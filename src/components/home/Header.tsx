@@ -8,14 +8,13 @@ import { Label } from "../ui/label";
 import { Spinner } from "../ui/spinner";
 import { Textarea } from "../ui/textarea";
 import { Check } from "lucide-react";
+import { createNotes } from "@/api/notes";
+import type Inputs from "@/types/tasktypes"
 
 
 
 export default function Header() {
-    type Inputs = {
-        title: string,
-        body: string,
-    }
+
 
 
 
@@ -25,20 +24,14 @@ export default function Header() {
 
     const onSubmit: SubmitHandler<Inputs> = async (inputs) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_ENV_BASE_URL}/api/notes/`, {
-                headers: { "Content-Type": "application/json" },
-                method: "POST",
-                body: JSON.stringify(inputs)
+            await createNotes(inputs).then(() => {
+                setResult(
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5em" }}>
+                        <Check size={16} /> Notes Created!
+                    </span>
+                );
             })
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            await response.json()
-            setResult(
-                <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5em" }}>
-                    <Check size={16} /> Notes Created!
-                </span>
-            );
+
             setTimeout(() => {
                 setResult("Submit")
             }, 4000);

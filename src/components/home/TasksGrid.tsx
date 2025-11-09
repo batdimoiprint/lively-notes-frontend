@@ -1,60 +1,37 @@
-import { Trash } from "lucide-react"
-import { Card, CardAction, CardContent, CardHeader } from "../ui/card"
-import React, { useEffect, useState } from "react"
-import { getNotes } from "@/api/notes"
+import { RefreshCcwIcon, Trash } from "lucide-react";
+import { Card, CardAction, CardContent, CardHeader } from "../ui/card";
+// import React, { useEffect, useState } from "react"
+import { deleteNotes, useNotes, } from "@/api/notes";
+import type Tasks from "@/types/tasktypes";
+import { Button } from "../ui/button";
+import { Spinner } from "../ui/spinner";
+
+
+
+
 
 
 export default function TasksGrid() {
-    type Tasks = {
-        _id: number;
-        title: string;
-        body: string;
-    };
-    const [tasks, setTasks] = useState<Tasks[] | React.ReactNode>([])
-    const [isDeleted, setDeleted] = useState<boolean>(false)
+    const { data: tasks = [], isLoading, error, refetch } = useNotes();
 
+    if (isLoading) return <Spinner />
+    if (error) return <div>Error loading notes</div>
 
-    useEffect(() => {
-        async function fetchNotes() {
-            const notes = await getNotes();
-            setTasks(notes || []);
-        }
-
-        fetchNotes();
-        setDeleted(false);
-    }, [isDeleted]);
-
-
-    async function deleteNote(id: number) {
-        try {
-            const response = await fetch(`${import.meta.env.VITE_ENV_BASE_URL}/api/notes/`, {
-                headers: { "Content-Type": "application/json" },
-                method: "DELETE",
-                body: JSON.stringify({ _id: (id) })
-            })
-
-            setDeleted(true)
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`)
-            }
-
-            await response.json()
-
-        } catch (error) {
-            console.log(error)
-        }
+    function handleRefresh() {
+        refetch()
     }
 
-    return (
+    return (<>
+        <Button variant={"secondary"} onClick={handleRefresh}><RefreshCcwIcon /></Button >
         <div className="grid grid-cols-6 gap-4">
+
             {tasks.map((task: Tasks) => {
                 return (
 
                     <Card key={task._id} className="p-2 max-h-48 overflow-hidden">
                         <CardHeader className="font-bold text-xl" >{task.title}
-                            <CardAction onClick={() => { deleteNote(task._id) }}>
-                                <Trash />
+                            <CardAction>
+                                <Trash onClick={() => { deleteNotes(task._id) }} />
                             </CardAction>
                         </CardHeader>
                         <CardContent>
@@ -66,5 +43,6 @@ export default function TasksGrid() {
             }
 
         </div >
+    </>
     )
 }
