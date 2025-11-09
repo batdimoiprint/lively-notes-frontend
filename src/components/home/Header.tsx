@@ -9,6 +9,8 @@ import { Spinner } from "../ui/spinner";
 import { Textarea } from "../ui/textarea";
 import { Check } from "lucide-react";
 
+
+
 export default function Header() {
     type Inputs = {
         title: string,
@@ -17,7 +19,7 @@ export default function Header() {
 
 
 
-    const { register, handleSubmit, formState: { errors, isSubmitting, } } = useForm<Inputs>();
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Inputs>();
     const [result, setResult] = useState<React.ReactNode>("Submit");
 
 
@@ -56,6 +58,7 @@ export default function Header() {
                     <CardTitle>Lively Desktop Notes</CardTitle>
                     <CardDescription>Good Day Morning</CardDescription>
                     <CardAction><ModeToggle /></CardAction>
+
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)}>
@@ -70,6 +73,7 @@ export default function Header() {
                     </form>
 
                 </CardContent>
+
             </Card>
         </>
     )
