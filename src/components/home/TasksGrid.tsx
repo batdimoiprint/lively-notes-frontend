@@ -1,37 +1,46 @@
-import { RefreshCcwIcon, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import { Card, CardAction, CardContent, CardHeader } from "../ui/card";
 // import React, { useEffect, useState } from "react"
 import { deleteNotes, useNotes, } from "@/api/notes";
 import type Tasks from "@/types/tasktypes";
-import { Button } from "../ui/button";
+
 import { Spinner } from "../ui/spinner";
-
-
-
-
-
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function TasksGrid() {
-    const { data: tasks = [], isLoading, error, refetch } = useNotes();
+    const { data: tasks = [], isLoading, error } = useNotes();
+    const queryClient = useQueryClient()
+
+    const mutation = useMutation({
+        mutationFn: deleteNotes,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['notes'] })
+        },
+        onError: (error) => {
+            console.log(error)
+        }
+    })
 
     if (isLoading) return <Spinner />
     if (error) return <div>Error loading notes</div>
 
-    function handleRefresh() {
-        refetch()
-    }
+
 
     return (<>
-        <Button variant={"secondary"} onClick={handleRefresh}><RefreshCcwIcon /></Button >
+
         <div className="grid grid-cols-6 gap-4">
 
             {tasks.map((task: Tasks) => {
                 return (
 
-                    <Card key={task._id} className="p-2 max-h-48 overflow-hidden">
-                        <CardHeader className="font-bold text-xl" >{task.title}
+                    <Card key={task._id} className="p-2 overflow-hidden max-h-48 backdrop-blur-md dark:bg-card/20">
+                        <CardHeader className="text-xl font-bold" >{task.title}
                             <CardAction>
-                                <Trash onClick={() => { deleteNotes(task._id) }} />
+                                <Trash onClick={() => {
+                                    // deleteNotes(task._id) 
+                                    mutation.mutate(task._id)
+
+                                }} />
                             </CardAction>
                         </CardHeader>
                         <CardContent>
