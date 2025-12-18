@@ -1,24 +1,31 @@
 import { useEffect, useRef } from 'react'
+import type { MatrixConfig } from '@/types/matrixConfig'
 
-interface MatrixConfig {
-    wavecolor: { r: number; g: number; b: number }
-    rainbowSpeed: number
-    rainbow: boolean
-    matrixspeed: number
-    textColor: string
-    trailOpacity: number
+type RGB = { r: number; g: number; b: number }
+
+const hexToRGB = (hex: string): RGB => {
+    const sanitized = hex.replace('#', '')
+    const normalized = sanitized.length === 3
+        ? sanitized.split('').map((char) => char + char).join('')
+        : sanitized
+    const value = Number.parseInt(normalized, 16)
+
+    if (Number.isNaN(value)) {
+        return { r: 0, g: 0, b: 0 }
+    }
+
+    return {
+        r: (value >> 16) & 255,
+        g: (value >> 8) & 255,
+        b: value & 255,
+    }
 }
 
-const DEFAULT_CONFIG: MatrixConfig = {
-    wavecolor: { r: 125, g: 52, b: 253 },
-    rainbowSpeed: 0.05,
-    rainbow: false,
-    matrixspeed: 50,
-    textColor: "#ffffff",
-    trailOpacity: 0.05,
+interface MatrixBGProps {
+    config: MatrixConfig;
 }
 
-export default function MatrixBG() {
+export default function MatrixBG({ config }: MatrixBGProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const dropsRef = useRef<number[]>([])
     const hueRef = useRef(-0.01)
@@ -54,8 +61,6 @@ export default function MatrixBG() {
         const ctx = canvas.getContext('2d')
         if (!ctx) return
 
-        const config = DEFAULT_CONFIG
-
         const draw = () => {
             const columns = Math.floor(canvas.width / fontSizeRef.current)
             if (dropsRef.current.length !== columns) {
@@ -63,7 +68,8 @@ export default function MatrixBG() {
             }
 
             // Trail effect
-            ctx.fillStyle = `rgba(0,0,0, ${config.trailOpacity})`
+            const backgroundRGB = hexToRGB(config.backgroundColor)
+            ctx.fillStyle = `rgba(${backgroundRGB.r},${backgroundRGB.g},${backgroundRGB.b}, ${config.trailOpacity})`
             ctx.fillRect(0, 0, canvas.width, canvas.height)
 
             ctx.font = `${fontSizeRef.current}px arial`
@@ -98,7 +104,7 @@ export default function MatrixBG() {
         return () => {
             if (intervalRef.current) clearInterval(intervalRef.current)
         }
-    }, [])
+    }, [config])
 
     return (
         <canvas
