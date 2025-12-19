@@ -10,7 +10,7 @@ export default function Home() {
 
     return (
         <main>
-            <div className='relative flex flex-col w-full gap-4 p-4 z-1 
+            <div className='relative flex flex-col w-full gap-4 px-4 pt-4 z-1 
             
             '>
                 <Header
@@ -23,7 +23,7 @@ export default function Home() {
                 <MatrixBG
                     config={matrixConfig}
                 />
-                <Snowfall />
+                <Snowfall snowflakeCount={1000} />
             </div>
         </main>
     )

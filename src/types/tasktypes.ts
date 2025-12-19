@@ -1,5 +1,5 @@
 export default interface Tasks {
-    _id: number;
+    _id?: number | undefined;
     title: string;
     body: string;
 }

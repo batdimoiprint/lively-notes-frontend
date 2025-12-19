@@ -3,6 +3,7 @@ import { HashRouter } from "react-router-dom"
 import AppRoute from "./routes/routes"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import axios from 'axios'
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 
 // React Query
@@ -22,6 +23,7 @@ function App() {
         <HashRouter>
           <QueryClientProvider client={queryClient}>
             <AppRoute />
+            {/* <ReactQueryDevtools initialIsOpen={false} /> */}
           </QueryClientProvider>
         </HashRouter>
       </ThemeProvider >

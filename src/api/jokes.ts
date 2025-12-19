@@ -5,8 +5,7 @@ const options = {
 }
 
 export default async function getJoke() {
-    const data = await fetch(url, options)
+    // const data = await fetch(url, options)
     const response = await data.json()
-    console.log(response)
     return response
 }

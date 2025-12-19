@@ -17,6 +17,10 @@ import type Inputs from "@/types/tasktypes"
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { MatrixConfig } from "@/types/matrixConfig";
 import getJoke from "@/api/jokes";
+import { useSanaIds, useLizIds, useMomoIds } from "@/lib/cloudinary";
+import { AdvancedImage, responsive } from '@cloudinary/react';
+
+
 
 interface HeaderProps {
     config: MatrixConfig;
@@ -43,12 +47,17 @@ const useDebouncedInput = () => {
 };
 
 
+
+
 export default function Header({ config, onConfigChange }: HeaderProps) {
     const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<Inputs>();
     const [result, setResult] = useState<React.ReactNode>("Submit");
     const queryClient = useQueryClient()
     const debounce = useDebouncedInput();
     const [joke, setJoke] = useState<string>("No Jokes yet")
+    const { sanaImg, isLoading: isSanaLoading, error: sanaError } = useSanaIds();
+    const { lizImg, isLoading: isLizLoading, error: lizError } = useLizIds();
+    const { momoImg, isLoading: isMomoLoading, error: momoError } = useMomoIds();
 
     const mutation = useMutation({
         mutationFn: createNotes,
@@ -61,7 +70,7 @@ export default function Header({ config, onConfigChange }: HeaderProps) {
             reset()
             setTimeout(() => {
                 setResult("Submit")
-            }, 4000);
+            }, 2000);
             queryClient.invalidateQueries({ queryKey: ['notes'] })
         },
         onError: (error) => {
@@ -93,8 +102,8 @@ export default function Header({ config, onConfigChange }: HeaderProps) {
 
 
     return (
-        <>
-            <Card className="backdrop-blur-md dark:bg-card/20">
+        <div className="flex flex-row gap-4 max-h-72 w-full h-auto">
+            <Card className="backdrop-blur-md dark:bg-card/20 w-full">
                 <CardHeader>
                     <CardTitle>Lively Desktop Notes</CardTitle>
                     <CardDescription>{joke}
@@ -176,7 +185,7 @@ export default function Header({ config, onConfigChange }: HeaderProps) {
                     </CardAction>
                 </CardHeader>
                 <CardContent>
-                    <form className="flex flex-row w-full h-full gap-4" onSubmit={handleSubmit(onSubmit)}>
+                    <form className="flex flex-col w-full h-full gap-4" onSubmit={handleSubmit(onSubmit)}>
                         <Input
                             {...register("title", {
                                 required: "Title is required",
@@ -204,6 +213,42 @@ export default function Header({ config, onConfigChange }: HeaderProps) {
                 </CardContent>
 
             </Card>
-        </>
+            {/* Pictures */}
+            <Card className="backdrop-blur-md dark:bg-card/20 w-full max-w-74.5 gap-0 text-center p-2">
+                <div className="w-full aspect-square flex items-center justify-center overflow-hidden">
+
+                    {isSanaLoading ? <Spinner /> : <AdvancedImage
+                        cldImg={sanaImg}
+                        className="w-full h-full object-cover rounded"
+                        plugins={[responsive()]}
+                    />}
+                    {sanaError?.message}
+
+                </div>
+                <p className="font-bold ">Slot for my gf</p>
+            </Card>
+            <Card className="backdrop-blur-md dark:bg-card/20 w-full max-w-74.5 gap-0 text-center p-2">
+                <div className="w-full aspect-square flex items-center justify-center overflow-hidden">
+                    {isLizLoading ? <Spinner /> : <AdvancedImage
+                        cldImg={lizImg}
+                        className="w-full h-full object-cover rounded"
+                        plugins={[responsive()]}
+                    />}
+                    {lizError?.message}
+                </div>
+                <p className="font-bold ">My First Love</p>
+            </Card>
+            <Card className="backdrop-blur-md dark:bg-card/20 w-full max-w-74.5 gap-0 text-center p-2">
+                <div className="w-full aspect-square flex items-center justify-center overflow-hidden">
+                    {isMomoLoading ? <Spinner /> : <AdvancedImage
+                        cldImg={momoImg}
+                        className="w-full h-full object-cover rounded"
+                        plugins={[responsive()]}
+                    />}
+                    {momoError?.message}
+                </div>
+                <p className="font-bold ">LOML</p>
+            </Card>
+        </div>
     )
 }
