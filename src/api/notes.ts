@@ -1,37 +1,37 @@
-import type Tasks from "@/types/tasktypes"
-import type Inputs from "@/types/tasktypes"
+import { type Tasks, type Inputs } from "@/types/tasktypes"
 import { useQuery } from "@tanstack/react-query"
+import api from "./axiosInstance"
 
+export async function getNotes() {
+    try {
+        const res = await api.get<Tasks[]>('/api/notes/')
 
-
-async function getNotes(): Promise<Tasks[]> {
-    const response = await fetch(`${import.meta.env.VITE_ENV_BASE_URL}/api/notes/`)
-    if (!response.ok) throw new Error("Failed to fetch notes");
-    return response.json()
+        return res.data
+    } catch (error) {
+        console.log(error)
+    }
 }
 
+export async function deleteNotes(id: string) {
+    try {
+        console.log(id)
+        const res = await api.delete('/api/notes/', { data: { _id: id } })
 
+        return res.status
+    } catch (error) {
+        console.log(error)
+    }
+}
 
-// export async function getNotes() {
-//     try {
-//         const res = await axios.get<Tasks>('/api/notes/')
-//         console.log(res.data)
-//         return res.data
-//     } catch (error) {
-//         console.log(error)
-//     }
+// export async function deleteNotes(id: number): Promise<Tasks[]> {
+//     const response = await fetch(`${import.meta.env.VITE_ENV_BASE_URL}/api/notes/`, {
+//         headers: { "Content-Type": "application/json" },
+//         method: "DELETE",
+//         body: JSON.stringify({ _id: (id) })
+//     })
+
+//     return response.json()
 // }
-
-
-export async function deleteNotes(id: number): Promise<Tasks[]> {
-    const response = await fetch(`${import.meta.env.VITE_ENV_BASE_URL}/api/notes/`, {
-        headers: { "Content-Type": "application/json" },
-        method: "DELETE",
-        body: JSON.stringify({ _id: (id) })
-    })
-
-    return response.json()
-}
 
 export async function createNotes(inputs: Inputs): Promise<Tasks[]> {
     const response = await fetch(`${import.meta.env.VITE_ENV_BASE_URL}/api/notes/`, {

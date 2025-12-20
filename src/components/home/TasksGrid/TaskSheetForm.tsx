@@ -1,15 +1,41 @@
 
 import { Edit, Save, Trash } from 'lucide-react'
 import { SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import type Tasks from '@/types/tasktypes'
+import { type Tasks } from '@/types/tasktypes'
 import { Button } from '../../ui/button'
 
 import { useState } from 'react'
 import { Input } from '../../ui/input'
+import {
+    // useForm
+    // , type SubmitHandler 
+} from 'react-hook-form'
+// import { useMutation } from '@tanstack/react-query'
 
-export default function TaskSheet({ title, body }: Tasks) {
+export default function TaskSheet({ task }: { task: Tasks | null }) {
     const [editActive, setEditActive] = useState<boolean>(false)
-    const [bodyValue, setBodyValue] = useState<string>(body)
+    // const {
+    //     register,
+    //     handleSubmit,
+    //       formState: { errors }, reset
+    // } = useForm<Tasks>()
+
+    // const mutation = useMutation({
+    //     onMutate: () => {
+
+    //     },
+    //     onSuccess: () => {
+
+    //     },
+    //     onError: () => {
+
+    //     }
+    // })
+
+    // const onSubmit: SubmitHandler<Tasks> = (data) => {
+    //     mutation.mutate(data)
+    // }
+
 
     return (
         <>
@@ -17,14 +43,19 @@ export default function TaskSheet({ title, body }: Tasks) {
                 <SheetHeader className='p-0 bg-amber-950'>
 
                 </SheetHeader>
-                <form>
+                <form
+                // onSubmit={handleSubmit(onSubmit)}
+                >
                     <SheetTitle className="w-full whitespace-normal wrap-break-word ">
-                        {title}
+                        {task?.title}
 
                     </SheetTitle>
                     <SheetDescription className="w-full whitespace-break-spaces wrap-break-word ">
                         <Input
-                            value={bodyValue}
+                            value={task?.body}
+                        // placeholder="Edit your note..."
+                        // onChange={e => setBodyValue(e.target.value)}
+                        // disabled={!editActive}
                         />
                     </SheetDescription>
                     <div className='flex flex-row items-center justify-between items- w-fill '>

@@ -2,7 +2,7 @@ import { Trash } from "lucide-react";
 import { Card, CardAction, CardContent, CardHeader } from "../../ui/card";
 // import React, { useEffect, useState } from "react"
 import { deleteNotes, useNotes, } from "@/api/notes";
-import type Tasks from "@/types/tasktypes";
+import { type Tasks } from "@/types/tasktypes";
 
 import { Spinner } from "../../ui/spinner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -12,20 +12,20 @@ import {
     Sheet,
     SheetTrigger,
 } from "@/components/ui/sheet"
-import TaskSheet from "./TaskSheet";
+import TaskSheet from "./TaskSheetForm";
 import React, { useState } from "react";
 
 const TasksGrid = React.memo(function TasksGrid() {
     const { data: tasks = [], isLoading, error } = useNotes();
     const queryClient = useQueryClient()
-    // const [notesId, setNotesId] = useState<number>()
-    const [title, setTitle] = useState<string>()
-    const [body, setBody] = useState<string>()
+    const [selectedTask, setSelectedTask] = useState<Tasks | null>(null)
+
 
     const mutation = useMutation({
         mutationFn: deleteNotes,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['notes'] })
+
         },
         onError: (error) => {
             console.log(error)
@@ -42,32 +42,31 @@ const TasksGrid = React.memo(function TasksGrid() {
             <Sheet>
                 <ScrollArea className="pb-4 h-180">
                     <div className="grid grid-cols-6 gap-4">
-
                         {tasks.map((task: Tasks) => {
                             return (
-
                                 <Card key={task._id} className="p-2 overflow-hidden max-h-48 backdrop-blur-md dark:bg-card/20">
                                     <SheetTrigger>
                                         <CardHeader
-                                            onClick={() => {
-                                                // setNotesId(task._id)
-                                                setTitle(task.title)
-                                                setBody(task.body)
-
-                                            }}
+                                            onClick={() => setSelectedTask(task)}
                                             className="text-xl font-bold cursor-pointer " >{task.title}
 
                                             <CardAction>
-                                                <Trash onClick={() => {
-                                                    // deleteNotes(task._id) 
-                                                    if (typeof task._id === "number") {
-                                                        mutation.mutate(task._id)
-                                                    }
-                                                }} />
+
                                             </CardAction>
                                         </CardHeader>
+
                                     </SheetTrigger>
                                     <CardContent>
+                                        <Trash onClick={
+
+                                            async () => {
+                                                const res = await deleteNotes(task._id)
+                                                if (res == 200) {
+                                                    mutation.mutate(task._id)
+
+                                                }
+                                            }}
+                                        />
                                         {task.body}
                                     </CardContent>
 
@@ -78,11 +77,7 @@ const TasksGrid = React.memo(function TasksGrid() {
                     </div >
                 </ScrollArea>
 
-                <TaskSheet
-                    // _id={notesId} 
-                    title={title ?? ""} body={body ?? ""}
-
-                />
+                <TaskSheet task={selectedTask} />
 
             </Sheet>
         </>

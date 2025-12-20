@@ -1,10 +1,10 @@
-export default interface Tasks {
-    _id?: number | undefined;
+export interface Tasks {
+    _id: string;
     title: string;
     body: string;
 }
 
-export default interface Inputs {
+export interface Inputs {
     title: string,
     body: string,
 }

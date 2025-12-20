@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@radix-ui/react-label'
 import { createNotes } from "@/api/notes";
-import type Inputs from "@/types/tasktypes"
+import { type Inputs } from "@/types/tasktypes"
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Spinner } from "../../ui/spinner";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -42,6 +42,7 @@ export default function FormNotes() {
     const onSubmit: SubmitHandler<Inputs> = (data) => {
         mutation.mutate(data)
     }
+
     return (
         <form className="flex flex-col w-full h-full gap-4" onSubmit={handleSubmit(onSubmit)}>
             <Input
