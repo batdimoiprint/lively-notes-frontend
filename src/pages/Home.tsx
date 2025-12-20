@@ -7,6 +7,7 @@ import { DEFAULT_MATRIX_CONFIG, type MatrixConfig } from '@/types/matrixConfig'
 import PictureCards from '@/components/home/PictureCards/PictureCards'
 
 export default function Home() {
+    // State for the MatrixBG and Header
     const [matrixConfig, setMatrixConfig] = useState<MatrixConfig>(DEFAULT_MATRIX_CONFIG)
 
     return (
@@ -20,7 +21,7 @@ export default function Home() {
 
             </div >
 
-            <div className='relative px-4 pt-4 overflow-hidden z-1 max-h-159'>
+            <div className='relative px-4 pt-4 overflow-hidden z-1 max-h-192'>
                 <TasksGrid />
             </div>
             <div className='absolute inset-0'>

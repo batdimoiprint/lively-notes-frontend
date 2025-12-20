@@ -1,20 +1,27 @@
 import React from 'react'
-import type { MatrixConfig } from "@/types/matrixConfig";
+import { type MatrixConfig } from "@/types/matrixConfig";
 import { Button } from '@/components/ui/button';
 import { Rainbow } from 'lucide-react';
 import { Label } from '@radix-ui/react-label';
 import { Input } from '@/components/ui/input';
 
-interface HeaderProps {
-    config: MatrixConfig;
-    onConfigChange: React.Dispatch<React.SetStateAction<MatrixConfig>>;
+interface FormMatrixConfigProps {
+    config: MatrixConfig,
+    onConfigChange: React.Dispatch<React.SetStateAction<MatrixConfig>>
 }
 
-export default function FormMatrixConfig({ config, onConfigChange }: HeaderProps) {
+// Goes to Header
+export default function FormMatrixConfig({ config, onConfigChange }: FormMatrixConfigProps) {
+
 
     const handleToggleRainbow = () => {
         onConfigChange(prev => ({ ...prev, rainbow: !prev.rainbow }))
+        console.log(config)
     }
+
+
+
+
     return (
         <>
             <Button

@@ -2,7 +2,8 @@ import { Card } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
 import { AdvancedImage, responsive } from '@cloudinary/react'
 import { useSanaIds, useLizIds, useMomoIds } from "@/lib/cloudinary";
-export default function PictureCards() {
+import React from 'react';
+const PictureCards = React.memo(function PictureCards() {
     const { sanaImg, isLoading: isSanaLoading, error: sanaError } = useSanaIds();
     const { lizImg, isLoading: isLizLoading, error: lizError } = useLizIds();
     const { momoImg, isLoading: isMomoLoading, error: momoError } = useMomoIds();
@@ -44,4 +45,6 @@ export default function PictureCards() {
                 <p className="font-bold ">LOML</p>
             </Card></>
     )
-}
+})
+
+export default PictureCards

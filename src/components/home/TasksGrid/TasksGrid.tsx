@@ -13,9 +13,9 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import TaskSheet from "./TaskSheet";
-import { useState } from "react";
+import React, { useState } from "react";
 
-export default function TasksGrid() {
+const TasksGrid = React.memo(function TasksGrid() {
     const { data: tasks = [], isLoading, error } = useNotes();
     const queryClient = useQueryClient()
     // const [notesId, setNotesId] = useState<number>()
@@ -40,7 +40,7 @@ export default function TasksGrid() {
     return (
         <>
             <Sheet>
-                <ScrollArea className="pb-4 h-156">
+                <ScrollArea className="pb-4 h-180">
                     <div className="grid grid-cols-6 gap-4">
 
                         {tasks.map((task: Tasks) => {
@@ -87,4 +87,6 @@ export default function TasksGrid() {
             </Sheet>
         </>
     )
-}
+})
+
+export default TasksGrid
