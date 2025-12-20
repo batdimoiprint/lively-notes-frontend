@@ -1,12 +1,12 @@
 import { Trash } from "lucide-react";
-import { Card, CardAction, CardContent, CardHeader } from "../ui/card";
+import { Card, CardAction, CardContent, CardHeader } from "../../ui/card";
 // import React, { useEffect, useState } from "react"
 import { deleteNotes, useNotes, } from "@/api/notes";
 import type Tasks from "@/types/tasktypes";
 
-import { Spinner } from "../ui/spinner";
+import { Spinner } from "../../ui/spinner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ScrollArea } from "../ui/scroll-area";
+import { ScrollArea } from "../../ui/scroll-area";
 
 import {
     Sheet,
@@ -40,7 +40,7 @@ export default function TasksGrid() {
     return (
         <>
             <Sheet>
-                <ScrollArea className="h-150">
+                <ScrollArea className="pb-4 h-156">
                     <div className="grid grid-cols-6 gap-4">
 
                         {tasks.map((task: Tasks) => {
@@ -80,7 +80,9 @@ export default function TasksGrid() {
 
                 <TaskSheet
                     // _id={notesId} 
-                    title={title ?? ""} body={body ?? ""} />
+                    title={title ?? ""} body={body ?? ""}
+
+                />
 
             </Sheet>
         </>
