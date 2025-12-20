@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 
 
 
-export async function getNotes(): Promise<Tasks[]> {
+async function getNotes(): Promise<Tasks[]> {
     const response = await fetch(`${import.meta.env.VITE_ENV_BASE_URL}/api/notes/`)
     if (!response.ok) throw new Error("Failed to fetch notes");
     return response.json()
@@ -52,7 +52,7 @@ export function useNotes() {
         queryKey: ['notes'],
         queryFn: getNotes,
         enabled: true,
-        staleTime: 60000,
+        staleTime: Infinity,
         retry: 2,
         refetchOnWindowFocus: true,
         networkMode: 'offlineFirst'

@@ -40,7 +40,7 @@ function useSanaPictures() {
         enabled: true,
         staleTime: Infinity,
         retry: 2,
-        refetchOnWindowFocus: false,
+        refetchOnWindowFocus: true,
         networkMode: 'offlineFirst'
     })
 }
@@ -52,7 +52,7 @@ function useMomoPictures() {
         enabled: true,
         staleTime: Infinity,
         retry: 2,
-        refetchOnWindowFocus: false,
+        refetchOnWindowFocus: true,
         networkMode: 'offlineFirst'
     })
 }
@@ -64,7 +64,7 @@ function useLizPictures() {
         enabled: true,
         staleTime: Infinity,
         retry: 2,
-        refetchOnWindowFocus: false,
+        refetchOnWindowFocus: true,
         networkMode: 'offlineFirst'
     })
 }
