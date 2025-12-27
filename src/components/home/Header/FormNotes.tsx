@@ -9,7 +9,7 @@ import { Spinner } from "../../ui/spinner";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { useState } from 'react';
 import { Check } from 'lucide-react';
-
+import { toast } from "sonner"
 
 export default function FormNotes() {
     const { register, handleSubmit, formState: { errors }, reset } = useForm<Inputs>();
@@ -30,6 +30,7 @@ export default function FormNotes() {
                 setResult("Submit")
             }, 2000);
             queryClient.invalidateQueries({ queryKey: ['notes'] })
+            toast.info("Notes Created")
         },
         onError: (error) => {
             setResult(error.message)

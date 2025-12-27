@@ -12,6 +12,7 @@ import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import TaskSheet from "./TaskSheetForm";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner"
 
 const TasksGrid = React.memo(function TasksGrid() {
     const { data: tasks = [], isLoading, error } = useNotes();
@@ -23,6 +24,7 @@ const TasksGrid = React.memo(function TasksGrid() {
         mutationFn: deleteNotes,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["notes"] });
+            toast("Notes Deleted")
         },
         onError: (error) => {
             console.log(error);
