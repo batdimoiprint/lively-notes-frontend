@@ -11,6 +11,8 @@ export default function JokeTitle() {
             setJoke(jokeData[0].joke) // Gets first item's title
         }
         getData()
+
+
     }, [])
     return (
         <>

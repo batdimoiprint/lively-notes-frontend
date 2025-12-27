@@ -4,7 +4,7 @@ import MatrixBG from '@/components/home/MatrixBG/MatrixBG'
 import TasksGrid from '@/components/home/TasksGrid/TasksGrid'
 import Snowfall from 'react-snowfall'
 import { DEFAULT_MATRIX_CONFIG, type MatrixConfig } from '@/types/matrixConfig'
-import PictureCards from '@/components/home/PictureCards/PictureCards'
+import PictureCards from '@/components/home/PictureCards/PictureCardsGroup'
 
 export default function Home() {
     // State for the MatrixBG and Header

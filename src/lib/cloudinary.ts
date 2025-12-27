@@ -1,55 +1,41 @@
-
-import { Cloudinary } from '@cloudinary/url-gen';
-import { auto } from '@cloudinary/url-gen/actions/resize';
-import { autoGravity } from '@cloudinary/url-gen/qualifiers/gravity';
-import {
-    // getSanaFolder,
-    // getLizFolder, getMomoFolder
-} from '@/api/pictures';
+import { useMemo } from 'react';
 import { useSanaPictures, useLizPictures, useMomoPictures } from '@/api/pictures';
+import { useCloudPics } from '@/hooks/useCloudPics';
 
 
-const cld = new Cloudinary({ cloud: { cloudName: 'dllnqngt4' } });
 
-// const publicId = await getPublicIds()
-// const sanaIds = await getSanaFolder()
-// const MomoIds = await getMomoFolder()
-// const LizIds = await getLizFolder()
-
+function randomizer(id: number[]) {
+    const randomId = Math.floor((Math.random() * id.length))
+    return randomId as number
+}
 
 export function useSanaIds() {
     const { data: sanaIds = [], isLoading, error } = useSanaPictures()
+    const randomizedId = useMemo(() => {
 
-    const randomizedId = Math.floor((Math.random() * sanaIds.length))
-    const sanaImg = cld
-        .image(`${sanaIds[randomizedId]}`)
-        .format('auto')
-        .quality('auto')
-        .resize(auto().gravity(autoGravity()).width(1000).height(1000));
+        return randomizer(sanaIds)
+    }, [sanaIds])
+    const sanaImg = useCloudPics({ id: sanaIds, randomizedId })
     return { sanaImg, isLoading, error }
 }
 
 export function useMomoIds() {
-
     const { data: momoIds = [], isLoading, error } = useMomoPictures()
-    const randomizedId = Math.floor((Math.random() * momoIds.length))
-    const momoImg = cld
+    const randomizedId = useMemo(() => {
 
-        .image(`${momoIds[randomizedId]}`)
-        .format('auto')
-        .quality('auto')
-        .resize(auto().gravity(autoGravity()).width(1000).height(1000));
+        return randomizer(momoIds)
+    }, [momoIds])
+    const momoImg = useCloudPics({ id: momoIds, randomizedId })
     return { momoImg, isLoading, error }
 }
 
 export function useLizIds() {
     const { data: lizIds = [], isLoading, error } = useLizPictures()
-    const randomizedId = Math.floor((Math.random() * lizIds.length))
-    const lizImg = cld
-        .image(`${lizIds[randomizedId]}`)
-        .format('auto')
-        .quality('auto')
-        .resize(auto().gravity(autoGravity()).width(1000).height(1000));
+    const randomizedId = useMemo(() => {
+
+        return randomizer(lizIds)
+    }, [lizIds])
+    const lizImg = useCloudPics({ id: lizIds, randomizedId })
     return { lizImg, isLoading, error }
 }
 
