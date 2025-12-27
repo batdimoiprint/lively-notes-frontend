@@ -6,8 +6,14 @@ const options = {
     method: "GET",
 }
 
+// Had to limit this on prod because of api limits lol
 export default async function getJoke() {
-    const res = await api.get(url, options)
-    const response = await res.data
-    return response
+    if (import.meta.env.PROD === true) {
+        const res = await api.get(url, options)
+        const response = await res.data
+        return response
+    } else {
+        return null
+    }
+
 }

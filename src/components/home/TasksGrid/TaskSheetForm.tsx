@@ -39,7 +39,7 @@ export default function TaskSheet({ task }: { task: Tasks | null }) {
 
     return (
         <>
-            <SheetContent className="p-8 backdrop-blur-md dark:bg-card/20 ">
+            <SheetContent side='left' className="p-8 backdrop-blur-md dark:bg-card/20">
                 <SheetHeader className='p-0 bg-amber-950'>
 
                 </SheetHeader>
