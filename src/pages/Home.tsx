@@ -6,6 +6,7 @@ import Snowfall from 'react-snowfall'
 import { Toaster } from '@/components/ui/sonner'
 import { DEFAULT_MATRIX_CONFIG, type MatrixConfig } from '@/types/matrixConfig'
 import PictureCards from '@/components/home/PictureCards/PictureCardsGroup'
+import Pomorodo from '@/components/home/Pomorodo/Pomorodo'
 
 export default function Home() {
     // State for the MatrixBG and Header
@@ -20,6 +21,7 @@ export default function Home() {
                         onConfigChange={setMatrixConfig}
                     />
                     <PictureCards />
+                    <Pomorodo />
 
                 </div >
 
