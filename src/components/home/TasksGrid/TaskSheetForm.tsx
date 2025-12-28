@@ -1,82 +1,85 @@
 
-import { Edit, Save, Trash } from 'lucide-react'
-import { SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import { type Tasks } from '@/types/tasktypes'
+import { SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
+import { type Inputs, type Tasks } from '@/types/tasktypes'
+import { Save } from 'lucide-react'
 import { Button } from '../../ui/button'
 
-import { useState } from 'react'
-import { Input } from '../../ui/input'
-import {
-    // useForm
-    // , type SubmitHandler 
-} from 'react-hook-form'
-// import { useMutation } from '@tanstack/react-query'
+import { editNotes } from '@/api/notes'
+import { Spinner } from '@/components/ui/spinner'
+import { Textarea } from '@/components/ui/textarea'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
+import { useForm, type SubmitHandler } from 'react-hook-form'
+import { toast } from 'sonner'
 
 export default function TaskSheet({ task }: { task: Tasks | null }) {
-    const [editActive, setEditActive] = useState<boolean>(false)
-    // const {
-    //     register,
-    //     handleSubmit,
-    //       formState: { errors }, reset
-    // } = useForm<Tasks>()
+    const { register, handleSubmit, reset } = useForm<Inputs>();
+    const [result, setResult] = useState<React.ReactNode>("Save");
+    const queryClient = useQueryClient()
+    const mutation = useMutation({
+        mutationFn: editNotes,
+        onMutate: () => {
+            setResult(<Spinner />)
 
-    // const mutation = useMutation({
-    //     onMutate: () => {
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['notes'] })
+            setResult(
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5em" }}>
+                    Notes Updated!
+                </span>
+            )
+            toast.info("Notes Update")
+            setTimeout(() => {
+                setResult("Save")
+            }, 2000);
 
-    //     },
-    //     onSuccess: () => {
 
-    //     },
-    //     onError: () => {
+        },
+        onError: () => {
+            toast.error("Failed to update notes")
+        }
+    })
 
-    //     }
-    // })
+    useEffect(() => {
+        reset({ title: task?.title ?? "", body: task?.body ?? "" });
+    }, [task, reset]);
 
-    // const onSubmit: SubmitHandler<Tasks> = (data) => {
-    //     mutation.mutate(data)
-    // }
-
+    const onSubmit: SubmitHandler<Inputs> = (data) => {
+        const payload: Tasks = { ...data, _id: task?._id ?? "" };
+        mutation.mutate(payload);
+    };
 
     return (
         <>
             <SheetContent side='left' className="p-8 backdrop-blur-md dark:bg-card/20">
-                <SheetHeader className='p-0 bg-amber-950'>
-
-                </SheetHeader>
-                <form
-                // onSubmit={handleSubmit(onSubmit)}
-                >
+                <form className='gap-4 flex flex-col' onSubmit={handleSubmit(onSubmit)}>
                     <SheetTitle className="w-full whitespace-normal wrap-break-word ">
-                        {task?.title}
+                        <Textarea
+                            {...register("title", { required: "Title is required" })}
 
+
+                        />
                     </SheetTitle>
-                    <SheetDescription className="w-full whitespace-break-spaces wrap-break-word ">
-                        <Input
-                            value={task?.body}
-                        // placeholder="Edit your note..."
-                        // onChange={e => setBodyValue(e.target.value)}
-                        // disabled={!editActive}
+                    <SheetDescription className="w-full h-full whitespace-break-spaces wrap-break-word ">
+
+                        <Textarea
+
+                            {...register("body", {
+                                required: "Title is required"
+                            })}
+
+
                         />
                     </SheetDescription>
-                    <div className='flex flex-row items-center justify-between items- w-fill '>
-
-                        <Button>
-                            <Trash size={20} />
-                            Delete
-                        </Button>
-                        {editActive ?
-                            <Button onClick={() => { setEditActive(false) }}>
-                                <Save size={20} />
-                                Save
-                            </Button> :
-                            <Button onClick={() => { setEditActive(true) }}>
-                                <Edit size={20} />
-                                Edit
-                            </Button>}
 
 
 
-                    </div>
+                    <Button disabled={mutation.isPending} type="submit" >
+                        <Save />
+                        {result}
+                    </Button>
+
                 </form>
             </SheetContent>
         </>

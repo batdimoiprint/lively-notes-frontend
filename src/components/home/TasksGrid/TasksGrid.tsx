@@ -1,18 +1,15 @@
-import { X } from "lucide-react";
-import { Card, CardAction, CardContent, CardHeader } from "../../ui/card";
-// import React, { useEffect, useState } from "react"
 import { deleteNotes, useNotes } from "@/api/notes";
 import { type Tasks } from "@/types/tasktypes";
 
-import { Spinner } from "../../ui/spinner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ScrollArea } from "../../ui/scroll-area";
+import { Spinner } from "../../ui/spinner";
 
-import { Sheet, SheetTrigger } from "@/components/ui/sheet";
-import TaskSheet from "./TaskSheetForm";
+import { Sheet } from "@/components/ui/sheet";
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner"
+import { toast } from "sonner";
+import TaskCard from "./TaskCard";
+import TaskSheet from "./TaskSheetForm";
 
 const TasksGrid = React.memo(function TasksGrid() {
     const { data: tasks = [], isLoading, error } = useNotes();
@@ -25,11 +22,16 @@ const TasksGrid = React.memo(function TasksGrid() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["notes"] });
             toast("Notes Deleted")
+
         },
         onError: (error) => {
             console.log(error);
         },
+        onSettled: () => setDeletingId(null)
     });
+
+
+
 
     if (isLoading) return <Spinner />;
     if (error) return <div>Error loading notes</div>;
@@ -37,47 +39,28 @@ const TasksGrid = React.memo(function TasksGrid() {
     return (
         <>
             <Sheet>
-                <ScrollArea className="pb-4 h-180">
+                <ScrollArea className="pb-4 h-160">
                     <div className="grid grid-cols-6 gap-4">
                         {tasks.map((task: Tasks) => {
                             return (
-                                <Card
-                                    key={task._id}
-                                    className="p-2 overflow-hidden max-h-48 backdrop-blur-md dark:bg-card/20"
-                                >
-                                    <CardHeader>
-                                        {/* {task._id} */}
-                                        {task.title}
-                                        <CardAction>
-                                            <Button
-                                                onClick={async () => {
-                                                    setDeletingId(task._id);
-                                                    mutation.mutate(task._id, {
-                                                        onSettled: () => setDeletingId(null)
-                                                    });
-                                                }}
-                                                variant="ghost"
-                                            >
-                                                {deletingId === task._id ? <Spinner /> : <X />}
-                                            </Button>
-                                        </CardAction>
-                                    </CardHeader>
+                                <>
 
-                                    <SheetTrigger>
-                                        <CardContent
-                                            onClick={() => setSelectedTask(task)}
-                                            className="cursor-pointer"
-                                        >
-                                            {task.body}
-                                        </CardContent>
-                                    </SheetTrigger>
-                                </Card>
+                                    <TaskCard
+                                        key={task._id}
+                                        task={task}
+                                        deletingId={deletingId}
+                                        setDeletingId={setDeletingId}
+                                        setSelectedTask={setSelectedTask}
+                                        mutation={mutation}
+                                    />
+                                </>
                             );
                         })}
                     </div>
                 </ScrollArea>
 
                 <TaskSheet task={selectedTask} />
+
             </Sheet>
         </>
     );

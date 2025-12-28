@@ -56,6 +56,7 @@ export default function FormNotes() {
 
             {/* {errors.title && <Label >{errors.title.message}</Label>} */}
             <Textarea
+                className='h-24 overflow-hidden'
                 {...register("body", {
                     required: "Body is required"
                 })}

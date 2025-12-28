@@ -25,7 +25,7 @@ export default function Home() {
 
                 </div >
 
-                <div className='relative px-4 pt-4 overflow-hidden z-1 max-h-192 max-w-[1920px]'>
+                <div className='relative px-4 pt-4 overflow-hidden z-1 max-h-164 max-w-[1920px]'>
                     <TasksGrid />
                 </div>
                 <div className='absolute inset-0'>

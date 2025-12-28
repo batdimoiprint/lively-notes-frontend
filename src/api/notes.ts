@@ -14,25 +14,31 @@ export async function getNotes() {
 export async function deleteNotes(id: string) {
     try {
         const res = await api.delete("/api/notes/", { data: { _id: id } });
+
         return res.status;
     } catch (error) {
         console.log(error);
     }
 }
 
-export async function createNotes(inputs: Inputs): Promise<Tasks[]> {
-    const response = await fetch(
-        `${import.meta.env.VITE_ENV_BASE_URL}/api/notes/`,
-        {
-            headers: { "Content-Type": "application/json" },
-            method: "POST",
-            body: JSON.stringify(inputs),
-        }
-    );
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+export async function createNotes(inputs: Inputs) {
+    try {
+        const res = await api.post("/api/notes/", { title: inputs.title, body: inputs.body });
+
+        return res.status;
+    } catch (error) {
+        console.log(error)
     }
-    return await response.json();
+}
+
+export async function editNotes(inputs: Tasks) {
+    try {
+        const res = await api.put("/api/notes/", { _id: inputs._id, title: inputs.title, body: inputs.body });
+
+        return res.status;
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 export function useNotes() {
