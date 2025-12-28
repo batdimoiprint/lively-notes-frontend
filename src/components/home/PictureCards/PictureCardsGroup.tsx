@@ -11,9 +11,8 @@ const PictureCards = React.memo(function PictureCards() {
     return (
         <>
             <PhotoCards cardLabel={'For my gf'} idolError={lizError} idolImg={lizImg} isIdolLoading={isLizLoading} />
-            <PhotoCards cardLabel={'LOML'} idolError={sanaError} idolImg={sanaImg} isIdolLoading={isSanaLoading} />
             <PhotoCards cardLabel={'Fist Love'} idolError={momoError} idolImg={momoImg} isIdolLoading={isMomoLoading} />
-
+            <PhotoCards cardLabel={'Happy Birthday <3'} idolError={sanaError} idolImg={sanaImg} isIdolLoading={isSanaLoading} />
 
         </>
     )

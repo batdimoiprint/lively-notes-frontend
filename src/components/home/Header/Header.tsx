@@ -1,17 +1,21 @@
 
-import { ModeToggle } from "../../mode-toggle";
-import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card";
-import type { MatrixConfig } from "@/types/matrixConfig";
-import FormNotes from "./FormNotes";
-import FormMatrixConfig from "./FormMatrixConfig";
-import JokeTitle from "./JokeTitle";
 import { Switch } from "@/components/ui/switch";
+import type { MatrixConfig } from "@/types/matrixConfig";
+import { useState } from "react";
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card";
+import FormMatrixConfig from "./FormMatrixConfig";
+import FormNotes from "./FormNotes";
+import JokeTitle from "./JokeTitle";
 interface HeaderProps {
     config: MatrixConfig;
     onConfigChange: React.Dispatch<React.SetStateAction<MatrixConfig>>;
 }
 // Goes to Home
 export default function Header({ config, onConfigChange }: HeaderProps) {
+    const [isHeaderToggled, setHeaderToggled] = useState<boolean>(false)
+
+
+
     return (
         <div className="flex flex-row w-full h-auto gap-4 ">
             <Card className="w-full backdrop-blur-md dark:bg-card/20">
@@ -21,15 +25,17 @@ export default function Header({ config, onConfigChange }: HeaderProps) {
                         <JokeTitle />
                     </CardDescription>
                     <CardAction className="flex flex-wrap items-center gap-2">
-                        <ModeToggle />
-                        <Switch
 
-                        />
+
+                        <Switch onCheckedChange={checked => { setHeaderToggled(checked) }} />
                     </CardAction>
                 </CardHeader>
                 <CardContent>
-                    <FormNotes />
-                    <FormMatrixConfig config={config} onConfigChange={onConfigChange} />
+                    {isHeaderToggled ?
+                        <FormMatrixConfig config={config} onConfigChange={onConfigChange} />
+                        : <FormNotes />}
+
+
                 </CardContent>
             </Card>
         </div>
