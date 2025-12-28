@@ -41,21 +41,16 @@ const TasksGrid = React.memo(function TasksGrid() {
             <Sheet>
                 <ScrollArea className="h-168">
                     <div className="grid grid-cols-6 gap-4">
-                        {tasks.map((task: Tasks) => {
-                            return (
-                                <>
-
-                                    <TaskCard
-                                        key={task._id}
-                                        task={task}
-                                        deletingId={deletingId}
-                                        setDeletingId={setDeletingId}
-                                        setSelectedTask={setSelectedTask}
-                                        mutation={mutation}
-                                    />
-                                </>
-                            );
-                        })}
+                        {tasks.map((task: Tasks) => (
+                            <TaskCard
+                                key={task._id}
+                                task={task}
+                                deletingId={deletingId}
+                                setDeletingId={setDeletingId}
+                                setSelectedTask={setSelectedTask}
+                                mutation={mutation}
+                            />
+                        ))}
                     </div>
                 </ScrollArea>
 

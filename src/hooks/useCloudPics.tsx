@@ -11,10 +11,13 @@ interface CloudPicsProps {
 }
 
 export function useCloudPics({ id, randomizedId }: CloudPicsProps) {
+    if (!Array.isArray(id) || id.length === 0 || randomizedId == null || randomizedId < 0 || randomizedId >= id.length) {
+        return null;
+    }
     const image = cld
         .image(`${id[randomizedId]}`)
         .format('auto')
         .quality('auto')
-        .resize(auto().gravity(autoGravity()).width(1000).height(1000))
-    return image
+        .resize(auto().gravity(autoGravity()).width(1000).height(1000));
+    return image;
 }
