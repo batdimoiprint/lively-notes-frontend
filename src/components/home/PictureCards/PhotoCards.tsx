@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
 import { AdvancedImage, responsive } from '@cloudinary/react'
@@ -25,9 +24,7 @@ export default function PhotoCards({ isIdolLoading, idolImg, idolError, cardLabe
 
             </div>
             <p className="font-bold ">{cardLabel}</p>
-            <Button onClick={() => {
-                console.log("first")
-            }}>Randomize</Button>
+
         </Card>
     )
 }

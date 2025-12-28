@@ -32,6 +32,9 @@ export default function TaskCard({
             <Card
                 key={task._id}
                 className="p-2 overflow-hidden max-h-48 backdrop-blur-md dark:bg-card/20"
+                onClick={() => {
+                    setSelectedTask(task);
+                }}
             >
                 <SheetTrigger>
                     <CardHeader>
@@ -56,9 +59,7 @@ export default function TaskCard({
                     </CardHeader>
                     <CardContent
                         className="whitespace-break-spaces "
-                        onClick={() => {
-                            setSelectedTask(task);
-                        }}
+
                     >
                         {task.body}
                     </CardContent>

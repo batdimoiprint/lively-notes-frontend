@@ -39,7 +39,7 @@ const TasksGrid = React.memo(function TasksGrid() {
     return (
         <>
             <Sheet>
-                <ScrollArea className="pb-4 h-160">
+                <ScrollArea className="h-168">
                     <div className="grid grid-cols-6 gap-4">
                         {tasks.map((task: Tasks) => {
                             return (

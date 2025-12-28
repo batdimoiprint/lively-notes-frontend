@@ -5,6 +5,7 @@ import type { MatrixConfig } from "@/types/matrixConfig";
 import FormNotes from "./FormNotes";
 import FormMatrixConfig from "./FormMatrixConfig";
 import JokeTitle from "./JokeTitle";
+import { Switch } from "@/components/ui/switch";
 interface HeaderProps {
     config: MatrixConfig;
     onConfigChange: React.Dispatch<React.SetStateAction<MatrixConfig>>;
@@ -21,12 +22,14 @@ export default function Header({ config, onConfigChange }: HeaderProps) {
                     </CardDescription>
                     <CardAction className="flex flex-wrap items-center gap-2">
                         <ModeToggle />
+                        <Switch
 
-                        <FormMatrixConfig config={config} onConfigChange={onConfigChange} />
+                        />
                     </CardAction>
                 </CardHeader>
                 <CardContent>
                     <FormNotes />
+                    <FormMatrixConfig config={config} onConfigChange={onConfigChange} />
                 </CardContent>
             </Card>
         </div>

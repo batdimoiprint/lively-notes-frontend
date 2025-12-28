@@ -15,7 +15,7 @@ export default function Home() {
     return (
         <>
             <main>
-                <div className='relative flex flex-row gap-4 px-4 pt-4 max-w-[1920px] z-1'>
+                <div className='relative flex flex-row gap-4 px-4 pt-4 max-w-[1920px] max-h-[350px] z-1'>
                     <Header
                         config={matrixConfig}
                         onConfigChange={setMatrixConfig}
@@ -25,7 +25,7 @@ export default function Home() {
 
                 </div >
 
-                <div className='relative px-4 pt-4 overflow-hidden z-1 max-h-164 max-w-[1920px]'>
+                <div className='relative px-4 pt-4 overflow-hidden z-1 max-w-[1920px]'>
                     <TasksGrid />
                 </div>
                 <div className='absolute inset-0'>
