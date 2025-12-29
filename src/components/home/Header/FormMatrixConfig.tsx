@@ -1,11 +1,13 @@
-import React, { useEffect } from "react";
-import { type MatrixConfig } from "@/types/matrixConfig";
-import { Label } from "@radix-ui/react-label";
+import { resetSettings } from "@/api/settings";
+import { ModeToggle } from "@/components/mode-toggle";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { ModeToggle } from "@/components/mode-toggle";
 import { Toggle } from "@/components/ui/toggle";
-import { Rainbow, SwatchBook } from "lucide-react";
+import { type MatrixConfig } from "@/types/matrixConfig";
+import { Label } from "@radix-ui/react-label";
+import { Check, Rainbow, RefreshCw, SwatchBook } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
 // import { getSettings } from "@/api/settings";
 // import { useForm, type SubmitHandler } from "react-hook-form";
@@ -18,7 +20,7 @@ interface FormMatrixConfigProps {
 
 // Goes to Header
 export default function FormMatrixConfig({ config, onConfigChange, }: FormMatrixConfigProps) {
-
+    const [reset, setReset] = useState<boolean>(false)
 
 
     useEffect(() => {
@@ -65,23 +67,26 @@ export default function FormMatrixConfig({ config, onConfigChange, }: FormMatrix
                     }
                     className="p-0 cursor-pointer w-7 h-7"
                 />
-                {/* Background Color */}
-                <Label htmlFor="backgroundColor" className="text-xs whitespace-nowrap">
-                    Background Color: {config.backgroundColor}
-                </Label>
-                <Input
-                    id="backgroundColor"
-                    type="color"
-                    value={config.backgroundColor}
-                    onChange={(e) =>
-                        onConfigChange((prev) => ({
-                            ...prev,
-                            backgroundColor: e.target.value,
-                        }))
-                    }
-                    className="p-0 cursor-pointer w-7 h-7"
-                />
+                <Button
+                    onClick={async () => {
+                        try {
+                            const response = await resetSettings();
+                            if (response === 200) {
+                                setReset(true);
+                                setTimeout(() => setReset(false), 2000);
+                            } else {
+                                setReset(false);
+                            }
+                        } catch (error) {
+                            console.error("Reset failed:", error);
+                            setReset(false);
+                        }
+                    }}
+                >
+                    {reset ? <Check /> : <RefreshCw />}
+                </Button>
             </div>
+
 
             {/* Speed Control */}
             <Label className="text-xs whitespace-nowrap">
@@ -125,6 +130,6 @@ export default function FormMatrixConfig({ config, onConfigChange, }: FormMatrix
                 step={0.01}
                 disabled={!config.rainbow}
             />
-        </div>
+        </div >
     );
 }
