@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import alertSoundUrl from './33_max_verstapoen.mp3'
+import alertSoundUrl from '@/assets/33_max_verstapoen.mp3'
 
 
 
@@ -220,6 +220,33 @@ export default function Pomorodo() {
 
     return (
         <Card className="w-full backdrop-blur-md dark:bg-card/20 p-4">
+            {/* TEST BUTTONS FOR ALERT SOUND */}
+            <div className="mb-2 flex gap-2">
+                <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => {
+                        if (audioRef.current) {
+                            audioRef.current.currentTime = 0;
+                            void audioRef.current.play();
+                        }
+                    }}
+                >
+                    Play Alert Sound
+                </Button>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => {
+                        if (audioRef.current) {
+                            audioRef.current.pause();
+                            audioRef.current.currentTime = 0;
+                        }
+                    }}
+                >
+                    Pause Alert Sound
+                </Button>
+            </div>
             <div className="flex items-center justify-between gap-3">
                 <div className="space-y-1">
                     <p className="text-sm text-muted-foreground">{modeHint}</p>
