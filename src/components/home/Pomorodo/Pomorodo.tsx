@@ -221,7 +221,7 @@ export default function Pomorodo() {
     return (
         <Card className="w-full backdrop-blur-md dark:bg-card/20 p-4">
             {/* TEST BUTTONS FOR ALERT SOUND */}
-            <div className="mb-2 flex gap-2">
+            <div className=" flex gap-2">
                 <Button
                     type="button"
                     variant="secondary"
@@ -262,7 +262,7 @@ export default function Pomorodo() {
                 </div>
             </div>
 
-            <div className="mt-4 h-2 w-full rounded bg-muted overflow-hidden">
+            <div className="h-2 w-full rounded bg-muted overflow-hidden">
                 <div
                     className="h-full bg-primary"
                     style={{ width: `${progressPercent}%` }}
@@ -270,7 +270,7 @@ export default function Pomorodo() {
                 />
             </div>
 
-            <div className="mt-4 flex flex-wrap items-center gap-2">
+            <div className=" flex flex-wrap items-center gap-2">
                 {steps.map((step, idx) => {
                     const isCurrent = idx === currentStepIndex
                     const isCompleted = idx < currentStepIndex
@@ -293,7 +293,7 @@ export default function Pomorodo() {
                 })}
             </div>
 
-            <div className="mt-4 flex items-center gap-2">
+            <div className="flex items-center gap-2">
                 {!isRunning ? (
                     <Button onClick={start} className="w-24">Start</Button>
                 ) : (

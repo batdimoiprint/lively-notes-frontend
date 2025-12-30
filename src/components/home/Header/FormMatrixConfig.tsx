@@ -112,8 +112,8 @@ export default function FormMatrixConfig({ config, onConfigChange, }: FormMatrix
                 onValueChange={(value) =>
                     onConfigChange((prev) => ({ ...prev, trailOpacity: value[0] }))
                 }
-                min={0.01}
-                max={0.3}
+                min={0.15}
+                max={0.5}
                 step={0.01}
             />
             {/* Rainbow Speed Control */}

@@ -13,7 +13,7 @@ export const DEFAULT_MATRIX_CONFIG: MatrixConfig = {
     rainbowSpeed: 0.05,
     rainbow: true,
     matrixspeed: 50,
-    textColor: "#ffffff",
-    trailOpacity: 0.05,
+    textColor: "#363636",
+    trailOpacity: 0.15,
     backgroundColor: "#000000"
 }
