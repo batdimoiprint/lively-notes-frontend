@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import Header from "@/components/home/Header/Header";
 import MatrixBG from "@/components/home/MatrixBG/MatrixBG";
 import TasksGrid from "@/components/home/TasksGrid/TasksGrid";
 import Snowfall from "react-snowfall";
-import { Toaster } from "@/components/ui/sonner";
-import { DEFAULT_MATRIX_CONFIG, type MatrixConfig } from "@/types/matrixConfig";
+import {Toaster} from "@/components/ui/sonner";
+import {DEFAULT_MATRIX_CONFIG, type MatrixConfig} from "@/types/matrixConfig";
 import PictureCards from "@/components/home/PictureCards/PictureCardsGroup";
 import Pomorodo from "@/components/home/Pomorodo/Pomorodo";
 
-import { ErrorBoundary } from "react-error-boundary";
+import {ErrorBoundary} from "react-error-boundary";
 import ErrorFallback from "@/components/ErrorFallback";
-import { getSettings } from "@/api/settings";
-import { Fireworks } from "@fireworks-js/react"
+import {getSettings} from "@/api/settings";
+import {Fireworks} from "@fireworks-js/react"
 
 export default function Home() {
     // State for the MatrixBG and Header
@@ -70,21 +70,21 @@ export default function Home() {
                                         autoresize: true,
                                         opacity: 1,
                                         acceleration: 1.05,
-                                        friction: 0.97,
+                                        friction: 1,
                                         gravity: 1.5,
                                         particles: 250,
                                         traceLength: 1,
-                                        traceSpeed: 2,
+                                        traceSpeed: 1,
                                         explosion: 5,
-                                        intensity: 10,
+                                        intensity: 200,
                                         flickering: 100,
-                                        lineStyle: 'round',
+                                        lineStyle: 'square',
                                         hue: {
                                             min: 0,
                                             max: 360
                                         },
                                         delay: {
-                                            min: 1,
+                                            min: 60,
                                             max: 60
                                         },
                                         rocketsPoint: {
