@@ -12,7 +12,7 @@ interface HeaderProps {
 }
 // Goes to Home
 export default function Header({ config, onConfigChange }: HeaderProps) {
-    const [isHeaderToggled, setHeaderToggled] = useState<boolean>(true)
+    const [isHeaderToggled, setHeaderToggled] = useState<boolean>(false)
 
 
 

@@ -9,18 +9,36 @@ import { Label } from "@radix-ui/react-label";
 import { Check, Rainbow, RefreshCw, SwatchBook } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
-// import { getSettings } from "@/api/settings";
+import { patchSettings } from "@/api/settings";
 // import { useForm, type SubmitHandler } from "react-hook-form";
-// import { useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
 interface FormMatrixConfigProps {
     config: MatrixConfig;
     onConfigChange: React.Dispatch<React.SetStateAction<MatrixConfig>>
 }
 
-// Goes to Header
+// Goes to Header to prop again
 export default function FormMatrixConfig({ config, onConfigChange, }: FormMatrixConfigProps) {
     const [reset, setReset] = useState<boolean>(false)
+
+
+    const mutation = useMutation({
+        mutationFn: patchSettings,
+        onSuccess: () => {
+            console.log("Success")
+
+        },
+        onError: () => {
+            console.log("error somewhere lol")
+        }
+    })
+
+    const handlePatch = (data: object) => {
+        mutation.mutate(data)
+    }
+
+    const displayValue = 0.65 - config.trailOpacity;
 
 
     useEffect(() => {
@@ -38,15 +56,21 @@ export default function FormMatrixConfig({ config, onConfigChange, }: FormMatrix
         <div className="flex flex-col gap-4 ">
             <div className="flex flex-row items-center justify-between">
                 <ModeToggle />
-                {/* Rainbow Toggle */}
+                 {/*Rainbow Toggle*/}
                 <Toggle
-                    aria-label="Toggle bookmark"
+                    aria-label="Toggle rainbow"
                     size={"sm"}
                     variant={"outline"}
                     className="Toggle"
                     pressed={!config?.rainbow}
                     onClick={() => {
-                        onConfigChange((prev) => ({ ...prev, rainbow: !prev.rainbow }))
+
+
+                        onConfigChange((prev) => {
+                            handlePatch({rainbow: !prev.rainbow })
+                            return { ...prev, rainbow: !prev.rainbow }
+                        })
+
                     }}
                 >
 
@@ -62,11 +86,17 @@ export default function FormMatrixConfig({ config, onConfigChange, }: FormMatrix
                     type="color"
                     disabled={Boolean(config.rainbow)}
                     value={config?.textColor}
-                    onChange={(e) =>
-                        onConfigChange((prev) => ({ ...prev, textColor: e.target.value }))
+                    onChange={(e) => {
+                        handlePatch({textColor: e.target.value})
+                        onConfigChange((prev) => ({...prev, textColor: e.target.value}))
                     }
+                    }
+
+
                     className="p-0 cursor-pointer w-7 h-7"
                 />
+
+                {/*Reset to Default*/}
                 <Button
                     onClick={async () => {
                         try {
@@ -94,24 +124,37 @@ export default function FormMatrixConfig({ config, onConfigChange, }: FormMatrix
             </Label>
             <Slider
                 value={[99 - config.matrixspeed]}
-                onValueChange={(value) =>
+                onValueChange={(value) =>(
                     onConfigChange((prev) => (
+                        { ...prev, matrixspeed: 99 - value[0] }
+                        ))
 
-                        { ...prev, matrixspeed: 99 - value[0] }))
-
+                )
                 }
+                onValueCommit={value => handlePatch({matrixspeed: 99 -value[0]})}
                 max={99}
                 step={1}
             />
             {/* Trail Control */}
+
+
+
             <Label className="text-xs whitespace-nowrap">
-                Trail: {Number(config.trailOpacity).toFixed(2)}
+                Trail: {Number(displayValue).toFixed(2)}
             </Label>
             <Slider
-                value={[config.trailOpacity]}
-                onValueChange={(value) =>
-                    onConfigChange((prev) => ({ ...prev, trailOpacity: value[0] }))
-                }
+
+                value={[displayValue]}
+                onValueChange={(value) => {
+
+                    const originalValue = 0.65 - value[0];
+                    onConfigChange((prev) => ({ ...prev, trailOpacity: originalValue }));
+                }}
+                onValueCommit={(value) => {
+                    // 3. Convert back to original scale before patching API
+                    const originalValue = 0.65 - value[0];
+                    handlePatch({ trailOpacity: originalValue });
+                }}
                 min={0.15}
                 max={0.5}
                 step={0.01}
@@ -125,6 +168,7 @@ export default function FormMatrixConfig({ config, onConfigChange, }: FormMatrix
                 onValueChange={(value) =>
                     onConfigChange((prev) => ({ ...prev, rainbowSpeed: value[0] }))
                 }
+                onValueCommit={value => handlePatch({rainbowSpeed: value[0]})}
                 min={0.01}
                 max={0.2}
                 step={0.01}
