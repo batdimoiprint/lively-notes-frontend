@@ -12,7 +12,7 @@ interface PhotoCardProps {
 
 export default function PhotoCards({ isIdolLoading, idolImg, idolError, cardLabel }: PhotoCardProps) {
     return (
-        <Card className="backdrop-blur-md w-full max-w-74.5 gap-0 text-center p-2 ">
+        <Card className="w-full max-w-74.5 gap-0 text-center p-2 ">
             <div className="flex items-center justify-center w-full overflow-hidden aspect-square ">
 
                 {isIdolLoading ? (

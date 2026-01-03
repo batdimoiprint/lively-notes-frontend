@@ -127,11 +127,3 @@
   }
 
 }
-
-/* Custom Card Styles */
-@layer utilities {
-  .bg-card {
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-  }
-}
