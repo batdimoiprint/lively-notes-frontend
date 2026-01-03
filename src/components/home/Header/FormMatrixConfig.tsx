@@ -1,5 +1,5 @@
 import { resetSettings } from "@/api/settings";
-import { ModeToggle } from "@/components/mode-toggle";
+// import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
@@ -55,7 +55,7 @@ export default function FormMatrixConfig({ config, onConfigChange, }: FormMatrix
     return (
         <div className="flex flex-col gap-4 ">
             <div className="flex flex-row items-center justify-between">
-                <ModeToggle />
+                {/* <ModeToggle /> */}
                  {/*Rainbow Toggle*/}
                 <Toggle
                     aria-label="Toggle rainbow"

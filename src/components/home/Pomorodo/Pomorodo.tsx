@@ -219,7 +219,7 @@ export default function Pomorodo() {
         mode === 'work' ? 'Work session' : breakKind === 'long' ? '15 min break' : 'Short break'
 
     return (
-        <Card className="w-full backdrop-blur-md dark:bg-card/20 p-4">
+        <Card className="w-full p-4">
             {/* TEST BUTTONS FOR ALERT SOUND */}
             <div className=" flex gap-2">
                 <Button

@@ -14,7 +14,7 @@
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.147 0.004 49.25);
-  --card: oklch(1 0 0);
+  --card: oklch(1 0 0/10%);
   --card-foreground: oklch(0.147 0.004 49.25);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.147 0.004 49.25);
@@ -86,7 +86,7 @@
 .dark {
   --background: oklch(0.147 0.004 49.25);
   --foreground: oklch(0.985 0.001 106.423);
-  --card: oklch(0.216 0.006 56.043);
+  --card: oklch(0.216 0.006 56.043/20%);
   --card-foreground: oklch(0.985 0.001 106.423);
   --popover: oklch(21.612% 0.00611 55.916 / 0.25);
   --popover-foreground: oklch(0.985 0.001 106.423);
@@ -126,5 +126,12 @@
     @apply bg-background text-foreground;
   }
 
+}
 
+/* Custom Card Styles */
+@layer utilities {
+  .bg-card {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
 }

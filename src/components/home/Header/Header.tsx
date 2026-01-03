@@ -19,7 +19,7 @@ export default function Header({ config, onConfigChange }: HeaderProps) {
 
     return (
         <div className="flex flex-row w-full h-auto gap-4 ">
-            <Card className="w-full backdrop-blur-md dark:bg-card/20">
+            <Card className="w-full">
                 <CardHeader>
                     <CardTitle>Lively Desktop Notes</CardTitle>
                     <CardDescription>

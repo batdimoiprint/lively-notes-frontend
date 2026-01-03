@@ -52,7 +52,7 @@ export default function TaskSheet({ task }: { task: Tasks | null }) {
 
     return (
         <>
-            <SheetContent side='left' className="p-8 backdrop-blur-md dark:bg-card/20">
+            <SheetContent side='left' className="p-8 ">
                 <form className='gap-4 flex flex-col' onSubmit={handleSubmit(onSubmit)}>
                     <SheetTitle className="w-full whitespace-normal wrap-break-word ">
                         <Textarea

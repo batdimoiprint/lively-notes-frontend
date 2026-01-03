@@ -11,7 +11,7 @@ type FallbackProps = {
 export default function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
     return (
 
-        <Card className={"relative flex flex-col justify-center p-4  mx-164 z-1 backdrop-blur-md dark:bg-card/20"}>
+        <Card className={"relative flex flex-col justify-center p-4  mx-164 z-1 "}>
 
             Something went wrong!
 

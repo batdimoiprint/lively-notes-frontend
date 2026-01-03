@@ -1,5 +1,4 @@
 export interface MatrixConfig {
-    wavecolor: { r: number; g: number; b: number }
     rainbowSpeed: number
     rainbow: boolean
     matrixspeed: number
@@ -9,7 +8,6 @@ export interface MatrixConfig {
 }
 
 export const DEFAULT_MATRIX_CONFIG: MatrixConfig = {
-    wavecolor: { r: 255, g: 255, b: 255 },
     rainbowSpeed: 0.01,
     rainbow: true,
     matrixspeed: 99,

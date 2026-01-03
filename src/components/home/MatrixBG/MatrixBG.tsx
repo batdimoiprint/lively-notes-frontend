@@ -1,7 +1,10 @@
 import { useEffect, useRef } from 'react'
 import type { MatrixConfig } from '@/types/matrixConfig'
+import { useTheme } from '@/components/theme-provider'
+
 
 type RGB = { r: number; g: number; b: number }
+
 
 const hexToRGB = (hex: string): RGB => {
     const sanitized = hex.replace('#', '')
@@ -26,6 +29,8 @@ interface MatrixBGProps {
 }
 
 export default function MatrixBG({ config }: MatrixBGProps) {
+    const theme = useTheme()
+    
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const dropsRef = useRef<number[]>([])
     const hueRef = useRef(-0.01)
@@ -53,6 +58,7 @@ export default function MatrixBG({ config }: MatrixBGProps) {
         return () => window.removeEventListener('resize', handleResize)
     }, [])
 
+    
     // Draw loop
     useEffect(() => {
         const canvas = canvasRef.current
@@ -68,7 +74,7 @@ export default function MatrixBG({ config }: MatrixBGProps) {
             }
 
             // Trail effect
-            const backgroundRGB = hexToRGB(config.backgroundColor)
+            const backgroundRGB = hexToRGB(theme.theme === "dark"? "000000" : "f0f0f0")
             ctx.fillStyle = `rgba(${backgroundRGB.r},${backgroundRGB.g},${backgroundRGB.b}, ${config.trailOpacity})`
             ctx.fillRect(0, 0, canvas.width, canvas.height)
 
@@ -104,7 +110,7 @@ export default function MatrixBG({ config }: MatrixBGProps) {
         return () => {
             if (intervalRef.current) clearInterval(intervalRef.current)
         }
-    }, [config])
+    }, [config, theme.theme])
 
     return (
         <canvas
