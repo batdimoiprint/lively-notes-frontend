@@ -1,6 +1,10 @@
 # Lively Notes Frontend
 
-React Version for my local Lively Notes Desktop 
+React Version for my local Lively Notes Desktop
+Because why not have your own custom wallpaper?
+This is a really cool pet project that uses AI as a strict teacher that guides me to learn all of react, typescript, and other libaries
+
+
 
 Old Repo
 https://github.com/batdimoiprint/Lively-Desktop-Notes
