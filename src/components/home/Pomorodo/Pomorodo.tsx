@@ -7,7 +7,7 @@ import alertSoundUrl from '@/assets/33_max_verstapoen.mp3'
 
 // VIBECODED PART
 // JUST EXPERIMENTING STUFFS
-
+// TODO: DO THIS ON MY OWN SHI
 
 type PomodoroMode = 'work' | 'break'
 type BreakKind = 'short' | 'long'

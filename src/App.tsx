@@ -1,10 +1,11 @@
 import { ThemeProvider } from "@/components/theme-provider"
-import { HashRouter } from "react-router-dom"
+// import { HashRouter } from "react-router-dom"
 import AppRoute from "./routes/routes"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import axios from 'axios'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { createIDBPersister } from './lib/idbPersister'
+import { BrowserRouter } from "react-router-dom"
 
 // import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
@@ -36,14 +37,14 @@ function App() {
     <>
 
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <HashRouter>
+        <BrowserRouter>
           <QueryClientProvider client={queryClient}>
             <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
               <AppRoute />
             </PersistQueryClientProvider>
             {/* <ReactQueryDevtools initialIsOpen={false} /> */}
           </QueryClientProvider>
-        </HashRouter>
+        </BrowserRouter>
       </ThemeProvider >
 
     </>
