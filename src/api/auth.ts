@@ -14,3 +14,17 @@ export async function Login(input:string) {
         throw error
     }
 }
+
+export async function WakeBackend() {
+    try {
+        const res = await api.get("/api/wake")
+        if (res.status === 200) {
+            return true
+        } else {
+            return false
+        }
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}

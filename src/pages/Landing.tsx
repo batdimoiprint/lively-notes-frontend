@@ -7,7 +7,7 @@ import {
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Login } from "@/api/auth";
+import { Login, WakeBackend } from "@/api/auth";
 import { toast } from "sonner";
 
 function Landing() {
@@ -29,11 +29,12 @@ function Landing() {
     if (value.length === 6) {
       mutation.mutate(value);
     }
+    WakeBackend()
   }, [value]);
 
   return (
-    <>
-    <div className="flex flex-col gap-4 items-center justify-center min-h-screen max-w-[1920px] ">
+    <main>
+    <section className="flex flex-col gap-4 items-center justify-center min-h-screen max-w-[1920px] ">
       <InputOTP
         maxLength={6}
         value={value}
@@ -51,9 +52,8 @@ function Landing() {
           <InputOTPSlot index={5} />
         </InputOTPGroup>
       </InputOTP>
-    </div>
-    
-    </>
+    </section>
+    </main>
     
   );
 }
