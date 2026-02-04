@@ -4,25 +4,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Toggle } from "@/components/ui/toggle";
-import { type MatrixConfig } from "@/types/matrixConfig";
 import { Label } from "@radix-ui/react-label";
 import { Check, Rainbow, RefreshCw, SwatchBook } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import  { useContext, useEffect, useState } from "react";
 
 import { patchSettings } from "@/api/settings";
-// import { useForm, type SubmitHandler } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
+import { MatrixContext } from "@/context/MatrixContext";
 
-interface FormMatrixConfigProps {
-    config: MatrixConfig;
-    onConfigChange: React.Dispatch<React.SetStateAction<MatrixConfig>>
-}
+
 
 // Goes to Header to prop again
-export default function FormMatrixConfig({ config, onConfigChange, }: FormMatrixConfigProps) {
+export default function FormMatrixConfig() {
+    const context = useContext(MatrixContext);
+    if (!context) throw new Error("MatrixContext not found");
+    const { config, onConfigChange } = context;
     const [reset, setReset] = useState<boolean>(false)
 
-
+    
     const mutation = useMutation({
         mutationFn: patchSettings,
         onSuccess: () => {

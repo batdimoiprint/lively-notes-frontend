@@ -8,10 +8,10 @@ export interface MatrixConfig {
 }
 
 export const DEFAULT_MATRIX_CONFIG: MatrixConfig = {
-    rainbowSpeed: 0.01,
+    rainbowSpeed: 0.05,
     rainbow: true,
-    matrixspeed: 99,
-    textColor: "#363636",
-    trailOpacity: 0.15,
+    matrixspeed: 67,
+    textColor: "#ff0000",
+    trailOpacity: 0.5,
     backgroundColor: "#000000"
 }
