@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Login, WakeBackend } from "@/api/auth";
 import { toast } from "sonner";
+import { Card } from "@/components/ui/card";
 
 function Landing() {
   const [value, setValue] = useState<string>("");
@@ -30,11 +31,13 @@ function Landing() {
       mutation.mutate(value);
     }
     WakeBackend()
+    
   }, [value]);
 
   return (
-    <main>
-    <section className="flex flex-col gap-4 items-center justify-center min-h-screen max-w-[1920px] ">
+    <main className="flex flex-col gap-4 items-center justify-center min-h-screen max-w-[1920px] ">
+    <Card className="items-center p-4">
+      <h1 className=" text-2xl font-bold">Welcome</h1>
       <InputOTP
         maxLength={6}
         value={value}
@@ -52,7 +55,7 @@ function Landing() {
           <InputOTPSlot index={5} />
         </InputOTPGroup>
       </InputOTP>
-    </section>
+    </Card >
     </main>
     
   );

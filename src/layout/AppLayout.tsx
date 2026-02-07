@@ -8,6 +8,7 @@ import { Fireworks } from "@fireworks-js/react";
 import { DEFAULT_MATRIX_CONFIG, type MatrixConfig } from "@/types/matrixConfig";
 import Snowfall from "react-snowfall";
 import { MatrixContext } from "@/context/MatrixContext";
+import picture from "@/assets/oj-serrano-iacKpANQHNA-unsplash.jpg"
 
 export default function AppLayout() {
   // Matrix Context
@@ -43,6 +44,11 @@ export default function AppLayout() {
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           <div className="absolute inset-0">
             <MatrixBG />
+
+
+    {/* Photo by <a href="https://unsplash.com/@senyor_oj?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">OJ Serrano</a> on <a href="https://unsplash.com/photos/aerial-view-of-city-buildings-during-daytime-iacKpANQHNA?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a> */}
+      
+            <img src={picture} alt="" className="fixed inset-0 opacity-90 dark:opacity-30" />
 
             {isChristmas && (
               <div className="fixed inset-0 ">
