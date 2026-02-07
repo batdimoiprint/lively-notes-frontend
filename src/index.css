@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  font-family: 'Inter', "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -125,5 +125,4 @@
   body {
     @apply bg-background text-foreground;
   }
-
 }

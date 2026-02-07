@@ -8,13 +8,11 @@ import { Fireworks } from "@fireworks-js/react";
 import { DEFAULT_MATRIX_CONFIG, type MatrixConfig } from "@/types/matrixConfig";
 import Snowfall from "react-snowfall";
 import { MatrixContext } from "@/context/MatrixContext";
-import picture from "@/assets/oj-serrano-iacKpANQHNA-unsplash.jpg"
+import picture from "@/assets/oj-serrano-iacKpANQHNA-unsplash.jpg";
 
 export default function AppLayout() {
   // Matrix Context
-  const [matrixConfig, setMatrixConfig] = useState<MatrixConfig>(
-    DEFAULT_MATRIX_CONFIG,
-  );
+  const [matrixConfig, setMatrixConfig] = useState<MatrixConfig>(DEFAULT_MATRIX_CONFIG);
 
   useEffect(() => {
     getSettings().then((settings) => {
@@ -30,34 +28,31 @@ export default function AppLayout() {
   const now = new Date();
   const isChristmas = now.getMonth() === 11 && now.getDate() === 25;
   const isNearNewYear =
-    (now.getMonth() === 11 && now.getDate() >= 30) ||
-    (now.getMonth() === 0 && now.getDate() <= 1);
+    (now.getMonth() === 11 && now.getDate() >= 30) || (now.getMonth() === 0 && now.getDate() <= 1);
   return (
     <main>
-      <MatrixContext.Provider value={{config: matrixConfig, onConfigChange: setMatrixConfig}}>
+      <MatrixContext.Provider value={{ config: matrixConfig, onConfigChange: setMatrixConfig }}>
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <div className="relative px-4 pt-4 overflow-hidden z-1 max-w-[1920px]">
+          <div className="relative z-1 max-w-[1920px] overflow-hidden px-4 pt-4">
             <Outlet />
           </div>
         </ErrorBoundary>
 
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           <div className="absolute inset-0">
-            
             <MatrixBG />
 
+            {/* Photo by <a href="https://unsplash.com/@senyor_oj?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">OJ Serrano</a> on <a href="https://unsplash.com/photos/aerial-view-of-city-buildings-during-daytime-iacKpANQHNA?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a> */}
 
-    {/* Photo by <a href="https://unsplash.com/@senyor_oj?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">OJ Serrano</a> on <a href="https://unsplash.com/photos/aerial-view-of-city-buildings-during-daytime-iacKpANQHNA?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a> */}
-      
             <img src={picture} alt="" className="fixed inset-0 opacity-90 dark:opacity-30" />
 
             {isChristmas && (
-              <div className="fixed inset-0 ">
+              <div className="fixed inset-0">
                 <Snowfall snowflakeCount={1000} />
               </div>
             )}
             {isNearNewYear && (
-              <div className="fixed inset-0 w-full h-full pointer-events-none">
+              <div className="pointer-events-none fixed inset-0 h-full w-full">
                 <Fireworks
                   style={{
                     top: 0,

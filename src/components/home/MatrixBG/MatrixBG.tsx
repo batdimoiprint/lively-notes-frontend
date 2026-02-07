@@ -77,9 +77,7 @@ export default function MatrixBG() {
       }
 
       // Trail effect
-      const backgroundRGB = hexToRGB(
-        theme.theme === "dark" ? "000000" : "f0f0f0",
-      );
+      const backgroundRGB = hexToRGB(theme.theme === "dark" ? "000000" : "f0f0f0");
       ctx.fillStyle = `rgba(${backgroundRGB.r},${backgroundRGB.g},${backgroundRGB.b}, ${config.trailOpacity})`;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -87,38 +85,23 @@ export default function MatrixBG() {
 
       for (let i = 0; i < dropsRef.current.length; i++) {
         const text =
-          charactersRef.current[
-            Math.floor(Math.random() * charactersRef.current.length)
-          ];
+          charactersRef.current[Math.floor(Math.random() * charactersRef.current.length)];
 
         // Set text color based on config
         if (config.rainbow) {
           hueRef.current += 0.01;
-          const rr = Math.floor(
-            127 * Math.sin(config.rainbowSpeed * hueRef.current + 0) + 128,
-          );
-          const rg = Math.floor(
-            127 * Math.sin(config.rainbowSpeed * hueRef.current + 2) + 128,
-          );
-          const rb = Math.floor(
-            127 * Math.sin(config.rainbowSpeed * hueRef.current + 4) + 128,
-          );
+          const rr = Math.floor(127 * Math.sin(config.rainbowSpeed * hueRef.current + 0) + 128);
+          const rg = Math.floor(127 * Math.sin(config.rainbowSpeed * hueRef.current + 2) + 128);
+          const rb = Math.floor(127 * Math.sin(config.rainbowSpeed * hueRef.current + 4) + 128);
           ctx.fillStyle = `rgba(${rr},${rg},${rb})`;
         } else {
           ctx.fillStyle = config.textColor;
         }
 
-        ctx.fillText(
-          text,
-          i * fontSizeRef.current,
-          dropsRef.current[i] * fontSizeRef.current,
-        );
+        ctx.fillText(text, i * fontSizeRef.current, dropsRef.current[i] * fontSizeRef.current);
         dropsRef.current[i]++;
 
-        if (
-          dropsRef.current[i] * fontSizeRef.current > canvas.height &&
-          Math.random() > 0.975
-        ) {
+        if (dropsRef.current[i] * fontSizeRef.current > canvas.height && Math.random() > 0.975) {
           dropsRef.current[i] = 0;
         }
       }
