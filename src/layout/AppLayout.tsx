@@ -43,6 +43,7 @@ export default function AppLayout() {
 
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           <div className="absolute inset-0">
+            
             <MatrixBG />
 
 
