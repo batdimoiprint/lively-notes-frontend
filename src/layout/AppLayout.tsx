@@ -33,7 +33,7 @@ export default function AppLayout() {
     <main>
       <MatrixContext.Provider value={{ config: matrixConfig, onConfigChange: setMatrixConfig }}>
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <div className="relative z-1 max-w-[1920px] overflow-hidden px-4 pt-4">
+          <div className="relative z-1 max-w-[1920px] overflow-hidden p-4">
             <Outlet />
           </div>
         </ErrorBoundary>
@@ -44,7 +44,7 @@ export default function AppLayout() {
 
             {/* Photo by <a href="https://unsplash.com/@senyor_oj?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">OJ Serrano</a> on <a href="https://unsplash.com/photos/aerial-view-of-city-buildings-during-daytime-iacKpANQHNA?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a> */}
 
-            <img src={picture} alt="" className="fixed inset-0 opacity-90 dark:opacity-30" />
+            <img src={picture} alt="" className="fixed inset-0 opacity-50 dark:opacity-30" />
 
             {isChristmas && (
               <div className="fixed inset-0">
