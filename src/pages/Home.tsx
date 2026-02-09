@@ -11,7 +11,7 @@ export default function Home() {
     <>
       <main>
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <div className="relative z-1 flex max-h-[350px] max-w-[1920px] flex-row gap-4 ">
+          <div className="relative z-1 flex max-h-[350px] max-w-[1920px] flex-row gap-4">
             <Header />
             <PictureCards />
             <Pomorodo />

@@ -5,11 +5,13 @@ import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Login, WakeBackend } from "@/api/auth";
 import { Card } from "@/components/ui/card";
+import Time from "@/components/landing/Time";
 
 function Landing() {
   const [value, setValue] = useState<string>("");
-  const [formatted, setFormatted] = useState<string>("");
+
   const [valid, setValid] = useState<boolean>(false);
+  const time = Time();
   const navigate = useNavigate();
   const mutation = useMutation({
     mutationFn: Login,
@@ -26,38 +28,19 @@ function Landing() {
   });
 
   useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const options: Intl.DateTimeFormatOptions = {
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-        hour12: true,
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      };
-      setFormatted(now.toLocaleString("en-US", options));
-    };
-
-    updateTime(); // Set initial time
-    const interval = setInterval(updateTime, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
     if (value.length === 6) {
       mutation.mutate(value);
     }
-    WakeBackend();
   }, [value]);
+  useEffect(() => {
+    WakeBackend();
+  }, []);
 
   return (
     <main className="flex min-h-screen max-w-[1920px] flex-col items-center justify-center gap-4">
       <Card className="items-center gap-2 p-4">
         <h1 className="text-3xl font-bold">Good Morning</h1>
-        <h2 className="text-lg font-light">{formatted}</h2>
+        <h2 className="text-lg font-light">{time.formattedTime}</h2>
         <InputOTP
           maxLength={6}
           value={value}
