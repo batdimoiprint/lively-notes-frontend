@@ -22,9 +22,9 @@ Tailwind
 
 ## React Hooks
 
-- useState
-- useEffect
-- useContext
+- useState - Used
+- useEffect - Used
+- useContext - Used
 - useReducer
 - useRef
 - useMemo
