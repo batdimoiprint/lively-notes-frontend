@@ -45,7 +45,7 @@ function Landing() {
         case time.timeGreet > 12 && time.timeGreet < 17:
           setGreetings("Good Afternoon");
           break;
-        case time.timeGreet > 18:
+        case time.timeGreet >= 18:
           setGreetings("Good Evening");
           break;
         default:
