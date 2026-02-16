@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 export default function Time() {
   const [formattedTime, setFormattedTime] = useState<string>("");
+  const [timeGreet, setTimeGreet] = useState<number | undefined>();
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
@@ -15,6 +16,7 @@ export default function Time() {
         year: "numeric",
       };
       setFormattedTime(now.toLocaleString("en-US", options));
+      setTimeGreet(now.getHours());
     };
 
     updateTime(); // Set initial time
@@ -23,5 +25,5 @@ export default function Time() {
     return () => clearInterval(interval);
   }, []);
 
-  return { formattedTime };
+  return { formattedTime, timeGreet };
 }

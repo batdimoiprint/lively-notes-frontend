@@ -9,7 +9,7 @@ import Time from "@/components/landing/Time";
 
 function Landing() {
   const [value, setValue] = useState<string>("");
-
+  const [greetings, setGreetings] = useState<string>("");
   const [valid, setValid] = useState<boolean>(false);
   const time = Time();
   const navigate = useNavigate();
@@ -36,10 +36,27 @@ function Landing() {
     WakeBackend();
   }, []);
 
+  useEffect(() => {
+    if (time.timeGreet) {
+      switch (true) {
+        case time.timeGreet > 0 && time.timeGreet < 12:
+          setGreetings("Good Morning");
+          break;
+        case time.timeGreet > 12 && time.timeGreet < 17:
+          setGreetings("Good Afternoon");
+          break;
+        case time.timeGreet > 18:
+          setGreetings("Good Evening");
+          break;
+        default:
+      }
+    }
+  }, [time.timeGreet]);
+
   return (
-    <main className="flex min-h-screen max-w-[1920px] flex-col items-center justify-center gap-4">
+    <main className="flex min-h-[1048px] max-w-[1920px] flex-col items-center justify-center gap-4">
       <Card className="items-center gap-2 p-4">
-        <h1 className="text-3xl font-bold">Good Morning</h1>
+        <h1 className="text-3xl font-bold">{greetings}</h1>
         <h2 className="text-lg font-light">{time.formattedTime}</h2>
         <InputOTP
           maxLength={6}
