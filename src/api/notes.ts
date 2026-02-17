@@ -8,6 +8,7 @@ export async function getNotes() {
     return res.data;
   } catch (error) {
     console.log(error);
+    throw error;
   }
 }
 
@@ -18,16 +19,21 @@ export async function deleteNotes(id: string) {
     return res.status;
   } catch (error) {
     console.log(error);
+    throw error;
   }
 }
 
 export async function createNotes(inputs: Inputs) {
   try {
     const res = await api.post("/api/notes/", { title: inputs.title, body: inputs.body });
-
-    return res.status;
+    if (res.status == 201) {
+      return res.data;
+    } else {
+      throw new Error("No token");
+    }
   } catch (error) {
     console.log(error);
+    throw error;
   }
 }
 
@@ -42,6 +48,7 @@ export async function editNotes(inputs: Tasks) {
     return res.status;
   } catch (error) {
     console.log(error);
+    throw error;
   }
 }
 

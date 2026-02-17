@@ -7,6 +7,7 @@ async function getSanaFolder() {
     return res.data;
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 
@@ -16,6 +17,7 @@ async function getMomoFolder() {
     return res.data;
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 
@@ -25,6 +27,7 @@ async function getLizFolder() {
     return res.data;
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 

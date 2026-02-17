@@ -1,27 +1,12 @@
 import { ThemeProvider } from "@/components/theme-provider";
-
 import AppRoute from "./routes/routes";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createIDBPersister } from "./lib/idbPersister";
 import { BrowserRouter } from "react-router-dom";
-
-// import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { queryClient } from "@/api/queryClient";
 // React Query
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      gcTime: 1000 * 60 * 60 * 24, // 24 hours
-      enabled: true,
-      staleTime: Infinity,
-      retry: 2,
-      refetchOnWindowFocus: true,
-      networkMode: "offlineFirst",
-    },
-  },
-});
-
 const persister = createIDBPersister();
 
 function App() {
@@ -33,7 +18,11 @@ function App() {
             <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
               <AppRoute />
             </PersistQueryClientProvider>
-            {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+            {import.meta.env.PROD === true ? (
+              <ReactQueryDevtools initialIsOpen={false} />
+            ) : (
+              <ReactQueryDevtools initialIsOpen={true} />
+            )}
           </QueryClientProvider>
         </BrowserRouter>
       </ThemeProvider>

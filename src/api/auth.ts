@@ -27,3 +27,18 @@ export async function WakeBackend() {
     throw error;
   }
 }
+
+export async function GetMe() {
+  try {
+    const res = await api.get("/api/auth/me");
+    if (res.status === 200) {
+      return res.data.userId;
+    } else {
+      console.log("error");
+      throw new Error("No token");
+    }
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}

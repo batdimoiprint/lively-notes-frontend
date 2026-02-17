@@ -5,14 +5,15 @@ import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Login, WakeBackend } from "@/api/auth";
 import { Card } from "@/components/ui/card";
-import Time from "@/components/landing/Time";
+import LandingGreeting from "@/components/landing/LandingGreeting";
+import { useAuth } from "@/hooks/useAuth";
+import { jwtDecode } from "jwt-decode";
 
 function Landing() {
   const [value, setValue] = useState<string>("");
-  const [greetings, setGreetings] = useState<string>("");
   const [valid, setValid] = useState<boolean>(false);
-  const time = Time();
   const navigate = useNavigate();
+  const { data: user } = useAuth();
   const mutation = useMutation({
     mutationFn: Login,
     onSuccess: () => {
@@ -37,27 +38,33 @@ function Landing() {
   }, []);
 
   useEffect(() => {
-    if (time.timeGreet) {
-      switch (true) {
-        case time.timeGreet > 0 && time.timeGreet < 12:
-          setGreetings("Good Morning");
-          break;
-        case time.timeGreet > 12 && time.timeGreet < 17:
-          setGreetings("Good Afternoon");
-          break;
-        case time.timeGreet >= 18:
-          setGreetings("Good Evening");
-          break;
-        default:
+    // Safely read the `access_token` cookie and decode it if present
+    const getCookie = (name: string) =>
+      document.cookie
+        .split(";")
+        .map((c) => c.trim())
+        .find((c) => c.startsWith(name + "="))
+        ?.split("=")[1];
+
+    const token = getCookie("access_token");
+    if (!token) return;
+
+    try {
+      const decode = jwtDecode<{ userId: string }>(token);
+      if (decode?.userId && decode.userId === String(user)) {
+        navigate("home");
+      } else {
+        console.log("Invalid Token");
       }
+    } catch (err) {
+      console.log("Failed to decode token:", err);
     }
-  }, [time.timeGreet]);
+  }, [user]);
 
   return (
     <main className="flex min-h-[1048px] max-w-[1920px] flex-col items-center justify-center gap-4">
       <Card className="items-center gap-2 p-4">
-        <h1 className="text-3xl font-bold">{greetings}</h1>
-        <h2 className="text-lg font-light">{time.formattedTime}</h2>
+        <LandingGreeting />
         <InputOTP
           maxLength={6}
           value={value}

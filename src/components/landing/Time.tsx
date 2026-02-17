@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 export default function Time() {
   const [formattedTime, setFormattedTime] = useState<string>("");
-  const [timeGreet, setTimeGreet] = useState<number | undefined>();
+  const [timeGreet, setTimeGreet] = useState<number>();
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();

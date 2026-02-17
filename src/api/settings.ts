@@ -8,6 +8,7 @@ async function getSettings() {
     return { ...res.data[0] };
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 
@@ -17,6 +18,7 @@ async function resetSettings() {
     return req.status;
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 
@@ -26,6 +28,7 @@ async function patchSettings(settings: object) {
     return req.status;
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 
