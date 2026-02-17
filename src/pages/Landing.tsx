@@ -62,8 +62,8 @@ function Landing() {
   }, [user]);
 
   return (
-    <main className="flex min-h-[1048px] max-w-[1920px] flex-col items-center justify-center gap-4">
-      <Card className="items-center gap-2 p-4">
+    <main className="flex min-h-screen w-full flex-col items-center justify-center gap-4 px-4 md:max-w-[1920px]">
+      <Card className="w-full max-w-md items-center gap-2 p-4">
         <LandingGreeting />
         <InputOTP
           maxLength={6}

@@ -41,7 +41,7 @@ export default function TaskCard({
         <SheetTrigger>
           <CardHeader>
             {/* {task._id} */}
-            <Label className="w-48 overflow-hidden font-bold text-ellipsis whitespace-nowrap">
+            <Label className="w-full overflow-hidden font-bold text-ellipsis whitespace-nowrap">
               {task.title}
             </Label>
 

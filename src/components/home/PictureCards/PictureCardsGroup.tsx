@@ -8,7 +8,7 @@ const PictureCards = React.memo(function PictureCards() {
   const { momoImg, isLoading: isMomoLoading, error: momoError } = useMomoIds();
 
   return (
-    <>
+    <div className="flex w-full flex-col gap-4 md:flex-row">
       <PhotoCards
         cardLabel={"For my gf"}
         idolError={lizError}
@@ -27,7 +27,7 @@ const PictureCards = React.memo(function PictureCards() {
         idolImg={sanaImg}
         isIdolLoading={isSanaLoading}
       />
-    </>
+    </div>
   );
 });
 

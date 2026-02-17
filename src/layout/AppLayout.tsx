@@ -33,7 +33,7 @@ export default function AppLayout() {
     <main>
       <MatrixContext.Provider value={{ config: matrixConfig, onConfigChange: setMatrixConfig }}>
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <div className="relative z-1 max-w-[1920px] overflow-hidden p-4">
+          <div className="relative z-1 w-full max-w-full overflow-hidden px-2 py-4 sm:px-4 md:px-6 md:max-w-[1920px]">
             <Outlet />
           </div>
         </ErrorBoundary>

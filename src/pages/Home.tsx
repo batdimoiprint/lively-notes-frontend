@@ -11,7 +11,7 @@ export default function Home() {
     <>
       <main>
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <div className="relative z-1 flex max-h-[350px] max-w-[1920px] flex-row gap-4">
+          <div className="relative z-1 flex w-full flex-col gap-4 md:max-h-[350px] md:flex-row md:max-w-[1920px]">
             <Header />
             <PictureCards />
             <Pomorodo />
@@ -19,7 +19,7 @@ export default function Home() {
         </ErrorBoundary>
 
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <div className="relative z-1 max-w-[1920px] overflow-hidden pt-4">
+          <div className="relative z-1 w-full overflow-hidden pt-4 md:max-w-[1920px]">
             <TasksGrid />
           </div>
         </ErrorBoundary>
