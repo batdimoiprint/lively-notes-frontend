@@ -52,7 +52,6 @@ export default function Pomorodo() {
   }, [workSessionsCompleted]);
 
   useEffect(() => {
-    // NOTE: Most browsers require a user gesture (click) before audio can play.
     const audio = new Audio(alertSoundUrl);
     audio.preload = "auto";
     audioRef.current = audio;
