@@ -7,18 +7,25 @@ This is a really cool pet project that uses AI as a strict teacher that guides m
 Old Repo
 https://github.com/batdimoiprint/Lively-Desktop-Notes
 
-## To do
-
-- Figure out the folder structure
-- How to do the destructuring of components
-- How to make custom hooks on react
-- How to use all of react hooks on this project
-
 ## Libraries Used
 
-Typescript
-ShadCN UI
-Tailwind
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- ShadCN UI (Radix UI components)
+- React Router DOM
+- TanStack React Query
+- Axios
+- Zustand
+- React Hook Form
+- Cloudinary React
+- Fireworks JS
+- React Snowfall
+- Sonner
+- IDB (IndexedDB)
+- Input OTP
+- Next Themes
 
 ## React Hooks
 
