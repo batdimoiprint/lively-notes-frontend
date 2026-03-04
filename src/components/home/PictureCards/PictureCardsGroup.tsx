@@ -1,32 +1,19 @@
-import { useLizIds, useMomoIds, useSanaIds } from "@/lib/cloudinary";
 import React from "react";
+import { useQuery } from "@tanstack/react-query";
 import PhotoCards from "./PhotoCards";
+import { getPostTest, type IGPost } from "@/api/post";
 
 const PictureCards = React.memo(function PictureCards() {
-  const { sanaImg, isLoading: isSanaLoading, error: sanaError } = useSanaIds();
-  const { lizImg, isLoading: isLizLoading, error: lizError } = useLizIds();
-  const { momoImg, isLoading: isMomoLoading, error: momoError } = useMomoIds();
+  const { data: post } = useQuery<IGPost | undefined>({
+    queryKey: ["igPost"],
+    queryFn: getPostTest,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
 
+  //TODO: Add CRUD for the IG usernames so dynamically adjust based on the api
   return (
     <>
-      <PhotoCards
-        cardLabel={"For my gf"}
-        idolError={lizError}
-        idolImg={lizImg}
-        isIdolLoading={isLizLoading}
-      />
-      <PhotoCards
-        cardLabel={"Fist Love"}
-        idolError={momoError}
-        idolImg={momoImg}
-        isIdolLoading={isMomoLoading}
-      />
-      <PhotoCards
-        cardLabel={"Happy Birthday <3"}
-        idolError={sanaError}
-        idolImg={sanaImg}
-        isIdolLoading={isSanaLoading}
-      />
+      <PhotoCards post={post} />
     </>
   );
 });

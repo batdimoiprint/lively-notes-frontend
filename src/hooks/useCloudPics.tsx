@@ -5,22 +5,14 @@ import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
 const cld = new Cloudinary({ cloud: { cloudName: "dllnqngt4" } });
 
 interface CloudPicsProps {
-  id: number[];
-  randomizedId: number;
+  id: string;
 }
 
-export function useCloudPics({ id, randomizedId }: CloudPicsProps) {
-  if (
-    !Array.isArray(id) ||
-    id.length === 0 ||
-    randomizedId == null ||
-    randomizedId < 0 ||
-    randomizedId >= id.length
-  ) {
-    return null;
-  }
+export function useCloudPics({ id }: CloudPicsProps) {
+  if (!id) return null;
+
   const image = cld
-    .image(`${id[randomizedId]}`)
+    .image(id)
     .format("auto")
     .quality("auto")
     .resize(auto().gravity(autoGravity()).width(1000).height(1000));
