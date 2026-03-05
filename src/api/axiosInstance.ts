@@ -2,7 +2,7 @@ import axios from "axios";
 import { queryClient } from "@/api/queryClient";
 
 const api = axios.create({
-  baseURL: import.meta.env.PROD ? import.meta.env.VITE_ENV_BASE_URL : "http://localhost:3000",
+  baseURL: import.meta.env.PROD ? "" : "http://localhost:3000",
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });

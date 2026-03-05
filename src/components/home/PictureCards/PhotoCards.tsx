@@ -17,6 +17,7 @@ export default function PhotoCards({ post }: { post?: IGPost }) {
   const currentPublicId =
     totalImages > 0 ? (post?.cloudinaryPics[currentIndex % totalImages]?.public_id ?? "") : "";
 
+    // TODO: Fix cloudpics lazyloading
   const image = useCloudPics({ id: currentPublicId });
 
   const goNext = () => {
