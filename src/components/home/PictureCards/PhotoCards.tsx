@@ -1,81 +1,79 @@
 import { type IGPost } from "@/api/post";
 import { Card } from "@/components/ui/card";
-import { useCloudPics } from "@/hooks/useCloudPics";
+import { Cloudinary } from "@cloudinary/url-gen";
+import { auto } from "@cloudinary/url-gen/actions/resize";
+import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
 import { AdvancedImage, responsive } from "@cloudinary/react";
-import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Heart } from "lucide-react";
+import { useState } from "react";
+
+const cld = new Cloudinary({ cloud: { cloudName: import.meta.env.VITE_CLOUDINARY } });
 
 export default function PhotoCards({ post }: { post?: IGPost }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [imageIndex, setImageIndex] = useState<number>(0);
+  const images =
+    post?.cloudinaryPics.map((pic) =>
+      cld
+        .image(pic.public_id)
+        .format("auto")
+        .quality("auto")
+        .resize(auto().gravity(autoGravity()).width(1000).height(1000))
+    ) ?? [];
 
-  const totalImages = post?.cloudinaryPics?.length ?? 0;
+  const imageCount = images.length;
 
-  useEffect(() => {
-    setCurrentIndex(0);
-  }, [post?._id]);
+  function nextImage() {
+    if (!imageCount) {
+      return;
+    }
+    setImageIndex((prev) => (prev + 1) % imageCount);
+  }
 
-  const currentPublicId =
-    totalImages > 0 ? (post?.cloudinaryPics[currentIndex % totalImages]?.public_id ?? "") : "";
-
-  const image = useCloudPics({ id: currentPublicId });
-
-  const goNext = () => {
-    if (totalImages === 0) return;
-    setCurrentIndex((prev) => (prev + 1) % totalImages);
-  };
-
-  const goPrev = () => {
-    if (totalImages === 0) return;
-    setCurrentIndex((prev) => (prev - 1 + totalImages) % totalImages);
-  };
+  function previousImage() {
+    if (!imageCount) {
+      return;
+    }
+    setImageIndex((prev) => (prev - 1 + imageCount) % imageCount);
+  }
 
   return (
     <Card className="w-full max-w-74.5 gap-0 p-2 text-center">
       <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden">
-        {image ? (
-          <AdvancedImage
-            cldImg={image}
-            className="h-full w-full rounded object-cover"
-            plugins={[responsive()]}
-          />
-        ) : (
-          <div className="text-muted-foreground flex h-full w-full items-center justify-center text-sm">
-            No image available
-          </div>
-        )}
-
-        {totalImages > 1 && (
-          <>
-            <button
-              type="button"
-              aria-label="Previous image"
-              onClick={goPrev}
-              className="absolute top-0 left-0 z-10 flex h-full w-1/3 items-center justify-start bg-linear-to-r from-black/40 to-transparent px-2 text-white transition hover:from-black/60"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-
-            <button
-              type="button"
-              aria-label="Next image"
-              onClick={goNext}
-              className="absolute top-0 right-0 z-10 flex h-full w-1/3 items-center justify-end bg-linear-to-l from-black/40 to-transparent px-2 text-white transition hover:from-black/60"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </>
-        )}
-
-        {totalImages > 0 && (
-          <div className="absolute right-2 bottom-2 z-10 rounded bg-black/60 px-2 py-1 text-xs text-white">
-            {currentIndex + 1}/{totalImages}
-          </div>
-        )}
+        {/* Gradient Button */}
+        <div className="absolute inset-0 z-10 flex">
+          <button
+            type="button"
+            className="flex h-full w-1/2 items-center justify-center bg-linear-to-r from-black/40 via-black/10 to-transparent transition hover:from-black/60 hover:via-black/20"
+            onClick={previousImage}
+          ></button>
+          <button
+            type="button"
+            className="flex h-full w-1/2 items-center justify-center bg-linear-to-l from-black/40 via-black/10 to-transparent transition hover:from-black/60 hover:via-black/20"
+            onClick={nextImage}
+          ></button>
+        </div>
+        <div className="absolute z-2 flex h-full w-full flex-col items-end justify-end px-2 font-bold">
+          {imageIndex + 1 + "/" + imageCount}
+        </div>
+        {/* Image Array */}
+        <div
+          className="flex"
+          style={{ transform: `translateX(${imageIndex * -100}%)`, transition: "transform 0.3s" }}
+        >
+          {images.map((img, idx) => (
+            <AdvancedImage
+              key={idx}
+              cldImg={img}
+              className="h-full w-full rounded object-cover"
+              plugins={[responsive()]}
+            />
+          ))}
+        </div>
       </div>
       <div className="flex flex-row justify-between">
-        <div className="flex flex-row gap-2">
+        <div className="flex flex-row gap-1">
           <Heart size={24} />
-          <p className="font-bold">{post?.likesCount}</p>
+          <p className="font-bold">{post?.likesCount?.toLocaleString() ?? 0}</p>
         </div>
         <a
           href={post?.url}
