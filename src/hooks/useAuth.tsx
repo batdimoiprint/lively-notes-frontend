@@ -8,7 +8,7 @@ export function useAuth() {
     queryFn: GetMe,
     retry: false,
     staleTime: 0,
-    gcTime: 0,                    
-    refetchOnWindowFocus: true
+    gcTime: 0,
+    refetchOnWindowFocus: true,
   });
 }

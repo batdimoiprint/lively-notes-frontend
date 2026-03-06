@@ -7,13 +7,12 @@ import { Login, WakeBackend } from "@/api/auth";
 import { Card } from "@/components/ui/card";
 import LandingGreeting from "@/components/landing/LandingGreeting";
 import { useAuth } from "@/hooks/useAuth";
-import { jwtDecode } from "jwt-decode";
 
 function Landing() {
   const [value, setValue] = useState<string>("");
   const [valid, setValid] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { data: user } = useAuth();
+  const { data: user, isLoading } = useAuth();
   const mutation = useMutation({
     mutationFn: Login,
     onSuccess: () => {
@@ -38,28 +37,10 @@ function Landing() {
   }, []);
 
   useEffect(() => {
-    // Safely read the `access_token` cookie and decode it if present
-    const getCookie = (name: string) =>
-      document.cookie
-        .split(";")
-        .map((c) => c.trim())
-        .find((c) => c.startsWith(name + "="))
-        ?.split("=")[1];
-
-    const token = getCookie("access_token");
-    if (!token) return;
-
-    try {
-      const decode = jwtDecode<{ userId: string }>(token);
-      if (decode?.userId && decode.userId === String(user)) {
-        navigate("home");
-      } else {
-        console.log("Invalid Token");
-      }
-    } catch (err) {
-      console.log("Failed to decode token:", err);
+    if (!isLoading && user) {
+      navigate("home");
     }
-  }, [user]);
+  }, [isLoading, user, navigate]);
 
   return (
     <main className="flex min-h-[1048px] max-w-[1920px] flex-col items-center justify-center gap-4">
