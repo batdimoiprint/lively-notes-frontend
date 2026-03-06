@@ -7,6 +7,8 @@ export function useAuth() {
     queryKey: ["auth"],
     queryFn: GetMe,
     retry: false,
-    staleTime: 15 * 60 * 1000,
+    staleTime: 0,
+    gcTime: 0,                    
+    refetchOnWindowFocus: true
   });
 }
