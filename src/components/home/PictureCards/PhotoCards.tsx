@@ -77,7 +77,7 @@ export default function PhotoCards({ post }: { post?: IGPost }) {
         </div>
         {/* Image Array */}
         <div
-          className="flex "
+          className="flex"
           style={{ transform: `translateX(${imageIndex * -100}%)`, transition: "transform 0.3s" }}
         >
           {images.map((img) => (

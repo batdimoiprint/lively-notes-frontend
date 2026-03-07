@@ -50,10 +50,10 @@ export default function TaskSheet({ task }: { task: Tasks | null }) {
     <>
       <SheetContent side="left" className="p-8">
         <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-          <SheetTitle className="w-full wrap-break-word whitespace-normal">
+          <SheetTitle className="w-full wrap-break-word whitespace-normal text-white">
             <Textarea {...register("title", { required: "Title is required" })} />
           </SheetTitle>
-          <SheetDescription className="h-full w-full wrap-break-word whitespace-break-spaces">
+          <SheetDescription className="h-full w-full wrap-break-word whitespace-break-spaces text-white">
             <Textarea
               {...register("body", {
                 required: "Title is required",
