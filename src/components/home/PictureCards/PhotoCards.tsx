@@ -5,36 +5,56 @@ import { auto } from "@cloudinary/url-gen/actions/resize";
 import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
 import { AdvancedImage, responsive } from "@cloudinary/react";
 import { Heart } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo, memo, useCallback } from "react";
 
 const cld = new Cloudinary({ cloud: { cloudName: import.meta.env.VITE_CLOUDINARY } });
 
+interface ImageItem {
+  public_id: string;
+  cldImg: ReturnType<typeof cld.image>;
+}
+
+const MemoizedImage = memo(({ img }: { img: ImageItem }) => (
+  <AdvancedImage
+    cldImg={img.cldImg}
+    className="h-full w-full rounded object-cover"
+    plugins={[responsive()]}
+  />
+));
+
+MemoizedImage.displayName = "MemoizedImage";
+
 export default function PhotoCards({ post }: { post?: IGPost }) {
   const [imageIndex, setImageIndex] = useState<number>(0);
-  const images =
-    post?.cloudinaryPics.map((pic) =>
-      cld
-        .image(pic.public_id)
-        .format("auto")
-        .quality("auto")
-        .resize(auto().gravity(autoGravity()).width(1000).height(1000))
-    ) ?? [];
+
+  const images: ImageItem[] = useMemo(
+    () =>
+      post?.cloudinaryPics.map((pic) => ({
+        public_id: pic.public_id,
+        cldImg: cld
+          .image(pic.public_id)
+          .format("auto")
+          .quality("auto")
+          .resize(auto().gravity(autoGravity()).width(1000).height(1000)),
+      })) ?? [],
+    [post?.cloudinaryPics]
+  );
 
   const imageCount = images.length;
 
-  function nextImage() {
+  const nextImage = useCallback(() => {
     if (!imageCount) {
       return;
     }
     setImageIndex((prev) => (prev + 1) % imageCount);
-  }
+  }, [imageCount]);
 
-  function previousImage() {
+  const previousImage = useCallback(() => {
     if (!imageCount) {
       return;
     }
     setImageIndex((prev) => (prev - 1 + imageCount) % imageCount);
-  }
+  }, [imageCount]);
 
   return (
     <Card className="w-full max-w-74.5 gap-0 p-2 text-center">
@@ -57,16 +77,11 @@ export default function PhotoCards({ post }: { post?: IGPost }) {
         </div>
         {/* Image Array */}
         <div
-          className="flex"
+          className="flex "
           style={{ transform: `translateX(${imageIndex * -100}%)`, transition: "transform 0.3s" }}
         >
-          {images.map((img, idx) => (
-            <AdvancedImage
-              key={idx}
-              cldImg={img}
-              className="h-full w-full rounded object-cover"
-              plugins={[responsive()]}
-            />
+          {images.map((img) => (
+            <MemoizedImage key={img.public_id} img={img} />
           ))}
         </div>
       </div>
