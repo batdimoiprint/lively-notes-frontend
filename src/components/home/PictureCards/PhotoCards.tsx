@@ -57,7 +57,7 @@ export default function PhotoCards({ post }: { post?: IGPost }) {
   }, [imageCount]);
 
   return (
-    <Card className="w-full sm:max-w-75 gap-0 p-2 text-center">
+    <Card className="w-full gap-0 p-2 text-center sm:max-w-75">
       <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden">
         {/* Gradient Button */}
         <div className="absolute inset-0 z-10 flex">

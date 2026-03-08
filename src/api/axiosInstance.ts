@@ -2,9 +2,7 @@ import axios from "axios";
 import { queryClient } from "@/api/queryClient";
 
 const isMobile = () => {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent
-  );
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 };
 
 const baseURL = import.meta.env.PROD

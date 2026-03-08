@@ -9,10 +9,10 @@ import ErrorFallback from "@/components/ErrorFallback";
 export default function Home() {
   return (
     <>
-      <main className="flex flex-col p-4 gap-4">
+      <main className="flex flex-col gap-4 p-4">
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           {/* Header */}
-          <div className="flex  max-w-[1920px] flex-col gap-4 sm:flex-row ">
+          <div className="flex max-w-[1920px] flex-col gap-4 sm:flex-row">
             <Header />
             <PictureCards />
             <Pomorodo />

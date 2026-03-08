@@ -6,12 +6,12 @@ import { ScrollArea } from "../../ui/scroll-area";
 import { Spinner } from "../../ui/spinner";
 
 import { Sheet } from "@/components/ui/sheet";
-import React, { useState } from "react";
+import  { useState, useMemo } from "react";
 import { toast } from "sonner";
 import TaskCard from "./TaskCard";
 import TaskSheet from "./TaskSheetForm";
 
-const TasksGrid = React.memo(function TasksGrid() {
+function TasksGrid() {
   const { data: tasks = [], isLoading, error } = useNotes();
   const queryClient = useQueryClient();
   const [selectedTask, setSelectedTask] = useState<Tasks | null>(null);
@@ -29,6 +29,19 @@ const TasksGrid = React.memo(function TasksGrid() {
     onSettled: () => setDeletingId(null),
   });
 
+  const taskCards = useMemo(() => (
+    tasks.map((task: Tasks) => (
+      <TaskCard
+        key={task._id}
+        task={task}
+        deletingId={deletingId}
+        setDeletingId={setDeletingId}
+        setSelectedTask={setSelectedTask}
+        mutation={mutation}
+      />
+    ))
+  ), [tasks, deletingId, mutation]);
+
   if (isLoading) return <Spinner />;
   if (error) return <div>Error loading notes</div>;
 
@@ -36,17 +49,8 @@ const TasksGrid = React.memo(function TasksGrid() {
     <>
       <Sheet>
         <ScrollArea className="h-168">
-          <div className="grid sm:grid-cols-6 gap-4">
-            {tasks.map((task: Tasks) => (
-              <TaskCard
-                key={task._id}
-                task={task}
-                deletingId={deletingId}
-                setDeletingId={setDeletingId}
-                setSelectedTask={setSelectedTask}
-                mutation={mutation}
-              />
-            ))}
+          <div className="grid gap-4 sm:grid-cols-6">
+            {taskCards}
           </div>
         </ScrollArea>
 
@@ -54,6 +58,6 @@ const TasksGrid = React.memo(function TasksGrid() {
       </Sheet>
     </>
   );
-});
+}
 
 export default TasksGrid;
