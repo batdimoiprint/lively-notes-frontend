@@ -1,8 +1,20 @@
 import axios from "axios";
 import { queryClient } from "@/api/queryClient";
 
+const isMobile = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+};
+
+const baseURL = import.meta.env.PROD
+  ? " "
+  : isMobile()
+    ? "http://192.168.1.6:3000"
+    : "http://localhost:3000";
+
 const api = axios.create({
-  baseURL: import.meta.env.PROD ? " " : "http://localhost:3000",
+  baseURL,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });

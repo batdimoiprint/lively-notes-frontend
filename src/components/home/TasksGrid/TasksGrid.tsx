@@ -36,7 +36,7 @@ const TasksGrid = React.memo(function TasksGrid() {
     <>
       <Sheet>
         <ScrollArea className="h-168">
-          <div className="grid grid-cols-6 gap-4">
+          <div className="grid sm:grid-cols-6 gap-4">
             {tasks.map((task: Tasks) => (
               <TaskCard
                 key={task._id}

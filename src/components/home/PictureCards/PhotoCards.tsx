@@ -35,7 +35,7 @@ export default function PhotoCards({ post }: { post?: IGPost }) {
           .image(pic.public_id)
           .format("auto")
           .quality("auto")
-          .resize(auto().gravity(autoGravity()).width(1000).height(1000)),
+          .resize(auto().gravity(autoGravity()).width(1500).height(1500)),
       })) ?? [],
     [post?.cloudinaryPics]
   );
@@ -57,7 +57,7 @@ export default function PhotoCards({ post }: { post?: IGPost }) {
   }, [imageCount]);
 
   return (
-    <Card className="w-full max-w-74.5 gap-0 p-2 text-center">
+    <Card className="w-full sm:max-w-75 gap-0 p-2 text-center">
       <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden">
         {/* Gradient Button */}
         <div className="absolute inset-0 z-10 flex">
