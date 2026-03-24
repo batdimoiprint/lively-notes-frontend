@@ -9,10 +9,12 @@ import { DEFAULT_MATRIX_CONFIG, type MatrixConfig } from "@/types/matrixConfig";
 import Snowfall from "react-snowfall";
 import { MatrixContext } from "@/context/MatrixContext";
 import picture from "@/assets/oj-serrano-iacKpANQHNA-unsplash.jpg";
+import { getBackgroundImage } from "@/api/backgroundImage";
 
 export default function AppLayout() {
   // Matrix Context
   const [matrixConfig, setMatrixConfig] = useState<MatrixConfig>(DEFAULT_MATRIX_CONFIG);
+  const [backgroundImageUrl, setBackgroundImageUrl] = useState<string>(picture);
 
   useEffect(() => {
     getSettings().then((settings) => {
@@ -22,6 +24,30 @@ export default function AppLayout() {
         console.log("No settings yet");
       }
     });
+
+    const loadBackgroundImage = async () => {
+      try {
+        const backgroundImage = await getBackgroundImage();
+
+        if (backgroundImage?.secure_url) {
+          setBackgroundImageUrl(backgroundImage.secure_url);
+        }
+      } catch (error) {
+        console.error("Failed to fetch background image:", error);
+      }
+    };
+
+    loadBackgroundImage();
+
+    const handleBackgroundImageUpdated = () => {
+      loadBackgroundImage();
+    };
+
+    window.addEventListener("background-image-updated", handleBackgroundImageUpdated);
+
+    return () => {
+      window.removeEventListener("background-image-updated", handleBackgroundImageUpdated);
+    };
   }, []);
 
   // Season Context
@@ -45,7 +71,7 @@ export default function AppLayout() {
             {/* Photo by <a href="https://unsplash.com/@senyor_oj?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">OJ Serrano</a> on <a href="https://unsplash.com/photos/aerial-view-of-city-buildings-during-daytime-iacKpANQHNA?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a> */}
 
             <img
-              src={picture}
+              src={backgroundImageUrl}
               alt=""
               className="fixed inset-0 min-h-screen object-cover opacity-50 dark:opacity-30"
             />

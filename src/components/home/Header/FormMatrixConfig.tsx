@@ -11,6 +11,7 @@ import { useContext, useEffect, useState } from "react";
 import { patchSettings } from "@/api/settings";
 import { useMutation } from "@tanstack/react-query";
 import { MatrixContext } from "@/context/MatrixContext";
+import FormBackgroundImage from "./FormBackgroundImage";
 
 // Goes to Header to prop again
 export default function FormMatrixConfig() {
@@ -99,6 +100,8 @@ export default function FormMatrixConfig() {
         >
           {reset ? <Check /> : <RefreshCw />}
         </Button>
+        
+      <FormBackgroundImage />
       </div>
 
       {/* Speed Control */}
@@ -143,6 +146,7 @@ export default function FormMatrixConfig() {
         step={0.01}
         disabled={!config.rainbow}
       />
+
     </div>
   );
 }
