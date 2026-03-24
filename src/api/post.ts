@@ -13,11 +13,15 @@ export interface IGPost {
   }[];
 }
 
-export async function getPostTest() {
-  try {
-    const res = await api.get<IGPost>("/api/igpost");
-    return res.data;
-  } catch (error) {
-    console.log(error);
-  }
+export async function getIdolPosts() {
+  const res = await api.get<IGPost[]>("/api/igpost/idol-posts");
+  return res.data;
+}
+
+export async function runActorForUsername(username: string) {
+  const res = await api.post("/api/apify/run-actor", {
+    username,
+  });
+
+  return res.data;
 }

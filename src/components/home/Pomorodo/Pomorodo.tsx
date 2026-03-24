@@ -1,7 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 import { useEffect, useMemo, useRef, useState } from "react";
-import alertSoundUrl from "@/assets/33_max_verstapoen.mp3";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Trash2, Upload } from "lucide-react";
+
+import {
+  deletePomodoroSound,
+  uploadPomodoroSound,
+  usePomodoroSound,
+} from "@/api/sound";
 
 // VIBECODED PART
 // JUST EXPERIMENTING STUFFS
@@ -22,11 +31,13 @@ function formatTime(ms: number) {
 }
 
 export default function Pomorodo() {
+  const queryClient = useQueryClient();
   const [mode, setMode] = useState<PomodoroMode>("work");
   const [breakKind, setBreakKind] = useState<BreakKind>("short");
   const [isRunning, setIsRunning] = useState(false);
   const [remainingMs, setRemainingMs] = useState<number>(WORK_MS);
   const [workSessionsCompleted, setWorkSessionsCompleted] = useState(0);
+  const [soundUrl, setSoundUrl] = useState<string | null>(null);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const endAtRef = useRef<number | null>(null);
@@ -34,6 +45,31 @@ export default function Pomorodo() {
   const breakKindRef = useRef<BreakKind>(breakKind);
   const workSessionsCompletedRef = useRef(workSessionsCompleted);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const soundQuery = usePomodoroSound();
+
+  const uploadMutation = useMutation({
+    mutationFn: uploadPomodoroSound,
+    onSuccess: () => {
+      toast.success("Pomodoro sound uploaded");
+      void queryClient.invalidateQueries({ queryKey: ["pomodoroSound"] });
+    },
+    onError: (error: unknown) => {
+      toast.error(error instanceof Error ? error.message : "Failed to upload sound");
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deletePomodoroSound,
+    onSuccess: () => {
+      toast.success("Pomodoro sound deleted");
+      void queryClient.invalidateQueries({ queryKey: ["pomodoroSound"] });
+    },
+    onError: (error: unknown) => {
+      toast.error(error instanceof Error ? error.message : "Failed to delete sound");
+    },
+  });
 
   useEffect(() => {
     modeRef.current = mode;
@@ -48,13 +84,39 @@ export default function Pomorodo() {
   }, [workSessionsCompleted]);
 
   useEffect(() => {
-    const audio = new Audio(alertSoundUrl);
+    const soundBlob = soundQuery.data;
+
+    if (!soundBlob) {
+      setSoundUrl(null);
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(soundBlob);
+    setSoundUrl(objectUrl);
+
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [soundQuery.data]);
+
+  useEffect(() => {
+    if (!soundUrl) {
+      audioRef.current = null;
+      return;
+    }
+
+    const audio = new Audio(soundUrl);
     audio.preload = "auto";
     audioRef.current = audio;
+
     return () => {
-      audioRef.current = null;
+      audio.pause();
+      audio.currentTime = 0;
+      if (audioRef.current === audio) {
+        audioRef.current = null;
+      }
     };
-  }, []);
+  }, [soundUrl]);
 
   const playAlert = () => {
     const audio = audioRef.current;
@@ -108,6 +170,22 @@ export default function Pomorodo() {
     setBreakKind("short");
     setRemainingMs(WORK_MS);
     setWorkSessionsCompleted(0);
+  };
+
+  const handleSoundUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    event.target.value = "";
+
+    if (!file) {
+      return;
+    }
+
+    uploadMutation.mutate(file);
+  };
+
+  const handleSoundDelete = () => {
+    deleteMutation.mutate();
   };
 
   useEffect(() => {
@@ -170,6 +248,7 @@ export default function Pomorodo() {
   }, [isRunning]);
 
   const modeLabel = mode === "work" ? "Focus" : breakKind === "long" ? "Long break" : "Short break";
+  const hasSound = Boolean(soundQuery.data);
 
   // SVG dimensions
   const size = 300;
@@ -226,18 +305,61 @@ export default function Pomorodo() {
               Session {Math.min(4, workSessionsCompleted + (mode === "work" ? 1 : 0))} / 4
             </p>
           </div>
-          
+
+          <div className="flex flex-col items-center gap-1">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="audio/*,.mp3,.wav,.m4a,.ogg,.webm,.aac"
+              className="hidden"
+              onChange={handleSoundUpload}
+              disabled={uploadMutation.isPending || deleteMutation.isPending}
+            />
+            <div className="flex items-center gap-1">
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                className="h-7 rounded-full px-2 text-[10px] font-semibold"
+                disabled={uploadMutation.isPending || deleteMutation.isPending}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {uploadMutation.isPending ? (
+                  <Spinner className="size-3" />
+                ) : (
+                  <Upload className="size-3" />
+                )}
+                Upload sound
+              </Button>
+              {hasSound ? (
+                <Button
+                  type="button"
+                  size="icon-sm"
+                  variant="ghost"
+                  className="h-7 w-7 rounded-full"
+                  disabled={uploadMutation.isPending || deleteMutation.isPending}
+                  onClick={handleSoundDelete}
+                >
+                  {deleteMutation.isPending ? <Spinner className="size-3" /> : <Trash2 className="size-3" />}
+                </Button>
+              ) : null}
+            </div>
+            <p className="text-[10px] text-muted-foreground">
+              Sound: {hasSound ? "active" : "none"}
+            </p>
+          </div>
+
           <div className="flex items-center gap-3">
             {!isRunning ? (
-              <Button onClick={start} size="sm" className="w-[80px] rounded-full shadow-sm">
+              <Button onClick={start} size="sm" className="w-20 rounded-full shadow-sm">
                 Start
               </Button>
             ) : (
-              <Button onClick={pause} variant="secondary" size="sm" className="w-[80px] rounded-full shadow-sm">
+              <Button onClick={pause} variant="secondary" size="sm" className="w-20 rounded-full shadow-sm">
                 Pause
               </Button>
             )}
-            <Button onClick={reset} variant="ghost" size="sm" className="w-[80px] rounded-full">
+            <Button onClick={reset} variant="ghost" size="sm" className="w-20 rounded-full">
               Reset
             </Button>
           </div>

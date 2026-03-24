@@ -1,20 +1,23 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import PhotoCards from "./PhotoCards";
-import { getPostTest, type IGPost } from "@/api/post";
+import { getIdolPosts, type IGPost } from "@/api/post";
+import IGUsernameSideCard from "./IGUsernameSideCard";
 
 const PictureCards = React.memo(function PictureCards() {
-  const { data: post } = useQuery<IGPost | undefined>({
-    queryKey: ["igPost"],
-    queryFn: getPostTest,
+  const { data: posts = [] } = useQuery<IGPost[]>({
+    queryKey: ["igIdolPosts"],
+    queryFn: getIdolPosts,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  //TODO: Add CRUD for the IG usernames so dynamically adjust based on the api
   return (
-    <>
-      <PhotoCards post={post} />
-    </>
+    <div className="flex w-full  items-stretch gap-2 ">
+      <IGUsernameSideCard />
+      {posts.map((post) => (
+        <PhotoCards key={post._id} post={post} />
+      ))}
+    </div>
   );
 });
 

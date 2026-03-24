@@ -21,15 +21,23 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const errorMessage = error?.response?.data?.message;
 
-    if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
+    if (
+      (error.response?.status === 401 || error.response?.status === 403) &&
+      !originalRequest._retry
+    ) {
+      // If no refresh token, do not attempt refresh
+      if (errorMessage === "No Refresh Token") {
+        queryClient.removeQueries({ queryKey: ["auth"] });
+        return Promise.reject(error);
+      }
       originalRequest._retry = true;
       try {
         await api.post("/api/auth/refresh");
         return api(originalRequest);
       } catch (refreshError) {
         queryClient.removeQueries({ queryKey: ["auth"] });
-
         return Promise.reject(refreshError || error);
       }
     }
