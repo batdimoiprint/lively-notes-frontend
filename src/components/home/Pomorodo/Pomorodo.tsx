@@ -33,14 +33,10 @@ export default function Pomorodo() {
   const modeRef = useRef<PomodoroMode>(mode);
   const breakKindRef = useRef<BreakKind>(breakKind);
   const workSessionsCompletedRef = useRef(workSessionsCompleted);
-  const warnedThirtySecRef = useRef(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     modeRef.current = mode;
-    // Reset the "30 seconds left" warning each time we enter a new mode
-    // so it can fire once during work and once during break.
-    warnedThirtySecRef.current = false;
   }, [mode]);
 
   useEffect(() => {
@@ -112,31 +108,7 @@ export default function Pomorodo() {
     setBreakKind("short");
     setRemainingMs(WORK_MS);
     setWorkSessionsCompleted(0);
-    warnedThirtySecRef.current = false;
   };
-
-  const steps = useMemo(() => {
-    return [
-      { label: "Work", key: "work-1" },
-      { label: "Break", key: "break-1" },
-      { label: "Work", key: "work-2" },
-      { label: "Break", key: "break-2" },
-      { label: "Work", key: "work-3" },
-      { label: "Break", key: "break-3" },
-      { label: "Work", key: "work-4" },
-      { label: "Long break", key: "break-long" },
-    ];
-  }, []);
-
-  const currentStepIndex = useMemo(() => {
-    // workSessionsCompleted is how many work sessions have been fully completed in the current cycle.
-    // Work step indices: 0,2,4,6
-    // Break step indices: 1,3,5,7 (7 is long break after 4th work)
-    const completed = Math.min(4, Math.max(0, workSessionsCompleted));
-    if (mode === "work") return completed * 2;
-    // mode === 'break'
-    return Math.min(7, Math.max(1, completed * 2 - 1));
-  }, [mode, workSessionsCompleted]);
 
   useEffect(() => {
     if (!isRunning) return;
@@ -150,13 +122,9 @@ export default function Pomorodo() {
       const msLeft = Math.max(0, endAt - Date.now());
       setRemainingMs(msLeft);
 
-      // Play alert 30s before the end of the current mode (once per mode).
-      if (msLeft > 0 && msLeft <= 30_000 && !warnedThirtySecRef.current) {
-        warnedThirtySecRef.current = true;
-        playAlert();
-      }
-
       if (msLeft === 0) {
+        playAlert();
+
         const wasMode = modeRef.current;
 
         if (wasMode === "work") {
@@ -201,100 +169,79 @@ export default function Pomorodo() {
     };
   }, [isRunning]);
 
-  const modeLabel = mode === "work" ? "Focus" : breakKind === "long" ? "Long break" : "Break";
-  const modeHint =
-    mode === "work" ? "Work session" : breakKind === "long" ? "15 min break" : "Short break";
+  const modeLabel = mode === "work" ? "Focus" : breakKind === "long" ? "Long break" : "Short break";
+
+  // SVG dimensions
+  const size = 300;
+  const strokeWidth = 10;
+  const center = size / 2;
+  const radius = center - strokeWidth;
+  const circumference = 2 * Math.PI * radius;
+  // Calculate offset so that it drains as time goes down
+  const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
 
   return (
-    <Card className="w-full p-4">
-      {/* TEST BUTTONS FOR ALERT SOUND */}
-      <div className="flex gap-2">
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={() => {
-            if (audioRef.current) {
-              audioRef.current.currentTime = 0;
-              void audioRef.current.play();
-            }
-          }}
+    <Card className="flex flex-col items-center justify-center p-6 w-full max-w-md mx-auto">
+      <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+        {/* SVG Circular Progress */}
+        <svg
+          className="absolute inset-0 transform -rotate-90 drop-shadow-md"
+          width={size}
+          height={size}
+          viewBox={`0 0 ${size} ${size}`}
         >
-          Play Alert Sound
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={() => {
-            if (audioRef.current) {
-              audioRef.current.pause();
-              audioRef.current.currentTime = 0;
-            }
-          }}
-        >
-          Pause Alert Sound
-        </Button>
-      </div>
-      <div className="flex items-center justify-between gap-3">
-        <div className="space-y-1">
-          <p className="text-muted-foreground text-sm">{modeHint}</p>
-          <p className="text-lg font-semibold">{modeLabel}</p>
-          <p className="text-muted-foreground text-xs">
-            Session {Math.min(4, workSessionsCompleted + 1)} / 4
-          </p>
+          {/* Background circle */}
+          <circle
+            className="text-muted stroke-current"
+            strokeWidth={strokeWidth}
+            fill="transparent"
+            r={radius}
+            cx={center}
+            cy={center}
+          />
+          {/* Progress circle */}
+          <circle
+            className="text-primary stroke-current transition-all duration-300 ease-linear"
+            strokeWidth={strokeWidth}
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round"
+            fill="transparent"
+            r={radius}
+            cx={center}
+            cy={center}
+          />
+        </svg>
+
+        {/* Inner Content */}
+        <div className="flex flex-col items-center justify-center z-10 text-center space-y-4">
+          <div className="space-y-1">
+            <p className="text-muted-foreground text-sm font-semibold tracking-wider uppercase">
+              {modeLabel}
+            </p>
+            <p className="text-5xl font-bold tabular-nums tracking-tight" aria-live="polite">
+              {formatTime(remainingMs)}
+            </p>
+            <p className="text-muted-foreground text-xs font-medium">
+              Session {Math.min(4, workSessionsCompleted + (mode === "work" ? 1 : 0))} / 4
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            {!isRunning ? (
+              <Button onClick={start} size="sm" className="w-[80px] rounded-full shadow-sm">
+                Start
+              </Button>
+            ) : (
+              <Button onClick={pause} variant="secondary" size="sm" className="w-[80px] rounded-full shadow-sm">
+                Pause
+              </Button>
+            )}
+            <Button onClick={reset} variant="ghost" size="sm" className="w-[80px] rounded-full">
+              Reset
+            </Button>
+          </div>
         </div>
-
-        <div className="text-right">
-          <p className="text-3xl font-bold tabular-nums" aria-live="polite">
-            {formatTime(remainingMs)}
-          </p>
-          <p className="text-muted-foreground text-xs">{Math.round(progressPercent)}%</p>
-        </div>
-      </div>
-
-      <div className="bg-muted h-2 w-full overflow-hidden rounded">
-        <div
-          className="bg-primary h-full"
-          style={{ width: `${progressPercent}%` }}
-          aria-hidden="true"
-        />
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2">
-        {steps.map((step, idx) => {
-          const isCurrent = idx === currentStepIndex;
-          const isCompleted = idx < currentStepIndex;
-
-          const className = isCurrent
-            ? "rounded px-2 py-1 text-xs font-semibold bg-primary text-primary-foreground"
-            : isCompleted
-              ? "rounded px-2 py-1 text-xs font-medium bg-secondary text-secondary-foreground"
-              : "rounded px-2 py-1 text-xs font-medium bg-muted text-muted-foreground";
-
-          return (
-            <span
-              key={step.key}
-              className={className}
-              aria-current={isCurrent ? "step" : undefined}
-            >
-              {step.label}
-            </span>
-          );
-        })}
-      </div>
-
-      <div className="flex items-center gap-2">
-        {!isRunning ? (
-          <Button onClick={start} className="w-24">
-            Start
-          </Button>
-        ) : (
-          <Button onClick={pause} variant="secondary" className="w-24">
-            Pause
-          </Button>
-        )}
-        <Button onClick={reset} variant="ghost">
-          Reset
-        </Button>
       </div>
     </Card>
   );
