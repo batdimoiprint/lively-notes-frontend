@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://lively-notes-backend-8442bbab7521.herokuapp.com/api/$1"
+      "destination": "https://1ai6l6vwae.execute-api.ap-southeast-1.amazonaws.com/api/$1"
     },
     {
       "source": "/(.*)",
