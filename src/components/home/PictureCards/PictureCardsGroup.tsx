@@ -12,11 +12,13 @@ const PictureCards = React.memo(function PictureCards() {
   });
 
   return (
-    <div className="flex w-full  items-stretch gap-2 ">
+    <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-stretch">
       <IGUsernameSideCard />
-      {posts.map((post) => (
-        <PhotoCards key={post._id} post={post} />
-      ))}
+      <div className="flex w-full gap-2 overflow-x-auto pb-2 [-webkit-overflow-scrolling:touch] snap-x snap-mandatory sm:overflow-visible sm:pb-0">
+        {posts.map((post) => (
+          <PhotoCards key={post._id} post={post} />
+        ))}
+      </div>
     </div>
   );
 });

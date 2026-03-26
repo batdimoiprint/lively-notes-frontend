@@ -1,5 +1,4 @@
 import { Card, CardAction, CardContent, CardHeader } from "@/components/ui/card";
-import { SheetTrigger } from "@/components/ui/sheet";
 import { Spinner } from "@/components/ui/spinner";
 import type { Tasks } from "@/types/tasktypes";
 import { Label } from "@radix-ui/react-label";
@@ -33,41 +32,39 @@ export default function TaskCard({
     <>
       <Card
         key={task._id}
-        className="max-h-48 overflow-hidden p-2"
+        className="max-h-48 overflow-hidden p-2 "
         onClick={() => {
           setSelectedTask(task);
         }}
       >
-        <SheetTrigger>
-          <CardHeader>
-            {/* {task._id} */}
-            <Label className="w-48 overflow-hidden font-bold text-ellipsis whitespace-nowrap">
-              {task.title}
-            </Label>
+        <CardHeader>
+          {/* {task._id} */}
+          <Label className="w-48 overflow-hidden font-bold text-ellipsis whitespace-nowrap">
+            {task.title}
+          </Label>
 
-            <CardAction>
-              <span className="cursor-pointer" onClick={(e) => e.stopPropagation()}>
-                {deletingId === task._id ? (
-                  <Spinner />
-                ) : confirming ? (
-                  <div className="flex flex-row gap-2">
-                    <Check
-                      onClick={() => {
-                        deleteTask();
-                        setConfirming(false);
-                      }}
-                      className="inline cursor-pointer"
-                    />
-                    <X onClick={() => setConfirming(false)} className="inline cursor-pointer" />
-                  </div>
-                ) : (
-                  <Trash onClick={() => setConfirming(true)} className="cursor-pointer" />
-                )}
-              </span>
-            </CardAction>
-          </CardHeader>
-          <CardContent className="whitespace-break-spaces">{task.body}</CardContent>
-        </SheetTrigger>
+          <CardAction>
+            <span className="cursor-pointer" onClick={(e) => e.stopPropagation()}>
+              {deletingId === task._id ? (
+                <Spinner />
+              ) : confirming ? (
+                <div className="flex flex-row gap-2">
+                  <Check
+                    onClick={() => {
+                      deleteTask();
+                      setConfirming(false);
+                    }}
+                    className="inline cursor-pointer"
+                  />
+                  <X onClick={() => setConfirming(false)} className="inline cursor-pointer" />
+                </div>
+              ) : (
+                <Trash onClick={() => setConfirming(true)} className="cursor-pointer" />
+              )}
+            </span>
+          </CardAction>
+        </CardHeader>
+        <CardContent className="whitespace-break-spaces ">{task.body}</CardContent>
       </Card>
     </>
   );

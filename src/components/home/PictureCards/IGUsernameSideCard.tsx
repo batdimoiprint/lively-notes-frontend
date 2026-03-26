@@ -42,7 +42,7 @@ export default function IGUsernameSideCard() {
   };
 
   return (
-    <Card className="relative flex h-full w-16 shrink-0 items-center justify-center overflow-visible p-2">
+    <Card className="relative flex w-full shrink-0 items-center justify-center overflow-visible p-2 sm:h-full sm:w-16">
       {!open ? (
         <Button
           type="button"
@@ -54,8 +54,7 @@ export default function IGUsernameSideCard() {
           <Plus />
         </Button>
       ) : (
-        <>
-          <div className="absolute flex justify-between gap-2 left-1/2 top-1/2 z-20 w-52 -translate-x-1/2 -translate-y-1/2 -rotate-90 ">
+        <div className="flex w-full flex-col gap-2 sm:absolute sm:left-1/2 sm:top-1/2 sm:z-20 sm:w-52 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:-rotate-90 sm:flex-row sm:gap-2">
             <Input
               value={igUsername}
               onChange={(event) => setIgUsername(event.target.value)}
@@ -67,10 +66,9 @@ export default function IGUsernameSideCard() {
               }}
               placeholder="ig-username"
               disabled={mutation.isPending}
-              
             />
 
-                        <Button
+            <Button
               type="button"
               size="sm"
               onClick={submit}
@@ -90,9 +88,6 @@ export default function IGUsernameSideCard() {
               Close
             </Button>
           </div>
-
-      
-        </>
       )}
     </Card>
   );

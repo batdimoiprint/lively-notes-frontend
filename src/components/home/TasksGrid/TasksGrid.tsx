@@ -5,8 +5,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ScrollArea } from "../../ui/scroll-area";
 import { Spinner } from "../../ui/spinner";
 
-import { Sheet } from "@/components/ui/sheet";
-import  { useState, useMemo } from "react";
+import { Dialog } from "@/components/ui/dialog";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import TaskCard from "./TaskCard";
 import TaskSheet from "./TaskSheetForm";
@@ -47,7 +47,7 @@ function TasksGrid() {
 
   return (
     <>
-      <Sheet>
+      <Dialog  open={Boolean(selectedTask)} onOpenChange={(open) => !open && setSelectedTask(null)} >
         <ScrollArea className="h-168">
           <div className="grid gap-4 sm:grid-cols-6">
             {taskCards}
@@ -55,7 +55,7 @@ function TasksGrid() {
         </ScrollArea>
 
         <TaskSheet task={selectedTask} />
-      </Sheet>
+      </Dialog>
     </>
   );
 }
