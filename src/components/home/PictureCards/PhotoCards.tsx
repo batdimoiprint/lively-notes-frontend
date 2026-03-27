@@ -5,7 +5,7 @@ import { auto } from "@cloudinary/url-gen/actions/resize";
 import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
 import { AdvancedImage, responsive } from "@cloudinary/react";
 import { Heart } from "lucide-react";
-import { useState, useMemo, memo, useCallback } from "react";
+import { useState, useMemo, memo, useCallback, useEffect } from "react";
 
 const cld = new Cloudinary({ cloud: { cloudName: import.meta.env.VITE_CLOUDINARY } });
 
@@ -39,6 +39,20 @@ export default function PhotoCards({ post }: { post?: IGPost }) {
       })) ?? [],
     [post?.cloudinaryPics]
   );
+
+  // Randomize imageIndex on mount or when images change, and reshuffle every 10 minutes
+  useEffect(() => {
+    if (images.length > 0) {
+      setImageIndex(Math.floor(Math.random() * images.length));
+    }
+    // Set up reshuffle timer
+    const interval = setInterval(() => {
+      if (images.length > 0) {
+        setImageIndex(Math.floor(Math.random() * images.length));
+      }
+    }, 600000); // 10 minutes
+    return () => clearInterval(interval);
+  }, [images.length]);
 
   const imageCount = images.length;
 
@@ -85,6 +99,14 @@ export default function PhotoCards({ post }: { post?: IGPost }) {
           ))}
         </div>
       </div>
+      {/* Caption (truncated if too long) */}
+      {post?.caption ? (
+        <div className="mt-2 px-1">
+          <p className="text-gray-700 dark:text-gray-300 text-xs line-clamp-2 overflow-hidden text-ellipsis">
+            {post.caption}
+          </p>
+        </div>
+      ) : null}
       <div className="flex flex-row justify-between">
         <div className="flex flex-row gap-1">
           <Heart size={24} />
@@ -98,7 +120,6 @@ export default function PhotoCards({ post }: { post?: IGPost }) {
         >
           {post?.ownerUsername}
         </a>
-        {/* <p className="font-bold">Caption</p> */}
       </div>
     </Card>
   );

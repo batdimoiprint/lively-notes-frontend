@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { createIgUsername } from "@/api/igUsername";
@@ -12,7 +12,6 @@ import { Spinner } from "@/components/ui/spinner";
 export default function IGUsernameSideCard() {
   const [open, setOpen] = useState(false);
   const [igUsername, setIgUsername] = useState("");
-  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: async (username: string) => {
@@ -24,7 +23,6 @@ export default function IGUsernameSideCard() {
     onSuccess: async () => {
       setIgUsername("");
       setOpen(false);
-      await queryClient.invalidateQueries({ queryKey: ["igIdolPosts"] });
       toast.success("IG posts updated");
     },
     onError: (error: Error) => {

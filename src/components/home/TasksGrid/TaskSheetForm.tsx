@@ -1,9 +1,4 @@
-import {
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { DialogContent } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { type Inputs, type Tasks } from "@/types/tasktypes";
 import { Save } from "lucide-react";
@@ -19,16 +14,12 @@ import { toast } from "sonner";
 
 export default function TaskSheet({ task }: { task: Tasks | null }) {
   const { register, handleSubmit, reset } = useForm<Inputs>();
-  const titleTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const bodyTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [result, setResult] = useState<React.ReactNode>("Save");
   const queryClient = useQueryClient();
 
   const resizeTextarea = (textarea: HTMLTextAreaElement | null) => {
-    if (!textarea) {
-      return;
-    }
-
+    if (!textarea) return;
     textarea.style.height = "auto";
     textarea.style.height = `${textarea.scrollHeight}px`;
   };
@@ -58,7 +49,6 @@ export default function TaskSheet({ task }: { task: Tasks | null }) {
   useEffect(() => {
     reset({ title: task?.title ?? "", body: task?.body ?? "" });
     requestAnimationFrame(() => {
-      resizeTextarea(titleTextareaRef.current);
       resizeTextarea(bodyTextareaRef.current);
     });
   }, [task, reset]);
@@ -72,46 +62,36 @@ export default function TaskSheet({ task }: { task: Tasks | null }) {
   const bodyField = register("body", { required: "Title is required" });
 
   return (
-    <>
-      <DialogContent className="max-h-[90vh] overflow-hidden p-0">
-        <form className="flex max-h-[90vh] flex-col gap-4 p-6" onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader className="gap-1 text-left">
-            <DialogTitle className="text-white">Edit task</DialogTitle>
-            <DialogDescription className="text-white/70">
-              Update the title and body for this note.
-            </DialogDescription>
-          </DialogHeader>
-
-          <ScrollArea className="max-h-20 rounded-md border">
-            <Textarea
-              {...titleField}
-              ref={(element) => {
-                titleField.ref(element);
-                titleTextareaRef.current = element;
-              }}
-              className="min-h-20 resize-none overflow-hidden border-0 bg-transparent shadow-none focus-visible:ring-0"
-              onInput={(event) => resizeTextarea(event.currentTarget)}
-            />
-          </ScrollArea>
-
-          <ScrollArea className="min-h-0 flex-1 rounded-md border">
-            <Textarea
-              {...bodyField}
-              ref={(element) => {
-                bodyField.ref(element);
-                bodyTextareaRef.current = element;
-              }}
-              className="min-h-48 resize-none overflow-hidden border-0 bg-transparent whitespace-break-spaces shadow-none focus-visible:ring-0"
-              onInput={(event) => resizeTextarea(event.currentTarget)}
-            />
-          </ScrollArea>
-
-          <Button className="self-end" disabled={mutation.isPending} type="submit">
-            <Save />
-            {result}
-          </Button>
-        </form>
-      </DialogContent>
-    </>
+    <DialogContent className="max-h-[90vh] overflow-hidden p-0">
+      <form className="flex max-h-[90vh] flex-col gap-4 p-6" onSubmit={handleSubmit(onSubmit)}>
+        {/* Title input in header */}
+        <div className="flex flex-col gap-2">
+          <input
+            {...titleField}
+            ref={titleField.ref}
+            className="text-xl font-bold border-none bg-transparent outline-none focus-visible:ring-0 px-0 py-0"
+            placeholder="Title"
+            defaultValue={task?.title ?? ""}
+            autoFocus
+          />
+        </div>
+        <ScrollArea className="min-h-0 flex-1 rounded-md border-none">
+          <Textarea
+            {...bodyField}
+            ref={(element) => {
+              bodyField.ref(element);
+              bodyTextareaRef.current = element;
+            }}
+            className="min-h-48 resize-none overflow-hidden border-none bg-transparent whitespace-break-spaces focus-visible:ring-0"
+            onInput={(event: React.FormEvent<HTMLTextAreaElement>) => resizeTextarea(event.currentTarget)}
+            placeholder="Body"
+          />
+        </ScrollArea>
+        <Button className="self-end" disabled={mutation.isPending} type="submit">
+          <Save />
+          {result}
+        </Button>
+      </form>
+    </DialogContent>
   );
 }

@@ -1,24 +1,48 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import PhotoCards from "./PhotoCards";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { getIdolPosts, type IGPost } from "@/api/post";
 import IGUsernameSideCard from "./IGUsernameSideCard";
+import { useIgPostRefreshStream } from "@/hooks/useIgPostRefreshStream";
 
 const PictureCards = React.memo(function PictureCards() {
+  useIgPostRefreshStream();
+
   const { data: posts = [] } = useQuery<IGPost[]>({
     queryKey: ["igIdolPosts"],
     queryFn: getIdolPosts,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
+  const [shuffledPosts, setShuffledPosts] = React.useState<IGPost[]>([]);
+
+  // Shuffle posts on posts change and every 10 minutes
+  React.useEffect(() => {
+    function shuffleAndSet() {
+      const arr = [...posts];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      setShuffledPosts(arr);
+    }
+    shuffleAndSet();
+    const interval = setInterval(shuffleAndSet, 600000); // 10 minutes
+    return () => clearInterval(interval);
+  }, [posts]);
+
   return (
     <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-stretch">
       <IGUsernameSideCard />
-      <div className="flex w-full gap-2 overflow-x-auto pb-2 [-webkit-overflow-scrolling:touch] snap-x snap-mandatory sm:overflow-visible sm:pb-0">
-        {posts.map((post) => (
-          <PhotoCards key={post._id} post={post} />
-        ))}
-      </div>
+      <ScrollArea className="w-full max-w-5xl pb-2 sm:pb-0 ">
+        <div className="flex gap-2 snap-x snap-mandatory ">
+          {shuffledPosts.map((post) => (
+            <PhotoCards key={post._id} post={post} />
+          ))}
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
     </div>
   );
 });
