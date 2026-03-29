@@ -1,19 +1,14 @@
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
 import PhotoCards from "./PhotoCards";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { getIdolPosts, type IGPost } from "@/api/post";
+import { type IGPost, useIdolPosts } from "@/api/post";
 import IGUsernameSideCard from "./IGUsernameSideCard";
 import { useIgPostRefreshStream } from "@/hooks/useIgPostRefreshStream";
 
 const PictureCards = React.memo(function PictureCards() {
   useIgPostRefreshStream();
 
-  const { data: posts = [] } = useQuery<IGPost[]>({
-    queryKey: ["igIdolPosts"],
-    queryFn: getIdolPosts,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
+  const { data: posts = [] } = useIdolPosts();
 
   const [shuffledPosts, setShuffledPosts] = React.useState<IGPost[]>([]);
 
