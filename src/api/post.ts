@@ -19,6 +19,16 @@ export async function getIdolPosts() {
   return res.data;
 }
 
+export async function getNewestIdolPosts() {
+  const res = await api.get<IGPost[]>("/api/igpost/newest-idol-posts");
+  return res.data;
+}
+
+export async function getRandomPostByUsername(username: string) {
+  const res = await api.get<IGPost>(`/api/igpost/random-post/${username}`);
+  return res.data;
+}
+
 function msUntilNext8AM(): number {
   const now = new Date();
   const next8AM = new Date();
@@ -34,7 +44,7 @@ function msUntilNext8AM(): number {
 export function useIdolPosts() {
   return useQuery<IGPost[]>({
     queryKey: ["igIdolPosts"],
-    queryFn: getIdolPosts,
+    queryFn: getNewestIdolPosts,
     staleTime: msUntilNext8AM(),
     gcTime: 86400000,
   });
