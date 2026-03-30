@@ -29,6 +29,7 @@ export function useIgPostRefreshStream() {
       void queryClient.invalidateQueries({ queryKey: ["igIdolPosts"] });
     };
 
+    source.addEventListener("open", handleRefresh);
     source.addEventListener("ig-posts-updated", handleRefresh as EventListener);
 
     return () => {

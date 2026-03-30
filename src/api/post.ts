@@ -15,12 +15,22 @@ export interface IGPost {
 }
 
 export async function getIdolPosts() {
-  const res = await api.get<IGPost[]>("/api/igpost/idol-posts");
+  const res = await api.get<IGPost[]>("/api/igpost/idol-posts", {
+    headers: {
+      "Cache-Control": "no-store, no-cache",
+      "Pragma": "no-cache",
+    },
+  });
   return res.data;
 }
 
 export async function getNewestIdolPosts() {
-  const res = await api.get<IGPost[]>("/api/igpost/newest-idol-posts");
+  const res = await api.get<IGPost[]>("/api/igpost/newest-idol-posts", {
+    headers: {
+      "Cache-Control": "no-store, no-cache",
+      "Pragma": "no-cache",
+    },
+  });
   return res.data;
 }
 
@@ -47,6 +57,7 @@ export function useIdolPosts() {
     queryFn: getNewestIdolPosts,
     staleTime: msUntilNext8AM(),
     gcTime: 86400000,
+    refetchOnWindowFocus: false,
   });
 }
 

@@ -8,13 +8,14 @@ import { useIgPostRefreshStream } from "@/hooks/useIgPostRefreshStream";
 const PictureCards = React.memo(function PictureCards() {
   useIgPostRefreshStream();
 
-  const { data: posts = [] } = useIdolPosts();
+  const { data: posts } = useIdolPosts();
 
   const [shuffledPosts, setShuffledPosts] = React.useState<IGPost[]>([]);
 
   // Shuffle posts on posts change and every 10 minutes
   React.useEffect(() => {
     function shuffleAndSet() {
+      if (!posts) return;
       const arr = [...posts];
       for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
