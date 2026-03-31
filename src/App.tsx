@@ -24,11 +24,11 @@ function App() {
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <BrowserRouter>
           <QueryClientProvider client={queryClient}>
-            <PersistQueryClientProvider 
-              client={queryClient} 
-              persistOptions={{ 
+            <PersistQueryClientProvider
+              client={queryClient}
+              persistOptions={{
                 persister,
-                buster: getCacheBuster()
+                buster: getCacheBuster(),
               }}
             >
               <AppRoute />

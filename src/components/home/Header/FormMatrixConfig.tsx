@@ -100,8 +100,8 @@ export default function FormMatrixConfig() {
         >
           {reset ? <Check /> : <RefreshCw />}
         </Button>
-        
-      <FormBackgroundImage />
+
+        <FormBackgroundImage />
       </div>
 
       {/* Speed Control */}
@@ -146,7 +146,6 @@ export default function FormMatrixConfig() {
         step={0.01}
         disabled={!config.rainbow}
       />
-
     </div>
   );
 }

@@ -15,7 +15,9 @@ export default function Home() {
           <div className="flex max-w-[1920px] flex-col gap-4 sm:flex-row">
             <Header />
             <PictureCards />
-            <Pomorodo />
+            <div className="flex w-full flex-col gap-4 sm:max-w-md">
+              <Pomorodo />
+            </div>
           </div>
         </ErrorBoundary>
 

@@ -29,29 +29,29 @@ function TasksGrid() {
     onSettled: () => setDeletingId(null),
   });
 
-  const taskCards = useMemo(() => (
-    tasks.map((task: Tasks) => (
-      <TaskCard
-        key={task._id}
-        task={task}
-        deletingId={deletingId}
-        setDeletingId={setDeletingId}
-        setSelectedTask={setSelectedTask}
-        mutation={mutation}
-      />
-    ))
-  ), [tasks, deletingId, mutation]);
+  const taskCards = useMemo(
+    () =>
+      tasks.map((task: Tasks) => (
+        <TaskCard
+          key={task._id}
+          task={task}
+          deletingId={deletingId}
+          setDeletingId={setDeletingId}
+          setSelectedTask={setSelectedTask}
+          mutation={mutation}
+        />
+      )),
+    [tasks, deletingId, mutation]
+  );
 
   if (isLoading) return <Spinner />;
   if (error) return <div>Error loading notes</div>;
 
   return (
     <>
-      <Dialog  open={Boolean(selectedTask)} onOpenChange={(open) => !open && setSelectedTask(null)} >
+      <Dialog open={Boolean(selectedTask)} onOpenChange={(open) => !open && setSelectedTask(null)}>
         <ScrollArea className="h-168">
-          <div className="grid gap-4 sm:grid-cols-6">
-            {taskCards}
-          </div>
+          <div className="grid gap-4 sm:grid-cols-6">{taskCards}</div>
         </ScrollArea>
 
         <TaskSheet task={selectedTask} />

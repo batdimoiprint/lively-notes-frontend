@@ -69,7 +69,7 @@ export default function TaskSheet({ task }: { task: Tasks | null }) {
           <input
             {...titleField}
             ref={titleField.ref}
-            className="text-xl font-bold border-none bg-transparent outline-none focus-visible:ring-0 px-0 py-0"
+            className="border-none bg-transparent px-0 py-0 text-xl font-bold outline-none focus-visible:ring-0"
             placeholder="Title"
             defaultValue={task?.title ?? ""}
             autoFocus
@@ -83,7 +83,9 @@ export default function TaskSheet({ task }: { task: Tasks | null }) {
               bodyTextareaRef.current = element;
             }}
             className="min-h-48 resize-none overflow-hidden border-none bg-transparent whitespace-break-spaces focus-visible:ring-0"
-            onInput={(event: React.FormEvent<HTMLTextAreaElement>) => resizeTextarea(event.currentTarget)}
+            onInput={(event: React.FormEvent<HTMLTextAreaElement>) =>
+              resizeTextarea(event.currentTarget)
+            }
             placeholder="Body"
           />
         </ScrollArea>

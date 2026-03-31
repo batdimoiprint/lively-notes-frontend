@@ -18,7 +18,7 @@ export async function getIdolPosts() {
   const res = await api.get<IGPost[]>("/api/igpost/idol-posts", {
     headers: {
       "Cache-Control": "no-store, no-cache",
-      "Pragma": "no-cache",
+      Pragma: "no-cache",
     },
   });
   return res.data;
@@ -28,7 +28,7 @@ export async function getNewestIdolPosts() {
   const res = await api.get<IGPost[]>("/api/igpost/newest-idol-posts", {
     headers: {
       "Cache-Control": "no-store, no-cache",
-      "Pragma": "no-cache",
+      Pragma: "no-cache",
     },
   });
   return res.data;

@@ -31,7 +31,7 @@ export default function TaskCard({
 }: TaskCardProps) {
   const [confirming, setConfirming] = useState<boolean>(false);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
-  
+
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const queryClient = useQueryClient();
   const { register, handleSubmit, reset } = useForm<Inputs>();
@@ -93,7 +93,7 @@ export default function TaskCard({
     <>
       <Card
         key={task._id}
-        className={`${isExpanded ? "h-auto max-h-none border-2" : "max-h-48"} overflow-hidden p-2 transition-all relative`}
+        className={`${isExpanded ? "h-auto max-h-none border-2" : "max-h-48"} relative overflow-hidden p-2 transition-all`}
         style={isExpanded && settings?.textColor ? { borderColor: settings.textColor } : undefined}
         onClick={handleCardClick}
       >
@@ -124,16 +124,14 @@ export default function TaskCard({
                 </span>
               </CardAction>
             </CardHeader>
-            <CardContent className="whitespace-break-spaces break-words">
-              {task.body}
-            </CardContent>
+            <CardContent className="break-words whitespace-break-spaces">{task.body}</CardContent>
           </>
         ) : (
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2 relative z-10 p-1">
-            <div className="flex justify-between items-center mb-1">
+          <form onSubmit={handleSubmit(onSubmit)} className="relative z-10 flex flex-col gap-2 p-1">
+            <div className="mb-1 flex items-center justify-between">
               <Textarea
                 {...titleField}
-                className="font-bold border-none resize-none m-0 p-0 text-md focus-visible:ring-0 min-h-0 bg-transparent"
+                className="text-md m-0 min-h-0 resize-none border-none bg-transparent p-0 font-bold focus-visible:ring-0"
                 style={{ overflow: "hidden" }}
                 onChange={(e) => {
                   titleField.onChange(e);
@@ -145,29 +143,29 @@ export default function TaskCard({
                 }}
                 onClick={(e) => e.stopPropagation()}
               />
-              <div className="flex gap-2 shrink-0">
+              <div className="flex shrink-0 gap-2">
                 <button
                   type="submit"
                   disabled={editMutation.isPending}
-                  className="bg-transparent rounded p-1"
-                  style={{ color: settings?.textColor || '#22c55e' }}
+                  className="rounded bg-transparent p-1"
+                  style={{ color: settings?.textColor || "#22c55e" }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   {editMutation.isPending ? <Spinner /> : <Save size={18} />}
                 </button>
-                <X 
-                  className="cursor-pointer text-gray-500 p-1 rounded" 
+                <X
+                  className="cursor-pointer rounded p-1 text-gray-500"
                   size={26}
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsExpanded(false);
-                  }} 
+                  }}
                 />
               </div>
             </div>
             <Textarea
               {...bodyField}
-              className="whitespace-break-spaces border-none resize-none p-0 focus-visible:ring-0 text-sm min-h-24 bg-transparent"
+              className="min-h-24 resize-none border-none bg-transparent p-0 text-sm whitespace-break-spaces focus-visible:ring-0"
               style={{ overflow: "hidden" }}
               onChange={(e) => {
                 bodyField.onChange(e);

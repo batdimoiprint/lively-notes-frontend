@@ -52,7 +52,7 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
       if (newPost) {
         setCurrentPost(newPost);
       }
-    }
+    },
   });
 
   const deleteMutation = useMutation({
@@ -72,7 +72,7 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
     },
     onError: () => {
       setShowDeleteConfirm(false);
-    }
+    },
   });
 
   const images: ImageItem[] = useMemo(
@@ -150,7 +150,7 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
       {/* Caption (truncated if too long) */}
       {currentPost?.caption ? (
         <div className="mt-2 px-1">
-          <p className="text-gray-700 dark:text-gray-300 text-xs line-clamp-2 overflow-hidden text-ellipsis">
+          <p className="line-clamp-2 overflow-hidden text-xs text-ellipsis text-gray-700 dark:text-gray-300">
             {currentPost.caption}
           </p>
         </div>
@@ -170,21 +170,29 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
                 aria-label="Confirm delete"
               >
                 {/* check icon */}
-                <svg width="16" height="16" fill="none" viewBox="0 0 16 16"><path stroke="currentColor" strokeWidth="2" d="M4 8.5l3 3 5-5"/></svg>
+                <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
+                  <path stroke="currentColor" strokeWidth="2" d="M4 8.5l3 3 5-5" />
+                </svg>
               </button>
               <button
-                onClick={() => { setShowDeleteConfirm(false); }}
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                }}
                 disabled={deleteMutation.isPending}
                 className="hover:bg-accent rounded p-1"
                 aria-label="Cancel delete"
               >
                 {/* cross icon */}
-                <svg width="16" height="16" fill="none" viewBox="0 0 16 16"><path stroke="currentColor" strokeWidth="2" d="M4 4l8 8M12 4l-8 8"/></svg>
+                <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
+                  <path stroke="currentColor" strokeWidth="2" d="M4 4l8 8M12 4l-8 8" />
+                </svg>
               </button>
             </>
           ) : (
             <button
-              onClick={() => { setShowDeleteConfirm(true); }}
+              onClick={() => {
+                setShowDeleteConfirm(true);
+              }}
               disabled={deleteMutation.isPending}
               className="hover:bg-accent rounded p-1"
               aria-label="Delete"
