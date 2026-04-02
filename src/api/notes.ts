@@ -39,7 +39,7 @@ export async function createNotes(inputs: Inputs) {
 
 export async function editNotes(inputs: Tasks) {
   try {
-    const res = await api.put("/api/notes/", {
+    const res = await api.patch("/api/notes/", {
       _id: inputs._id,
       title: inputs.title,
       body: inputs.body,
