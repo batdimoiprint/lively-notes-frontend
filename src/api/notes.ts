@@ -62,6 +62,16 @@ export async function reorderNotes(orderedIds: string[]) {
   }
 }
 
+export async function moveNoteToSection(noteId: string, sectionId: string) {
+  try {
+    const res = await api.patch("/api/notes/move-section", { noteId, sectionId });
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
 export function useNotes() {
   return useQuery({
     queryKey: ["notes"],
