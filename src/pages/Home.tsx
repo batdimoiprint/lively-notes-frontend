@@ -1,5 +1,6 @@
 import Header from "@/components/home/Header/Header";
 import TasksGrid from "@/components/home/TasksGrid/TasksGrid";
+import TodoList from "@/components/home/Todo/TodoList";
 import { Toaster } from "@/components/ui/sonner";
 import PictureCards from "@/components/home/PictureCards/PictureCardsGroup";
 import Pomorodo from "@/components/home/Pomorodo/Pomorodo";
@@ -22,8 +23,13 @@ export default function Home() {
         </ErrorBoundary>
 
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <div className="max-w-[1920px] overflow-hidden">
-            <TasksGrid />
+          <div className="flex max-w-[1920px] gap-4 overflow-hidden" style={{ height: 'calc(100vh - 280px)', maxHeight: '669px' }}>
+            <div className="min-w-0 flex-1">
+              <TasksGrid />
+            </div>
+            <div className="hidden w-80 shrink-0 lg:block">
+              <TodoList />
+            </div>
           </div>
         </ErrorBoundary>
       </main>

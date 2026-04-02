@@ -107,7 +107,7 @@ function TasksGrid() {
             onDragEnd={handleDragEnd}
           >
             <SortableContext items={displayTasks.map((t) => t._id)} strategy={rectSortingStrategy}>
-              <div className="grid gap-4 sm:grid-cols-6">
+              <div className="grid gap-4 sm:grid-cols-4">
                 {displayTasks.map((task: Tasks) => (
                   <TaskCard
                     key={task._id}
