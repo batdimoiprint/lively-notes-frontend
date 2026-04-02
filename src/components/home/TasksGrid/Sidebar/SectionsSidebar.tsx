@@ -129,11 +129,10 @@ export default function SectionsSidebar({ selectedSection, onSectionSelect, sect
         ...sections
       ];
     }
-    return sections.map((section) =>
-      section._id === "default"
-        ? { ...section, noteCount: sectionCounts.default ?? 0 }
-        : { ...section, noteCount: sectionCounts[section._id] ?? section.noteCount }
-    );
+    return sections.map((section) => ({
+      ...section,
+      noteCount: sectionCounts[section._id] ?? 0
+    }));
   }, [sections, sectionCounts]);
 
   const createMutation = useMutation({

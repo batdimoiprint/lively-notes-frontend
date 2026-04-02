@@ -7,4 +7,5 @@ export interface Tasks {
 export interface Inputs {
   title: string;
   body: string;
+  sectionId?: string;
 }

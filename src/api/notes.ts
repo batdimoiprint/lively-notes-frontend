@@ -25,7 +25,11 @@ export async function deleteNotes(id: string) {
 
 export async function createNotes(inputs: Inputs) {
   try {
-    const res = await api.post("/api/notes/", { title: inputs.title, body: inputs.body });
+    const res = await api.post("/api/notes/", {
+      title: inputs.title,
+      body: inputs.body,
+      sectionId: inputs.sectionId,
+    });
     if (res.status == 201) {
       return res.data;
     } else {

@@ -7,7 +7,7 @@ import { ScrollArea } from "../../ui/scroll-area";
 import { Spinner } from "../../ui/spinner";
 
 import { Dialog } from "@/components/ui/dialog";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
 import TaskCard from "./TaskCard";
 import TaskSheet from "./TaskSheetForm";
@@ -29,13 +29,17 @@ import {
   rectSortingStrategy,
 } from "@dnd-kit/sortable";
 
-function TasksGrid() {
+interface TasksGridProps {
+  selectedSection: string;
+  onSectionSelect: (sectionId: string) => void;
+}
+
+function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
   const { data: tasks = [], isLoading, error } = useNotes();
   const queryClient = useQueryClient();
   const [selectedTask, setSelectedTask] = useState<Tasks | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [orderedTasks, setOrderedTasks] = useState<Tasks[]>([]);
-  const [selectedSection, setSelectedSection] = useState<string>("default");
 
   // Filter tasks by selected section - treat undefined/null sectionId as "default"
   const sectionTasks = useMemo(() => {
@@ -54,17 +58,16 @@ function TasksGrid() {
   }, [tasks]);
 
   // Sync orderedTasks with sectionTasks when they change
+  useEffect(() => {
+    setOrderedTasks(sectionTasks);
+  }, [sectionTasks]);
+
   const displayTasks = useMemo(() => {
     if (orderedTasks.length > 0 && orderedTasks.every(t => sectionTasks.some(task => task._id === t._id))) {
-      return orderedTasks.filter(t => sectionTasks.some(task => task._id === t._id));
+      return orderedTasks;
     }
     return sectionTasks;
   }, [orderedTasks, sectionTasks]);
-
-  // Update orderedTasks when sectionTasks from API change
-  if (sectionTasks.length > 0 && (orderedTasks.length === 0 || !orderedTasks.every(t => sectionTasks.some(task => task._id === t._id)))) {
-    setOrderedTasks(sectionTasks);
-  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -108,7 +111,7 @@ function TasksGrid() {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
       queryClient.invalidateQueries({ queryKey: ["sections"] });
       toast.success("Note moved to section");
-      setSelectedSection(sectionId);
+      onSectionSelect(sectionId);
     },
     onError: () => {
       toast.error("Failed to move note");
@@ -175,7 +178,7 @@ function TasksGrid() {
           <div className="flex h-full gap-4 ">
             <SectionsSidebar
               selectedSection={selectedSection}
-              onSectionSelect={setSelectedSection}
+              onSectionSelect={onSectionSelect}
               sectionCounts={sectionCounts}
             />
             <ScrollArea className="h-168 flex-1">

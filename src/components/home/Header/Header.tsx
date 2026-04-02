@@ -12,8 +12,12 @@ import FormMatrixConfig from "./FormMatrixConfig";
 import FormNotes from "./FormNotes";
 import JokeTitle from "./JokeTitle";
 
+interface HeaderProps {
+  selectedSection: string;
+}
+
 // Goes to Home
-export default function Header() {
+export default function Header({ selectedSection }: HeaderProps) {
   const [isHeaderToggled, setHeaderToggled] = useState<boolean>(false);
 
   return (
@@ -32,7 +36,7 @@ export default function Header() {
             />
           </CardAction>
         </CardHeader>
-        <CardContent>{isHeaderToggled ? <FormMatrixConfig /> : <FormNotes />}</CardContent>
+        <CardContent>{isHeaderToggled ? <FormMatrixConfig /> : <FormNotes selectedSection={selectedSection} />}</CardContent>
       </Card>
     </div>
   );

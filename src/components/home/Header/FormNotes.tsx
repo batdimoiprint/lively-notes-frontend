@@ -11,7 +11,11 @@ import { useState } from "react";
 import { Check } from "lucide-react";
 import { toast } from "sonner";
 
-export default function FormNotes() {
+interface FormNotesProps {
+  selectedSection: string;
+}
+
+export default function FormNotes({ selectedSection }: FormNotesProps) {
   const {
     register,
     handleSubmit,
@@ -24,17 +28,18 @@ export default function FormNotes() {
   const mutation = useMutation({
     mutationFn: createNotes,
     onMutate: () => setResult(<Spinner />),
-    onSuccess: () => {
+    onSuccess: async () => {
       setResult(
         <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5em" }}>
           <Check size={16} /> Notes Created!
         </span>
       );
       reset();
+      await queryClient.invalidateQueries({ queryKey: ["notes"] });
+      await queryClient.refetchQueries({ queryKey: ["notes"] });
       setTimeout(() => {
         setResult("Submit");
       }, 2000);
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
       toast.info("Notes Created");
     },
     onError: (error) => {
@@ -46,7 +51,7 @@ export default function FormNotes() {
   });
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    mutation.mutate(data);
+    mutation.mutate({ ...data, sectionId: selectedSection });
   };
 
   return (
