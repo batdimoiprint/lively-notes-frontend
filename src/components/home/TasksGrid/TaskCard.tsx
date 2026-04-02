@@ -13,6 +13,8 @@ import { editNotes } from "@/api/notes";
 import { toast } from "sonner";
 import { type Inputs } from "@/types/tasktypes";
 import { useSettings } from "@/api/settings";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface TaskCardProps {
   task: Tasks;
@@ -39,6 +41,22 @@ export default function TaskCard({
 
   const titleTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const bodyTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: task._id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    cursor: isDragging ? "grabbing" : "grab",
+  };
 
   const resizeTextarea = (textarea: HTMLTextAreaElement | null) => {
     if (!textarea) return;
@@ -92,9 +110,15 @@ export default function TaskCard({
   return (
     <>
       <Card
+        ref={setNodeRef}
+        style={{
+          ...style,
+          ...(isExpanded && settings?.textColor ? { borderColor: settings.textColor } : {}),
+        }}
+        {...attributes}
+        {...listeners}
         key={task._id}
-        className={`${isExpanded ? "h-auto max-h-none border-2" : "max-h-48"} relative overflow-hidden p-2 transition-all`}
-        style={isExpanded && settings?.textColor ? { borderColor: settings.textColor } : undefined}
+        className={`${isExpanded ? "h-auto max-h-none border-2" : "max-h-48"} relative overflow-hidden p-2 transition-all touch-none`}
         onClick={handleCardClick}
       >
         {!isExpanded || isDesktop ? (

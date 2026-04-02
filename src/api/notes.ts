@@ -52,6 +52,16 @@ export async function editNotes(inputs: Tasks) {
   }
 }
 
+export async function reorderNotes(orderedIds: string[]) {
+  try {
+    const res = await api.patch("/api/notes/reorder", { orderedIds });
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
 export function useNotes() {
   return useQuery({
     queryKey: ["notes"],
