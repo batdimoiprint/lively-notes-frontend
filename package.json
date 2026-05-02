@@ -39,6 +39,7 @@
     "idb": "^8.0.3",
     "idb-keyval": "^6.2.2",
     "input-otp": "^1.4.2",
+    "jszip": "^3.10.1",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.548.0",
     "next-themes": "^0.4.6",
@@ -52,8 +53,7 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.2",
-    "zustand": "^5.0.12",
-    "jszip": "^3.10.1"
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
@@ -72,6 +72,7 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.58.0",
     "vite": "^7.3.1",
+    "vite-plugin-pwa": "1.2.0",
     "vite-plugin-singlefile": "^2.3.2"
   },
   "packageManager": "pnpm@10.26.0+sha512.3b3f6c725ebe712506c0ab1ad4133cf86b1f4b687effce62a9b38b4d72e3954242e643190fc51fa1642949c735f403debd44f5cb0edd657abe63a8b6a7e1e402"
