@@ -15,18 +15,22 @@ export default function Home() {
     <>
       <main className="flex flex-col gap-4 p-4">
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          {/* Header */}
-          <div className="flex max-w-[1920px] flex-col gap-4 sm:flex-row">
-            <Header selectedSection={selectedSection} />
-            <PictureCards />
-            <div className="flex w-full flex-col gap-4 sm:max-w-md">
+          {/* Mobile: PictureCards → Header → Pomorodo. sm+: side-by-side row */}
+          <div className="flex max-w-[1920px] flex-col gap-4 sm:flex-row sm:items-start">
+            <div className="order-2 sm:order-1 sm:flex-1">
+              <Header selectedSection={selectedSection} />
+            </div>
+            <div className="order-1 sm:order-2">
+              <PictureCards />
+            </div>
+            <div className="order-3 flex w-full flex-col gap-4 sm:max-w-md">
               <Pomorodo />
             </div>
           </div>
         </ErrorBoundary>
 
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <div className="flex max-w-[1920px] gap-4 overflow-hidden" style={{ height: 'calc(100vh - 280px)', maxHeight: '669px' }}>
+          <div className="flex max-w-[1920px] gap-4 overflow-hidden sm:h-[calc(100vh-280px)] sm:max-h-[669px]">
             <div className="min-w-0 flex-1">
               <TasksGrid selectedSection={selectedSection} onSectionSelect={setSelectedSection} />
             </div>

@@ -1,9 +1,10 @@
 import { deleteNotes, useNotes, reorderNotes, moveNoteToSection } from "@/api/notes";
 import { type Tasks } from "@/types/tasktypes";
 import SectionsSidebar from "./Sidebar/SectionsSidebar";
+import { useSections, type Section } from "@/api/sections";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ScrollArea } from "../../ui/scroll-area";
+import { ScrollArea, ScrollBar } from "../../ui/scroll-area";
 import { Spinner } from "../../ui/spinner";
 
 import { Dialog } from "@/components/ui/dialog";
@@ -175,13 +176,24 @@ function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
           collisionDetection={customCollisionDetection}
           onDragEnd={handleDragEnd}
         >
-          <div className="flex h-full gap-4 ">
-            <SectionsSidebar
-              selectedSection={selectedSection}
-              onSectionSelect={onSectionSelect}
-              sectionCounts={sectionCounts}
-            />
-            <ScrollArea className="h-168 flex-1">
+          {/* Mobile: tabs on top, notes below. sm+: sidebar left, notes right */}
+          <MobileSectionTabs
+            selectedSection={selectedSection}
+            onSectionSelect={onSectionSelect}
+            sectionCounts={sectionCounts}
+          />
+
+          <div className="flex h-full gap-4">
+            {/* Desktop sidebar — hidden on mobile */}
+            <div className="hidden sm:block">
+              <SectionsSidebar
+                selectedSection={selectedSection}
+                onSectionSelect={onSectionSelect}
+                sectionCounts={sectionCounts}
+              />
+            </div>
+
+            <ScrollArea className="h-auto flex-1 sm:h-168">
               <SortableContext items={displayTasks.map((t) => t._id)} strategy={rectSortingStrategy}>
                 <div className="grid gap-4 sm:grid-cols-4">
                   {displayTasks.map((task: Tasks) => (
@@ -203,6 +215,60 @@ function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
         <TaskSheet task={selectedTask} />
       </Dialog>
     </>
+  );
+}
+
+// ── Mobile-only horizontal tab strip ────────────────────────────────────────
+interface MobileSectionTabsProps {
+  selectedSection: string;
+  onSectionSelect: (id: string) => void;
+  sectionCounts: Record<string, number>;
+}
+
+function MobileSectionTabs({ selectedSection, onSectionSelect, sectionCounts }: MobileSectionTabsProps) {
+  const { data: rawSections = [] } = useSections();
+
+  const sections: Section[] = useMemo(() => {
+    const hasDefault = rawSections.some((s) => s._id === "default");
+    const base = hasDefault
+      ? rawSections
+      : [{ _id: "default", title: "Notes", order: 0, noteCount: 0, createdAt: new Date().toISOString() }, ...rawSections];
+    return base.map((s) => ({ ...s, noteCount: sectionCounts[s._id] ?? 0 }));
+  }, [rawSections, sectionCounts]);
+
+  return (
+    <div className="mb-3 sm:hidden">
+      <ScrollArea className="w-full">
+        <div className="flex gap-2 pb-1">
+          {sections.map((section) => {
+            const isSelected = selectedSection === section._id;
+            return (
+              <button
+                key={section._id}
+                onClick={() => onSectionSelect(section._id)}
+                className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+                  isSelected
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                }`}
+              >
+                {section.title}
+                {section.noteCount !== undefined && section.noteCount > 0 && (
+                  <span
+                    className={`rounded-full px-1.5 py-0.5 text-xs ${
+                      isSelected ? "bg-primary-foreground/20 text-primary-foreground" : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {section.noteCount}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
+    </div>
   );
 }
 

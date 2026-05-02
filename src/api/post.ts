@@ -39,6 +39,15 @@ export async function getRandomPostByUsername(username: string) {
   return res.data;
 }
 
+export async function downloadImages(postId: string, publicIds: string[]) {
+  const res = await api.post(
+    "/api/igpost/download",
+    { postId, publicIds },
+    { responseType: "blob" }
+  );
+  return res.data;
+}
+
 function msUntilNext8AM(): number {
   const now = new Date();
   const next8AM = new Date();
