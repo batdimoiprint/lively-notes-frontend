@@ -94,17 +94,11 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
     [currentPost?.cloudinaryPics]
   );
 
-  // Dialog images: capped at 1920px wide, good quality — plain URLs so the browser
-  // fetches exactly once and we can track load state with a native img onLoad
+  // Dialog images: maximum quality, original resolution, original format
   const dialogImageUrls: string[] = useMemo(
     () =>
       currentPost?.cloudinaryPics.map((pic) =>
-        cld
-          .image(pic.public_id)
-          .format("auto")
-          .quality("auto:good")
-          .resize(auto().gravity(autoGravity()).width(1920))
-          .toURL()
+        cld.image(pic.public_id).toURL()
       ) ?? [],
     [currentPost?.cloudinaryPics]
   );
@@ -335,7 +329,7 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
             <img
               src={prevLoadedUrlRef.current}
               alt="previous"
-              className="absolute inset-0 z-20 h-full w-full object-contain opacity-40"
+              className="absolute inset-0 z-20 max-h-[80vh] w-full object-contain opacity-40"
               aria-hidden
             />
           )}
@@ -346,7 +340,7 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
               key={targetUrl}
               src={targetUrl}
               alt={`${currentPost?.ownerUsername ?? ""} photo ${imageIndex + 1}`}
-              className="relative z-30 h-full w-full object-contain transition-opacity duration-500"
+              className="relative z-30 max-h-[80vh] w-full object-contain transition-opacity duration-500"
               style={{ opacity: loadedDialogUrl === targetUrl ? 1 : 0 }}
               onLoad={() => setLoadedDialogUrl(targetUrl)}
               onError={() => setLoadedDialogUrl(targetUrl)}
