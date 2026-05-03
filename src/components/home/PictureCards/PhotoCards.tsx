@@ -10,8 +10,8 @@ import { Cloudinary } from "@cloudinary/url-gen";
 import { auto } from "@cloudinary/url-gen/actions/resize";
 import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
 import { AdvancedImage, responsive } from "@cloudinary/react";
-import { Heart, Dices, Trash2, Download, Loader2 } from "lucide-react";
-import { useState, useMemo, memo, useCallback, useEffect } from "react";
+import { Heart, Dices, Trash2, Download } from "lucide-react";
+import { useState, useMemo, memo, useCallback, useEffect, useRef } from "react";
 
 const cld = new Cloudinary({ cloud: { cloudName: import.meta.env.VITE_CLOUDINARY } });
 
@@ -108,12 +108,27 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
     [currentPost?.cloudinaryPics]
   );
 
-  const [isDialogImgLoading, setIsDialogImgLoading] = useState(false);
+  // Track which URL is currently fully loaded and visible in the dialog
+  const [loadedDialogUrl, setLoadedDialogUrl] = useState<string | null>(null);
+  // Keep the previous loaded URL so we can show it while the next one loads (crossfade)
+  const prevLoadedUrlRef = useRef<string | null>(null);
 
-  // Reset loader whenever the dialog opens or the index changes
+  const targetUrl = showImageDialog && dialogImageUrls.length > 0
+    ? dialogImageUrls[imageIndex]
+    : null;
+  const isDialogImgLoading = targetUrl !== null && loadedDialogUrl !== targetUrl;
+
   useEffect(() => {
-    if (showImageDialog) setIsDialogImgLoading(true);
-  }, [showImageDialog, imageIndex]);
+    if (loadedDialogUrl) prevLoadedUrlRef.current = loadedDialogUrl;
+  }, [loadedDialogUrl]);
+
+  // Reset when dialog closes
+  useEffect(() => {
+    if (!showImageDialog) {
+      setLoadedDialogUrl(null);
+      prevLoadedUrlRef.current = null;
+    }
+  }, [showImageDialog]);
 
   // Randomize imageIndex on mount or when images change, and reshuffle every 10 minutes
   useEffect(() => {
@@ -309,22 +324,40 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
             </svg>
           </button>
 
-          {/* Loader overlay */}
+          {/* Shimmer skeleton — always behind, visible while loading */}
           {isDialogImgLoading && (
-            <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/60">
-              <Loader2 size={40} className="animate-spin text-white/70" />
+            <div className="absolute inset-0 z-10 overflow-hidden">
+              <div
+                className="h-full w-full"
+                style={{
+                  background: "linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.10) 50%, rgba(255,255,255,0.03) 100%)",
+                  backgroundSize: "200% 100%",
+                  animation: "shimmer 1.5s infinite linear",
+                }}
+              />
             </div>
           )}
 
-          {/* Image — plain img so we get native onLoad/onError */}
-          {dialogImageUrls.length > 0 && (
+          {/* Previous image — stays visible while next one loads */}
+          {isDialogImgLoading && prevLoadedUrlRef.current && (
             <img
-              key={dialogImageUrls[imageIndex]}
-              src={dialogImageUrls[imageIndex]}
+              src={prevLoadedUrlRef.current}
+              alt="previous"
+              className="absolute inset-0 z-20 max-h-[80vh] w-full object-contain opacity-40"
+              aria-hidden
+            />
+          )}
+
+          {/* Current image — fades in once loaded */}
+          {targetUrl && (
+            <img
+              key={targetUrl}
+              src={targetUrl}
               alt={`${currentPost?.ownerUsername ?? ""} photo ${imageIndex + 1}`}
-              className="max-h-[80vh] w-full object-contain"
-              onLoad={() => setIsDialogImgLoading(false)}
-              onError={() => setIsDialogImgLoading(false)}
+              className="relative z-30 max-h-[80vh] w-full object-contain transition-opacity duration-500"
+              style={{ opacity: loadedDialogUrl === targetUrl ? 1 : 0 }}
+              onLoad={() => setLoadedDialogUrl(targetUrl)}
+              onError={() => setLoadedDialogUrl(targetUrl)}
             />
           )}
         </div>
