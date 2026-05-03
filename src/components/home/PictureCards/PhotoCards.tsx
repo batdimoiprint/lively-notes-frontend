@@ -10,7 +10,7 @@ import { Cloudinary } from "@cloudinary/url-gen";
 import { auto } from "@cloudinary/url-gen/actions/resize";
 import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
 import { AdvancedImage, responsive } from "@cloudinary/react";
-import { Heart, Dices, Trash2, Download } from "lucide-react";
+import { Heart, Dices, Trash2, Download, Loader2 } from "lucide-react";
 import { useState, useMemo, memo, useCallback, useEffect } from "react";
 
 const cld = new Cloudinary({ cloud: { cloudName: import.meta.env.VITE_CLOUDINARY } });
@@ -93,15 +93,27 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
     [currentPost?.cloudinaryPics]
   );
 
-  // Full-resolution images for the dialog (no resize = original quality)
-  const fullResImages: ImageItem[] = useMemo(
+  // Dialog images: capped at 1920px wide, good quality — plain URLs so the browser
+  // fetches exactly once and we can track load state with a native img onLoad
+  const dialogImageUrls: string[] = useMemo(
     () =>
-      currentPost?.cloudinaryPics.map((pic) => ({
-        public_id: pic.public_id,
-        cldImg: cld.image(pic.public_id).format("auto").quality("auto"),
-      })) ?? [],
+      currentPost?.cloudinaryPics.map((pic) =>
+        cld
+          .image(pic.public_id)
+          .format("auto")
+          .quality("auto:good")
+          .resize(auto().gravity(autoGravity()).width(1920))
+          .toURL()
+      ) ?? [],
     [currentPost?.cloudinaryPics]
   );
+
+  const [isDialogImgLoading, setIsDialogImgLoading] = useState(false);
+
+  // Reset loader whenever the dialog opens or the index changes
+  useEffect(() => {
+    if (showImageDialog) setIsDialogImgLoading(true);
+  }, [showImageDialog, imageIndex]);
 
   // Randomize imageIndex on mount or when images change, and reshuffle every 10 minutes
   useEffect(() => {
@@ -297,12 +309,22 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
             </svg>
           </button>
 
-          {/* Image */}
-          {fullResImages.length > 0 && (
-            <AdvancedImage
-              cldImg={fullResImages[imageIndex].cldImg}
+          {/* Loader overlay */}
+          {isDialogImgLoading && (
+            <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/60">
+              <Loader2 size={40} className="animate-spin text-white/70" />
+            </div>
+          )}
+
+          {/* Image — plain img so we get native onLoad/onError */}
+          {dialogImageUrls.length > 0 && (
+            <img
+              key={dialogImageUrls[imageIndex]}
+              src={dialogImageUrls[imageIndex]}
+              alt={`${currentPost?.ownerUsername ?? ""} photo ${imageIndex + 1}`}
               className="max-h-[80vh] w-full object-contain"
-              plugins={[responsive()]}
+              onLoad={() => setIsDialogImgLoading(false)}
+              onError={() => setIsDialogImgLoading(false)}
             />
           )}
         </div>
