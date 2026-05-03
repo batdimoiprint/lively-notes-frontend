@@ -6,6 +6,7 @@ import {
   Dialog,
   DialogContent,
 } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Cloudinary } from "@cloudinary/url-gen";
 import { auto } from "@cloudinary/url-gen/actions/resize";
 import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
@@ -300,8 +301,8 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
     {/* Full-screen Image Dialog */}
     <Dialog open={showImageDialog} onOpenChange={setShowImageDialog}>
       <DialogContent className="flex max-h-[95vh] w-[95vw] max-w-5xl flex-col gap-0 border-0 bg-black p-0 shadow-2xl">
-        {/* Image area */}
-        <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden">
+        {/* Image area — min-h ensures space is held while loading */}
+        <div className="relative flex min-h-[60vh] flex-1 items-center justify-center overflow-hidden">
           {/* Navigation: prev */}
           <button
             onClick={previousImage}
@@ -324,18 +325,9 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
             </svg>
           </button>
 
-          {/* Shimmer skeleton — always behind, visible while loading */}
+          {/* Skeleton loader — visible while image loads, fills the container */}
           {isDialogImgLoading && (
-            <div className="absolute inset-0 z-10 overflow-hidden">
-              <div
-                className="h-full w-full"
-                style={{
-                  background: "linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.10) 50%, rgba(255,255,255,0.03) 100%)",
-                  backgroundSize: "200% 100%",
-                  animation: "shimmer 1.5s infinite linear",
-                }}
-              />
-            </div>
+            <Skeleton className="absolute inset-0 z-10 h-full w-full rounded-none" />
           )}
 
           {/* Previous image — stays visible while next one loads */}
@@ -343,7 +335,7 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
             <img
               src={prevLoadedUrlRef.current}
               alt="previous"
-              className="absolute inset-0 z-20 max-h-[80vh] w-full object-contain opacity-40"
+              className="absolute inset-0 z-20 h-full w-full object-contain opacity-40"
               aria-hidden
             />
           )}
@@ -354,7 +346,7 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
               key={targetUrl}
               src={targetUrl}
               alt={`${currentPost?.ownerUsername ?? ""} photo ${imageIndex + 1}`}
-              className="relative z-30 max-h-[80vh] w-full object-contain transition-opacity duration-500"
+              className="relative z-30 h-full w-full object-contain transition-opacity duration-500"
               style={{ opacity: loadedDialogUrl === targetUrl ? 1 : 0 }}
               onLoad={() => setLoadedDialogUrl(targetUrl)}
               onError={() => setLoadedDialogUrl(targetUrl)}
