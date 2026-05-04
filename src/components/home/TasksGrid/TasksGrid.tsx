@@ -12,6 +12,7 @@ import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
 import TaskCard from "./TaskCard";
 import TaskSheet from "./TaskSheetForm";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 import {
   DndContext,
@@ -41,6 +42,7 @@ function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
   const [selectedTask, setSelectedTask] = useState<Tasks | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [orderedTasks, setOrderedTasks] = useState<Tasks[]>([]);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   // Filter tasks by selected section - treat undefined/null sectionId as "default"
   const sectionTasks = useMemo(() => {
@@ -80,6 +82,9 @@ function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+
+  // Disable sensors on mobile
+  const activeSensors = isDesktop ? sensors : [];
 
   const mutation = useMutation({
     mutationFn: deleteNotes,
@@ -172,7 +177,7 @@ function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
     <>
       <Dialog open={Boolean(selectedTask)} onOpenChange={(open) => !open && setSelectedTask(null)}>
         <DndContext
-          sensors={sensors}
+          sensors={activeSensors}
           collisionDetection={customCollisionDetection}
           onDragEnd={handleDragEnd}
         >

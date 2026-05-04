@@ -49,13 +49,16 @@ export default function TaskCard({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: task._id });
+  } = useSortable({ 
+    id: task._id,
+    disabled: !isDesktop, // Disable DND on mobile
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-    cursor: isDragging ? "grabbing" : "grab",
+    cursor: isDesktop ? (isDragging ? "grabbing" : "grab") : "pointer",
   };
 
   const resizeTextarea = (textarea: HTMLTextAreaElement | null) => {
@@ -115,10 +118,10 @@ export default function TaskCard({
           ...style,
           ...(isExpanded && settings?.textColor ? { borderColor: settings.textColor } : {}),
         }}
-        {...attributes}
-        {...listeners}
+        {...(isDesktop ? attributes : {})}
+        {...(isDesktop ? listeners : {})}
         key={task._id}
-        className={`${isExpanded ? "h-auto max-h-none border-2" : "max-h-48"} relative overflow-hidden p-2 transition-all touch-none`}
+        className={`${isExpanded ? "h-auto max-h-none border-2" : "max-h-48"} relative overflow-hidden p-2 transition-all ${isDesktop ? "touch-none" : ""}`}
         onClick={handleCardClick}
       >
         {!isExpanded || isDesktop ? (
