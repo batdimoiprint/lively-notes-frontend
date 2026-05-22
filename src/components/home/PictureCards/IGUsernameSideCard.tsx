@@ -40,19 +40,19 @@ export default function IGUsernameSideCard() {
   };
 
   return (
-    <Card className="relative flex w-full shrink-0 items-center justify-center overflow-visible p-2 sm:h-full sm:w-16">
+    <Card className={`relative flex h-[360px] w-full shrink-0 items-center justify-center overflow-hidden p-3 transition-all duration-300 sm:h-full ${open ? "sm:w-80" : "sm:w-16"}`}>
       {!open ? (
         <Button
           type="button"
           size="icon"
-          className="h-10 w-10"
+          className="h-10 w-10 shrink-0"
           onClick={() => setOpen(true)}
           aria-label="Add IG Username"
         >
           <Plus />
         </Button>
       ) : (
-        <div className="flex w-full flex-col gap-2 sm:absolute sm:top-1/2 sm:left-1/2 sm:z-20 sm:w-52 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:-rotate-90 sm:flex-row sm:gap-2">
+        <div className="flex w-full flex-col gap-3 p-2 animate-in fade-in zoom-in-95 duration-200">
           <Input
             value={igUsername}
             onChange={(event) => setIgUsername(event.target.value)}
@@ -64,27 +64,27 @@ export default function IGUsernameSideCard() {
             }}
             placeholder="ig-username"
             disabled={mutation.isPending}
+            className="w-full h-10 text-center"
           />
-
-          <Button
-            type="button"
-            size="sm"
-            onClick={submit}
-            disabled={mutation.isPending}
-            className="h-8"
-          >
-            {mutation.isPending ? <Spinner /> : "Add"}
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => setOpen(false)}
-            disabled={mutation.isPending}
-            className="h-8"
-          >
-            Close
-          </Button>
+          <div className="flex gap-2 w-full">
+            <Button
+              type="button"
+              onClick={submit}
+              disabled={mutation.isPending}
+              className="flex-1 h-9"
+            >
+              {mutation.isPending ? <Spinner className="h-4 w-4" /> : "Add"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={mutation.isPending}
+              className="flex-1 h-9"
+            >
+              Cancel
+            </Button>
+          </div>
         </div>
       )}
     </Card>

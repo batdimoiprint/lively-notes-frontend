@@ -37,6 +37,23 @@ function InputOTPSlot({
   const inputOTPContext = React.useContext(OTPInputContext);
   const { char, hasFakeCaret, isActive } = inputOTPContext?.slots[index] ?? {};
 
+  const [maskedChar, setMaskedChar] = React.useState<string>("");
+
+  React.useEffect(() => {
+    if (!char) {
+      setMaskedChar("");
+      return;
+    }
+
+    setMaskedChar(char);
+
+    const timer = setTimeout(() => {
+      setMaskedChar("*");
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [char]);
+
   return (
     <div
       data-slot="input-otp-slot"
@@ -47,7 +64,7 @@ function InputOTPSlot({
       )}
       {...props}
     >
-      {char}
+      {maskedChar}
       {hasFakeCaret && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <div className="animate-caret-blink bg-foreground h-4 w-px duration-1000" />

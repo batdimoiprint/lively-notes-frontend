@@ -177,8 +177,8 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
 
   return (
     <>
-      <Card className="w-[85vw] max-w-[18rem] shrink-0 snap-start gap-0 p-2 text-center sm:w-[18rem] sm:flex-none">
-      <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden">
+      <Card className="flex w-[85vw] max-w-[18rem] shrink-0 snap-start flex-col justify-between gap-0 p-2 text-center sm:w-[18rem] sm:flex-none h-[360px] sm:h-full">
+      <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden shrink-0">
         {/* 3-zone overlay: prev | open dialog | next */}
         <div className="absolute inset-0 z-10 flex">
           <button
@@ -213,30 +213,32 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
           ))}
         </div>
       </div>
-      {/* Caption (truncated if too long) */}
-      {currentPost?.caption ? (
-        <div className="mt-2 px-1">
+      {/* Caption (truncated if too long or aligned empty space if missing) */}
+      <div className="mt-2 px-1 flex-1 flex items-center justify-center min-h-[2.5rem]">
+        {currentPost?.caption ? (
           <p className="line-clamp-2 overflow-hidden text-xs text-ellipsis text-gray-700 dark:text-gray-300">
             {currentPost.caption}
           </p>
+        ) : (
+          <div className="h-full w-full" />
+        )}
+      </div>
+      <div className="flex flex-row justify-between items-center mt-2 pt-1.5 border-t border-border/50 shrink-0">
+        <div className="flex flex-row gap-1 items-center">
+          <Heart size={16} className="text-rose-500 fill-rose-500" />
+          <p className="font-bold text-xs">{currentPost?.likesCount?.toLocaleString() ?? 0}</p>
         </div>
-      ) : null}
-      <div className="flex flex-row justify-between">
-        <div className="flex flex-row gap-1">
-          <Heart size={24} />
-          <p className="font-bold">{currentPost?.likesCount?.toLocaleString() ?? 0}</p>
-        </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 min-w-0">
           {showDeleteConfirm ? (
             <>
               <button
                 onClick={() => deleteMutation.mutate()}
                 disabled={deleteMutation.isPending}
-                className="hover:bg-accent rounded p-1"
+                className="hover:bg-accent rounded p-1 shrink-0"
                 aria-label="Confirm delete"
               >
                 {/* check icon */}
-                <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
+                <svg width="14" height="14" fill="none" viewBox="0 0 16 16">
                   <path stroke="currentColor" strokeWidth="2" d="M4 8.5l3 3 5-5" />
                 </svg>
               </button>
@@ -245,11 +247,11 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
                   setShowDeleteConfirm(false);
                 }}
                 disabled={deleteMutation.isPending}
-                className="hover:bg-accent rounded p-1"
+                className="hover:bg-accent rounded p-1 shrink-0"
                 aria-label="Cancel delete"
               >
                 {/* cross icon */}
-                <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
+                <svg width="14" height="14" fill="none" viewBox="0 0 16 16">
                   <path stroke="currentColor" strokeWidth="2" d="M4 4l8 8M12 4l-8 8" />
                 </svg>
               </button>
@@ -260,36 +262,38 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
                 setShowDeleteConfirm(true);
               }}
               disabled={deleteMutation.isPending}
-              className="hover:bg-accent rounded p-1"
+              className="hover:bg-accent rounded p-1 shrink-0"
               aria-label="Delete"
             >
-              <Trash2 size={16} />
+              <Trash2 size={14} />
             </button>
           )}
           <button
             onClick={() => randomizeMutation.mutate()}
             disabled={randomizeMutation.isPending}
-            className="hover:bg-accent rounded p-1"
+            className="hover:bg-accent rounded p-1 shrink-0"
+            aria-label="Randomize"
           >
-            <Dices size={16} />
+            <Dices size={14} />
           </button>
           <button
             onClick={handleDownload}
-            className="hover:bg-accent rounded p-1"
+            className="hover:bg-accent rounded p-1 shrink-0"
             aria-label="Download image"
           >
-            <Download size={16} />
+            <Download size={14} />
           </button>
           <a
             href={currentPost?.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="cursor-pointer font-medium hover:font-bold hover:underline"
+            className="cursor-pointer font-medium hover:font-bold hover:underline text-xs shrink-0 max-w-[70px] truncate"
+            title={currentPost?.ownerUsername}
           >
             {currentPost?.ownerUsername}
           </a>
         </div>
-        </div>
+      </div>
     </Card>
 
     {/* Full-screen Image Dialog */}
