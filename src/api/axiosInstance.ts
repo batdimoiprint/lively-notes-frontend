@@ -1,5 +1,6 @@
 import axios from "axios";
 import { queryClient } from "@/api/queryClient";
+import { logger } from "@/lib/logger";
 
 const isMobile = () => {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -21,6 +22,15 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     const errorMessage = error?.response?.data?.message;
+
+    // Log the API error centrally
+    logger.error("HTTP Request Failed", {
+      url: originalRequest?.url,
+      method: originalRequest?.method,
+      status: error.response?.status,
+      message: errorMessage || error.message,
+      error,
+    });
 
     if (
       (error.response?.status === 401 || error.response?.status === 403) &&

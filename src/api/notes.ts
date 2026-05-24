@@ -3,77 +3,46 @@ import { useQuery } from "@tanstack/react-query";
 import api from "./axiosInstance";
 
 export async function getNotes() {
-  try {
-    const res = await api.get<Tasks[]>("/api/notes/");
-    return res.data;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  const res = await api.get<Tasks[]>("/api/notes/");
+  return res.data;
 }
 
 export async function deleteNotes(id: string) {
-  try {
-    const res = await api.delete("/api/notes/", { data: { _id: id } });
-
-    return res.status;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  const res = await api.delete("/api/notes/", { data: { _id: id } });
+  return res.status;
 }
 
 export async function createNotes(inputs: Inputs) {
-  try {
-    const res = await api.post("/api/notes/", {
-      title: inputs.title,
-      body: inputs.body,
-      sectionId: inputs.sectionId,
-    });
-    if (res.status == 201) {
-      return res.data;
-    } else {
-      throw new Error("No token");
-    }
-  } catch (error) {
-    console.log(error);
-    throw error;
+  const res = await api.post("/api/notes/", {
+    title: inputs.title,
+    body: inputs.body,
+    sectionId: inputs.sectionId,
+  });
+  if (res.status == 201) {
+    return res.data;
+  } else {
+    throw new Error("No token");
   }
 }
 
 export async function editNotes(inputs: Tasks) {
-  try {
-    const res = await api.patch("/api/notes/", {
-      _id: inputs._id,
-      title: inputs.title,
-      body: inputs.body,
-    });
+  const res = await api.patch("/api/notes/", {
+    _id: inputs._id,
+    title: inputs.title,
+    body: inputs.body,
+  });
 
-    return res.status;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  return res.status;
 }
 
 export async function reorderNotes(orderedIds: string[]) {
-  try {
-    const res = await api.patch("/api/notes/reorder", { orderedIds });
-    return res.data;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  const res = await api.patch("/api/notes/reorder", { orderedIds });
+  return res.data;
 }
 
 export async function moveNoteToSection(noteId: string, sectionId: string) {
-  try {
-    const res = await api.patch("/api/notes/move-section", { noteId, sectionId });
-    return res.data;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  const res = await api.patch("/api/notes/move-section", { noteId, sectionId });
+  return res.data;
 }
 
 export function useNotes() {

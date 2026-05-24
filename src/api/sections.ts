@@ -10,63 +10,33 @@ export interface Section {
 }
 
 export async function getSections() {
-  try {
-    const res = await api.get<Section[]>("/api/sections/");
-    return res.data;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  const res = await api.get<Section[]>("/api/sections/");
+  return res.data;
 }
 
 export async function createSection(title: string, id?: string, order?: number) {
-  try {
-    const res = await api.post<Section>("/api/sections/", { title, _id: id, order });
-    return res.data;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  const res = await api.post<Section>("/api/sections/", { title, _id: id, order });
+  return res.data;
 }
 
 export async function deleteSection(id: string) {
-  try {
-    const res = await api.delete("/api/sections/", { data: { _id: id } });
-    return res.status;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  const res = await api.delete("/api/sections/", { data: { _id: id } });
+  return res.status;
 }
 
 export async function updateSection(section: Partial<Section> & { _id: string }) {
-  try {
-    const res = await api.put("/api/sections/", section);
-    return res.status;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  const res = await api.put("/api/sections/", section);
+  return res.status;
 }
 
 export async function reorderSections(orderedIds: string[]) {
-  try {
-    const res = await api.patch("/api/sections/reorder", { orderedIds });
-    return res.data;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  const res = await api.patch("/api/sections/reorder", { orderedIds });
+  return res.data;
 }
 
 export async function initializeSections() {
-  try {
-    const res = await api.post("/api/sections/initialize");
-    return res.data;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  const res = await api.post("/api/sections/initialize");
+  return res.data;
 }
 
 export function useSections() {
