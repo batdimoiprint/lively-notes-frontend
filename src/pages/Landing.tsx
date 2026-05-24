@@ -9,8 +9,8 @@ import LandingGreeting from "@/components/landing/LandingGreeting";
 import { useAuth } from "@/hooks/useAuth";
 
 function Landing() {
-  const [value, setValue] = useState<string>("");
   const [valid, setValid] = useState<boolean>(false);
+  const [otpKey, setOtpKey] = useState<number>(0);
   const navigate = useNavigate();
   const { data: user, isLoading } = useAuth();
   const mutation = useMutation({
@@ -21,17 +21,12 @@ function Landing() {
     onError: () => {
       setValid(true);
       setTimeout(() => {
-        setValue(""); // ← Reset OTP on error
+        setOtpKey((k) => k + 1); // ← Remount OTP to clear input
         setValid(false);
       }, 2000);
     },
   });
 
-  useEffect(() => {
-    if (value.length === 6) {
-      mutation.mutate(value);
-    }
-  }, [value]);
   useEffect(() => {
     WakeBackend();
   }, []);
@@ -47,11 +42,11 @@ function Landing() {
       <Card className="items-center gap-2 p-4">
         <LandingGreeting />
         <InputOTP
+          key={otpKey}
           maxLength={6}
-          value={value}
           pattern={REGEXP_ONLY_DIGITS}
-          onChange={(value) => {
-            setValue(value);
+          onComplete={(code) => {
+            mutation.mutate(code);
           }}
           disabled={mutation.isPending || valid}
         >
