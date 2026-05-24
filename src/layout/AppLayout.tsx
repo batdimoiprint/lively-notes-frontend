@@ -8,13 +8,12 @@ import { Fireworks } from "@fireworks-js/react";
 import { DEFAULT_MATRIX_CONFIG, type MatrixConfig } from "@/types/matrixConfig";
 import Snowfall from "react-snowfall";
 import { MatrixContext } from "@/context/MatrixContext";
-import picture from "@/assets/oj-serrano-iacKpANQHNA-unsplash.jpg";
 import { getBackgroundImage } from "@/api/backgroundImage";
 
 export default function AppLayout() {
   // Matrix Context
   const [matrixConfig, setMatrixConfig] = useState<MatrixConfig>(DEFAULT_MATRIX_CONFIG);
-  const [backgroundImageUrl, setBackgroundImageUrl] = useState<string>(picture);
+  const [backgroundImageUrl, setBackgroundImageUrl] = useState<string>();
 
   useEffect(() => {
     getSettings().then((settings) => {
@@ -39,6 +38,10 @@ export default function AppLayout() {
 
     loadBackgroundImage();
 
+    const refreshInterval = window.setInterval(() => {
+      loadBackgroundImage();
+    }, 10 * 60 * 1000);
+
     const handleBackgroundImageUpdated = () => {
       loadBackgroundImage();
     };
@@ -46,6 +49,7 @@ export default function AppLayout() {
     window.addEventListener("background-image-updated", handleBackgroundImageUpdated);
 
     return () => {
+      window.clearInterval(refreshInterval);
       window.removeEventListener("background-image-updated", handleBackgroundImageUpdated);
     };
   }, []);
