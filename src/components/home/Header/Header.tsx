@@ -21,25 +21,23 @@ export default function Header({ selectedSection }: HeaderProps) {
   const [isHeaderToggled, setHeaderToggled] = useState<boolean>(false);
 
   return (
-    <div className="flex h-auto w-full flex-row gap-4">
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Lively Desktop Notes</CardTitle>
-          <CardDescription>
-            <JokeTitle />
-          </CardDescription>
-          <CardAction className="flex flex-wrap items-center gap-2">
-            <Switch
-              onCheckedChange={(checked) => {
-                setHeaderToggled(checked);
-              }}
-            />
-          </CardAction>
-        </CardHeader>
-        <CardContent>
-          {isHeaderToggled ? <FormMatrixConfig /> : <FormNotes selectedSection={selectedSection} />}
-        </CardContent>
-      </Card>
-    </div>
+    <Card className="flex sm:flex-1 flex-col">
+      <CardHeader>
+        <CardTitle>Lively Desktop Notes</CardTitle>
+        <CardDescription>
+          <JokeTitle />
+        </CardDescription>
+        <CardAction className="flex flex-wrap items-center gap-2">
+          <Switch
+            onCheckedChange={(checked) => {
+              setHeaderToggled(checked);
+            }}
+          />
+        </CardAction>
+      </CardHeader>
+      <CardContent className="bg-debug flex flex-1 flex-col">
+        {isHeaderToggled ? <FormMatrixConfig /> : <FormNotes selectedSection={selectedSection} />}
+      </CardContent>
+    </Card>
   );
 }

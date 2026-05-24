@@ -55,7 +55,7 @@ export default function FormNotes({ selectedSection }: FormNotesProps) {
   };
 
   return (
-    <form className="flex h-full w-full flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+    <form className="flex h-full flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
       <Input
         {...register("title", {
           required: "Title is required",
@@ -63,15 +63,13 @@ export default function FormNotes({ selectedSection }: FormNotesProps) {
         placeholder={errors.title ? errors.title.message : "Title"}
       />
 
-      {/* {errors.title && <Label >{errors.title.message}</Label>} */}
       <Textarea
-        className="h-24 overflow-hidden"
+        className="overflow-hidden sm:flex-1"
         {...register("body", {
           required: "Body is required",
         })}
         placeholder={errors.body ? errors.body.message : "Body"}
       />
-      {/* {errors.body && <Label >{errors.body.message}</Label>} */}
 
       <Button disabled={mutation.isPending} type="submit">
         {result}
