@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { MoveLeft, MoveRight, NotepadText, Plus, Shuffle } from "lucide-react";
+import { MoveLeft, MoveRight, Plus, Shuffle } from "lucide-react";
 import { toast } from "sonner";
 import { createIgUsername } from "@/api/igUsername";
 import { runActorForUsername } from "@/api/post";
