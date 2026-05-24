@@ -40,7 +40,9 @@ export default function IGUsernameSideCard() {
   };
 
   return (
-    <Card className={`relative flex h-[360px] w-full shrink-0 items-center justify-center overflow-hidden p-3 transition-all duration-300 sm:h-full ${open ? "sm:w-80" : "sm:w-16"}`}>
+    <Card
+      className={`relative flex h-[360px] w-full shrink-0 items-center justify-center overflow-hidden p-3 transition-all duration-300 sm:h-full ${open ? "sm:w-80" : "sm:w-16"}`}
+    >
       {!open ? (
         <Button
           type="button"
@@ -52,7 +54,7 @@ export default function IGUsernameSideCard() {
           <Plus />
         </Button>
       ) : (
-        <div className="flex w-full flex-col gap-3 p-2 animate-in fade-in zoom-in-95 duration-200">
+        <div className="animate-in fade-in zoom-in-95 flex w-full flex-col gap-3 p-2 duration-200">
           <Input
             value={igUsername}
             onChange={(event) => setIgUsername(event.target.value)}
@@ -64,14 +66,14 @@ export default function IGUsernameSideCard() {
             }}
             placeholder="ig-username"
             disabled={mutation.isPending}
-            className="w-full h-10 text-center"
+            className="h-10 w-full text-center"
           />
-          <div className="flex gap-2 w-full">
+          <div className="flex w-full gap-2">
             <Button
               type="button"
               onClick={submit}
               disabled={mutation.isPending}
-              className="flex-1 h-9"
+              className="h-9 flex-1"
             >
               {mutation.isPending ? <Spinner className="h-4 w-4" /> : "Add"}
             </Button>
@@ -80,7 +82,7 @@ export default function IGUsernameSideCard() {
               variant="outline"
               onClick={() => setOpen(false)}
               disabled={mutation.isPending}
-              className="flex-1 h-9"
+              className="h-9 flex-1"
             >
               Cancel
             </Button>

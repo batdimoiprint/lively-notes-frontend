@@ -78,7 +78,11 @@ export default function TodoList() {
   };
 
   const saveEdit = () => {
-    if (editingId && editText.trim() && editText.trim() !== todos.find(t => t._id === editingId)?.text) {
+    if (
+      editingId &&
+      editText.trim() &&
+      editText.trim() !== todos.find((t) => t._id === editingId)?.text
+    ) {
       updateMutation.mutate({ _id: editingId, text: editText.trim() });
       toast.info("Todo updated");
     }
@@ -109,20 +113,30 @@ export default function TodoList() {
             onChange={(e) => setNewTodoText(e.target.value)}
             disabled={createMutation.isPending}
           />
-          <Button type="submit" size="icon" disabled={createMutation.isPending || !newTodoText.trim()}>
-            {createMutation.isPending ? <Spinner className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+          <Button
+            type="submit"
+            size="icon"
+            disabled={createMutation.isPending || !newTodoText.trim()}
+          >
+            {createMutation.isPending ? (
+              <Spinner className="h-4 w-4" />
+            ) : (
+              <Plus className="h-4 w-4" />
+            )}
           </Button>
         </form>
 
         <ScrollArea className="min-h-0 flex-1">
           <div className="flex flex-col gap-2 pr-4">
             {todos.length === 0 ? (
-              <p className="text-muted-foreground text-center text-sm">No todos yet. Add one above!</p>
+              <p className="text-muted-foreground text-center text-sm">
+                No todos yet. Add one above!
+              </p>
             ) : (
               todos.map((todo) => (
                 <div
                   key={todo._id}
-                  className="flex items-center gap-3 rounded-md border p-3 transition-colors hover:bg-accent/50"
+                  className="hover:bg-accent/50 flex items-center gap-3 rounded-md border p-3 transition-colors"
                 >
                   <Checkbox
                     id={todo._id}
@@ -160,7 +174,7 @@ export default function TodoList() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-destructive hover:text-destructive"
+                    className="text-destructive hover:text-destructive h-8 w-8"
                     onClick={() => handleDelete(todo._id)}
                     disabled={deleteMutation.isPending || editingId === todo._id}
                   >

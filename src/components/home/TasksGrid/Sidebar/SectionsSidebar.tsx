@@ -1,6 +1,13 @@
 import { useState, useRef, useEffect, useMemo, type RefObject } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useSections, createSection, deleteSection, updateSection, reorderSections, type Section } from "@/api/sections";
+import {
+  useSections,
+  createSection,
+  deleteSection,
+  updateSection,
+  reorderSections,
+  type Section,
+} from "@/api/sections";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +15,18 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
-import { Plus, Trash, FolderIcon, MoreVertical, Edit2, ChevronUp, ChevronDown, Inbox, Check, X } from "lucide-react";
+import {
+  Plus,
+  Trash,
+  FolderIcon,
+  MoreVertical,
+  Edit2,
+  ChevronUp,
+  ChevronDown,
+  Inbox,
+  Check,
+  X,
+} from "lucide-react";
 import { useDroppable } from "@dnd-kit/core";
 import {
   DropdownMenu,
@@ -23,8 +41,6 @@ interface SectionsSidebarProps {
   onSectionSelect: (sectionId: string) => void;
   sectionCounts: Record<string, number>;
 }
-
-
 
 interface DroppableSectionProps {
   section: Section;
@@ -65,29 +81,25 @@ function DroppableSection({
     id: `section-${section._id}`,
   });
 
-
-
   const activeClass = isSelected
     ? "bg-accent/80 text-accent-foreground font-semibold shadow-xs"
     : "text-muted-foreground hover:bg-accent/40 hover:text-foreground";
 
-  const dropClass = isOver
-    ? "ring-2 ring-primary ring-offset-1 scale-[1.02] bg-primary/5"
-    : "";
+  const dropClass = isOver ? "ring-2 ring-primary ring-offset-1 scale-[1.02] bg-primary/5" : "";
 
   return (
     <div
       ref={setNodeRef}
-      className={`group relative flex items-center justify-between rounded-lg p-2 transition-all duration-200 ease-out select-none active:scale-[0.99] gap-2 ${activeClass} ${dropClass}`}
+      className={`group relative flex items-center justify-between gap-2 rounded-lg p-2 transition-all duration-200 ease-out select-none active:scale-[0.99] ${activeClass} ${dropClass}`}
     >
       {/* Selected Indicator Pill */}
       {isSelected && (
-        <span className="absolute left-1 top-2.5 bottom-2.5 w-1 rounded-full bg-primary" />
+        <span className="bg-primary absolute top-2.5 bottom-2.5 left-1 w-1 rounded-full" />
       )}
 
       {isEditing ? (
         <div
-          className="flex items-center gap-1.5 w-full bg-background rounded-md border p-0.5 shadow-xs"
+          className="bg-background flex w-full items-center gap-1.5 rounded-md border p-0.5 shadow-xs"
           onClick={(e) => e.stopPropagation()}
           onPointerDown={(e) => e.stopPropagation()}
         >
@@ -102,12 +114,12 @@ function DroppableSection({
                 cancelEditing();
               }
             }}
-            className="h-7 flex-1 border-0 focus-visible:ring-0 px-2 text-sm shadow-none"
+            className="h-7 flex-1 border-0 px-2 text-sm shadow-none focus-visible:ring-0"
           />
           <Button
             size="icon"
             variant="ghost"
-            className="h-6 w-6 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+            className="h-6 w-6 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950/30"
             onClick={(e) => {
               e.stopPropagation();
               saveEdit();
@@ -118,7 +130,7 @@ function DroppableSection({
           <Button
             size="icon"
             variant="ghost"
-            className="h-6 w-6 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+            className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-6 w-6"
             onClick={(e) => {
               e.stopPropagation();
               cancelEditing();
@@ -130,7 +142,7 @@ function DroppableSection({
       ) : (
         <>
           <div
-            className="flex flex-1 items-center gap-2.5 min-w-0 cursor-pointer pl-1"
+            className="flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 pl-1"
             onClick={(e) => {
               e.stopPropagation();
               onSelect();
@@ -141,18 +153,16 @@ function DroppableSection({
             }}
           >
             {section._id === "default" ? (
-              <Inbox className="h-4 w-4 shrink-0 text-primary transition-colors" />
+              <Inbox className="text-primary h-4 w-4 shrink-0 transition-colors" />
             ) : (
-              <FolderIcon className="h-4 w-4 shrink-0 transition-colors text-primary" />
+              <FolderIcon className="text-primary h-4 w-4 shrink-0 transition-colors" />
             )}
-            <span className="truncate text-sm font-medium leading-none">
-              {section.title}
-            </span>
+            <span className="truncate text-sm leading-none font-medium">{section.title}</span>
           </div>
 
-          <div className="flex items-center gap-1.5 shrink-0 pl-1">
+          <div className="flex shrink-0 items-center gap-1.5 pl-1">
             {section.noteCount !== undefined && section.noteCount > 0 && (
-              <span className="text-xs px-2 py-0.5 rounded-full font-semibold bg-muted text-muted-foreground group-hover:bg-background/80 transition-colors">
+              <span className="bg-muted text-muted-foreground group-hover:bg-background/80 rounded-full px-2 py-0.5 text-xs font-semibold transition-colors">
                 {section.noteCount}
               </span>
             )}
@@ -163,7 +173,7 @@ function DroppableSection({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-6 w-6 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100 transition-opacity"
+                    className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <MoreVertical className="h-3.5 w-3.5" />
@@ -176,7 +186,7 @@ function DroppableSection({
                       onEdit();
                     }}
                   >
-                    <Edit2 className="h-4 w-4 mr-2" />
+                    <Edit2 className="mr-2 h-4 w-4" />
                     Rename
                   </DropdownMenuItem>
                   {canMoveUp && (
@@ -186,7 +196,7 @@ function DroppableSection({
                         onMoveUp();
                       }}
                     >
-                      <ChevronUp className="h-4 w-4 mr-2" />
+                      <ChevronUp className="mr-2 h-4 w-4" />
                       Move Up
                     </DropdownMenuItem>
                   )}
@@ -197,7 +207,7 @@ function DroppableSection({
                         onMoveDown();
                       }}
                     >
-                      <ChevronDown className="h-4 w-4 mr-2" />
+                      <ChevronDown className="mr-2 h-4 w-4" />
                       Move Down
                     </DropdownMenuItem>
                   )}
@@ -209,7 +219,7 @@ function DroppableSection({
                       onDelete();
                     }}
                   >
-                    <Trash className="h-4 w-4 mr-2" />
+                    <Trash className="mr-2 h-4 w-4" />
                     Delete
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -222,7 +232,11 @@ function DroppableSection({
   );
 }
 
-export default function SectionsSidebar({ selectedSection, onSectionSelect, sectionCounts }: SectionsSidebarProps) {
+export default function SectionsSidebar({
+  selectedSection,
+  onSectionSelect,
+  sectionCounts,
+}: SectionsSidebarProps) {
   const { data: sections = [], isLoading } = useSections();
   const queryClient = useQueryClient();
   const [isAdding, setIsAdding] = useState(false);
@@ -234,16 +248,22 @@ export default function SectionsSidebar({ selectedSection, onSectionSelect, sect
 
   // Ensure default "Notes" section always exists
   const allSections = useMemo(() => {
-    const hasDefault = sections.some(s => s._id === "default");
+    const hasDefault = sections.some((s) => s._id === "default");
     if (!hasDefault) {
       return [
-        { _id: "default", title: "Notes", order: 0, noteCount: sectionCounts.default ?? 0, createdAt: new Date().toISOString() },
-        ...sections
+        {
+          _id: "default",
+          title: "Notes",
+          order: 0,
+          noteCount: sectionCounts.default ?? 0,
+          createdAt: new Date().toISOString(),
+        },
+        ...sections,
       ];
     }
     return sections.map((section) => ({
       ...section,
-      noteCount: sectionCounts[section._id] ?? 0
+      noteCount: sectionCounts[section._id] ?? 0,
     }));
   }, [sections, sectionCounts]);
 
@@ -317,10 +337,8 @@ export default function SectionsSidebar({ selectedSection, onSectionSelect, sect
       const temp = newSections[index];
       newSections[index] = newSections[index - 1];
       newSections[index - 1] = temp;
-      
-      const customSectionIds = newSections
-        .filter((s) => s._id !== "default")
-        .map((s) => s._id);
+
+      const customSectionIds = newSections.filter((s) => s._id !== "default").map((s) => s._id);
       reorderMutation.mutate(customSectionIds);
     }
   };
@@ -333,9 +351,7 @@ export default function SectionsSidebar({ selectedSection, onSectionSelect, sect
       newSections[index] = newSections[index + 1];
       newSections[index + 1] = temp;
 
-      const customSectionIds = newSections
-        .filter((s) => s._id !== "default")
-        .map((s) => s._id);
+      const customSectionIds = newSections.filter((s) => s._id !== "default").map((s) => s._id);
       reorderMutation.mutate(customSectionIds);
     }
   };
@@ -374,14 +390,16 @@ export default function SectionsSidebar({ selectedSection, onSectionSelect, sect
   if (isLoading) return <Spinner />;
 
   return (
-    <Card className="flex h-full w-64 shrink-0 flex-col overflow-hidden border-primary/10 shadow-lg backdrop-blur-md bg-card/45">
+    <Card className="border-primary/10 bg-card/45 flex h-full w-64 shrink-0 flex-col overflow-hidden shadow-lg backdrop-blur-md">
       <CardHeader className="shrink-0 pb-2">
         <div className="flex items-center justify-between">
-          <Label className="font-bold text-xs uppercase tracking-wider text-muted-foreground">Sections</Label>
+          <Label className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
+            Sections
+          </Label>
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6 rounded-full hover:bg-accent"
+            className="hover:bg-accent h-6 w-6 rounded-full"
             onClick={() => setIsAdding(true)}
           >
             <Plus className="h-4 w-4" />
@@ -390,7 +408,7 @@ export default function SectionsSidebar({ selectedSection, onSectionSelect, sect
       </CardHeader>
       <CardContent className="flex min-h-0 flex-1 flex-col gap-2">
         {isAdding && (
-          <div className="flex items-center gap-1.5 border rounded-lg p-1 bg-background shadow-xs transition-all animate-in fade-in-50 slide-in-from-top-2 duration-150">
+          <div className="bg-background animate-in fade-in-50 slide-in-from-top-2 flex items-center gap-1.5 rounded-lg border p-1 shadow-xs transition-all duration-150">
             <Input
               ref={addInputRef}
               value={newSectionTitle}
@@ -404,12 +422,12 @@ export default function SectionsSidebar({ selectedSection, onSectionSelect, sect
                 }
               }}
               placeholder="New section name..."
-              className="h-8 flex-1 border-0 focus-visible:ring-0 px-2 text-sm shadow-none"
+              className="h-8 flex-1 border-0 px-2 text-sm shadow-none focus-visible:ring-0"
             />
             <Button
               size="icon"
               variant="ghost"
-              className="h-7 w-7 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+              className="h-7 w-7 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950/30"
               onClick={handleCreate}
             >
               <Check className="h-4 w-4" />
@@ -417,7 +435,7 @@ export default function SectionsSidebar({ selectedSection, onSectionSelect, sect
             <Button
               size="icon"
               variant="ghost"
-              className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+              className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-7 w-7"
               onClick={() => {
                 setNewSectionTitle("");
                 setIsAdding(false);
@@ -427,7 +445,7 @@ export default function SectionsSidebar({ selectedSection, onSectionSelect, sect
             </Button>
           </div>
         )}
-        
+
         <ScrollArea className="min-h-0 flex-1">
           <div className="flex flex-col gap-1 pr-2">
             {allSections.map((section, index) => (

@@ -46,7 +46,7 @@ function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
 
   // Filter tasks by selected section - treat undefined/null sectionId as "default"
   const sectionTasks = useMemo(() => {
-    return tasks.filter(task => {
+    return tasks.filter((task) => {
       const taskSectionId = (task as any).sectionId || "default";
       return taskSectionId === selectedSection;
     });
@@ -66,7 +66,10 @@ function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
   }, [sectionTasks]);
 
   const displayTasks = useMemo(() => {
-    if (orderedTasks.length > 0 && orderedTasks.every(t => sectionTasks.some(task => task._id === t._id))) {
+    if (
+      orderedTasks.length > 0 &&
+      orderedTasks.every((t) => sectionTasks.some((task) => task._id === t._id))
+    ) {
       return orderedTasks;
     }
     return sectionTasks;
@@ -128,7 +131,9 @@ function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
   const customCollisionDetection = (args: any) => {
     // First check for section droppables using pointerWithin
     const pointerCollisions = pointerWithin(args);
-    const sectionCollision = pointerCollisions.find((c: any) => String(c.id).startsWith("section-"));
+    const sectionCollision = pointerCollisions.find((c: any) =>
+      String(c.id).startsWith("section-")
+    );
     if (sectionCollision) {
       return [sectionCollision];
     }
@@ -150,7 +155,7 @@ function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
       const targetSectionId = overId.replace("section-", "");
       const note = tasks.find((t) => t._id === activeId);
       const currentSectionId = (note as any)?.sectionId || "default";
-      
+
       if (note && currentSectionId !== targetSectionId) {
         moveSectionMutation.mutate({ noteId: activeId, sectionId: targetSectionId });
       }
@@ -162,9 +167,9 @@ function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
       const oldIndex = orderedTasks.findIndex((item) => item._id === activeId);
       const newIndex = orderedTasks.findIndex((item) => item._id === overId);
       const newOrder = arrayMove(orderedTasks, oldIndex, newIndex);
-      
+
       setOrderedTasks(newOrder);
-      
+
       const orderedIds = newOrder.map((task) => task._id);
       reorderMutation.mutate(orderedIds);
     }
@@ -199,7 +204,10 @@ function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
             </div>
 
             <ScrollArea className="h-auto flex-1 sm:h-full">
-              <SortableContext items={displayTasks.map((t) => t._id)} strategy={rectSortingStrategy}>
+              <SortableContext
+                items={displayTasks.map((t) => t._id)}
+                strategy={rectSortingStrategy}
+              >
                 <div className="grid gap-4 sm:grid-cols-4">
                   {displayTasks.map((task: Tasks) => (
                     <TaskCard
@@ -230,14 +238,27 @@ interface MobileSectionTabsProps {
   sectionCounts: Record<string, number>;
 }
 
-function MobileSectionTabs({ selectedSection, onSectionSelect, sectionCounts }: MobileSectionTabsProps) {
+function MobileSectionTabs({
+  selectedSection,
+  onSectionSelect,
+  sectionCounts,
+}: MobileSectionTabsProps) {
   const { data: rawSections = [] } = useSections();
 
   const sections: Section[] = useMemo(() => {
     const hasDefault = rawSections.some((s) => s._id === "default");
     const base = hasDefault
       ? rawSections
-      : [{ _id: "default", title: "Notes", order: 0, noteCount: 0, createdAt: new Date().toISOString() }, ...rawSections];
+      : [
+          {
+            _id: "default",
+            title: "Notes",
+            order: 0,
+            noteCount: 0,
+            createdAt: new Date().toISOString(),
+          },
+          ...rawSections,
+        ];
     return base.map((s) => ({ ...s, noteCount: sectionCounts[s._id] ?? 0 }));
   }, [rawSections, sectionCounts]);
 
@@ -261,7 +282,9 @@ function MobileSectionTabs({ selectedSection, onSectionSelect, sectionCounts }: 
                 {section.noteCount !== undefined && section.noteCount > 0 && (
                   <span
                     className={`rounded-full px-1.5 py-0.5 text-xs ${
-                      isSelected ? "bg-primary-foreground/20 text-primary-foreground" : "bg-muted text-muted-foreground"
+                      isSelected
+                        ? "bg-primary-foreground/20 text-primary-foreground"
+                        : "bg-muted text-muted-foreground"
                     }`}
                   >
                     {section.noteCount}

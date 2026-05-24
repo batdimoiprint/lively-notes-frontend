@@ -42,14 +42,7 @@ export default function TaskCard({
   const titleTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const bodyTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ 
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task._id,
     disabled: !isDesktop, // Disable DND on mobile
   });

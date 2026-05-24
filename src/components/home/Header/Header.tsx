@@ -36,7 +36,9 @@ export default function Header({ selectedSection }: HeaderProps) {
             />
           </CardAction>
         </CardHeader>
-        <CardContent>{isHeaderToggled ? <FormMatrixConfig /> : <FormNotes selectedSection={selectedSection} />}</CardContent>
+        <CardContent>
+          {isHeaderToggled ? <FormMatrixConfig /> : <FormNotes selectedSection={selectedSection} />}
+        </CardContent>
       </Card>
     </div>
   );

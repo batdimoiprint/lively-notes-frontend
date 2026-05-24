@@ -13,10 +13,11 @@ export default function Home() {
 
   return (
     <>
-      <main className="flex flex-col gap-4 p-4">
+      {/* Headers */}
+      <main className="flex flex-col">
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           {/* Mobile: PictureCards → Header → Pomorodo. sm+: side-by-side row */}
-          <div className="flex max-w-[1920px] flex-col gap-4 sm:flex-row sm:items-start">
+          <div className="flex max-w-480 flex-col gap-4 sm:flex-row sm:items-start">
             <div className="order-2 sm:order-1 sm:flex-1">
               <Header selectedSection={selectedSection} />
             </div>
@@ -29,8 +30,9 @@ export default function Home() {
           </div>
         </ErrorBoundary>
 
+        {/* Below Grid */}
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <div className="flex max-w-[1920px] gap-4 overflow-hidden sm:h-[calc(100vh-280px)] sm:max-h-[669px]">
+          <div className="flex max-w-480 gap-4 overflow-hidden sm:h-[calc(100vh-280px)] sm:max-h-167.25">
             <div className="min-w-0 flex-1">
               <TasksGrid selectedSection={selectedSection} onSectionSelect={setSelectedSection} />
             </div>
