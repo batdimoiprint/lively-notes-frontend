@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
+import { MoveLeft, MoveRight, NotepadText, Plus, Shuffle } from "lucide-react";
 import { toast } from "sonner";
 import { createIgUsername } from "@/api/igUsername";
 import { runActorForUsername } from "@/api/post";
@@ -9,7 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 
-export default function IGUsernameSideCard() {
+interface ControlCardProps {
+  onScrollLeft?: () => void;
+  onScrollRight?: () => void;
+  onRandomize?: () => void;
+}
+
+export default function ControlCard({ onScrollLeft, onScrollRight, onRandomize }: ControlCardProps) {
   const [open, setOpen] = useState(false);
   const [igUsername, setIgUsername] = useState("");
 
@@ -41,7 +47,7 @@ export default function IGUsernameSideCard() {
 
   return (
     <Card
-      className={`relative flex h-[360px] w-full shrink-0 items-center justify-center overflow-hidden p-3 transition-all duration-300 sm:h-full ${open ? "sm:w-80" : "sm:w-16"}`}
+      className={`relative flex ${open ? "flex-col" : "flex-row sm:flex-col"} h-90 w-full shrink-0 items-center justify-center overflow-hidden p-3 transition-all duration-300 sm:h-full ${open ? "sm:w-80" : "sm:w-16"} gap-3`}
     >
       {!open ? (
         <Button
@@ -89,6 +95,38 @@ export default function IGUsernameSideCard() {
           </div>
         </div>
       )}
+      <div className={`flex gap-2 ${open ? "flex-row w-full px-2" : "flex-row sm:flex-col"}`}>
+        <Button
+          type="button"
+          size={open ? "default" : "icon"}
+          variant="outline"
+          onClick={onScrollLeft}
+          className={open ? "h-10 flex-1" : "h-10 w-10 shrink-0 transition-transform duration-200 hover:scale-105"}
+          aria-label="Scroll Left"
+        >
+          <MoveLeft className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          size={open ? "default" : "icon"}
+          variant="outline"
+          onClick={onRandomize}
+          className={open ? "h-10 flex-1" : "h-10 w-10 shrink-0 transition-transform duration-200 hover:scale-105"}
+          aria-label="Randomize Posts"
+        >
+          <Shuffle className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          size={open ? "default" : "icon"}
+          variant="outline"
+          onClick={onScrollRight}
+          className={open ? "h-10 flex-1" : "h-10 w-10 shrink-0 transition-transform duration-200 hover:scale-105"}
+          aria-label="Scroll Right"
+        >
+          <MoveRight className="h-4 w-4" />
+        </Button>
+      </div>
     </Card>
   );
 }
