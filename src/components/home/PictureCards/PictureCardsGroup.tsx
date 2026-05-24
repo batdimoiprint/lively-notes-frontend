@@ -30,8 +30,8 @@ const PictureCards = React.memo(function PictureCards() {
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-stretch">
-      <ScrollArea className="max-w-5xl pb-2 sm:h-full">
-        <div className="flex h-full snap-x snap-mandatory gap-2">
+      <ScrollArea className="flex flex-1 flex-row pb-2 sm:h-full">
+        <div className="flex h-full max-w-5xl flex-1 snap-x snap-mandatory flex-row gap-2">
           {shuffledPosts.map((post) => (
             <PhotoCards key={post._id} post={post} />
           ))}

@@ -104,9 +104,8 @@ export default function FormMatrixConfig() {
       </div>
 
       {/* Background Image Upload */}
-      
+
       <FormBackgroundImage />
-      
 
       {/* Speed Control */}
       <Label className="text-xs whitespace-nowrap">Speed: {99 - config.matrixspeed}ms</Label>

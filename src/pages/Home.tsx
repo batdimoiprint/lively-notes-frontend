@@ -13,18 +13,17 @@ export default function Home() {
 
   return (
     <>
-      {/* Headers */}
       <main className="flex flex-col">
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          {/* Mobile: PictureCards → Header → Pomorodo. sm+: side-by-side row */}
-          <div className="flex max-w-480 flex-col gap-4 sm:flex-row sm:items-stretch">
-            <div className="order-2 flex flex-col sm:order-1 sm:flex-1">
+          {/* Headers */}
+          <div className="flex w-full flex-col sm:flex-row sm:items-stretch">
+            <div className="order-2 flex flex-col sm:order-1">
               <Header selectedSection={selectedSection} />
             </div>
-            <div className="order-1 sm:order-2">
+            <div className="order-1 flex flex-col sm:order-2 sm:flex-1">
               <PictureCards />
             </div>
-            <div className="order-3 flex w-full flex-col gap-4 sm:max-w-md">
+            <div className="order-3 flex">
               <Pomorodo />
             </div>
           </div>

@@ -25,42 +25,39 @@ export default function FormBackgroundImage() {
   });
 
   return (
-    
-      
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <Input
-          id="background-image"
-          type="file"
-          accept="image/jpeg, image/png, image/webp"
-          onChange={(event) => {
-            const file = event.target.files?.[0] ?? null;
-            setSelectedFile(file);
-          }}
-          className="cursor-pointer"
-        />
-        <Button
-          type="button"
-          disabled={!selectedFile || mutation.isPending}
-          onClick={() => {
-            if (!selectedFile) {
-              return;
-            }
+    <div className="flex flex-col gap-2 sm:flex-row">
+      <Input
+        id="background-image"
+        type="file"
+        accept="image/jpeg, image/png, image/webp"
+        onChange={(event) => {
+          const file = event.target.files?.[0] ?? null;
+          setSelectedFile(file);
+        }}
+        className="cursor-pointer"
+      />
+      <Button
+        type="button"
+        disabled={!selectedFile || mutation.isPending}
+        onClick={() => {
+          if (!selectedFile) {
+            return;
+          }
 
-            mutation.mutate(selectedFile);
-          }}
-        >
-          {mutation.isSuccess ? <Check size={16} /> : <UploadCloud size={16} />}          
-        </Button>
-        <Button
+          mutation.mutate(selectedFile);
+        }}
+      >
+        {mutation.isSuccess ? <Check size={16} /> : <UploadCloud size={16} />}
+      </Button>
+      <Button
         onClick={() => {
           if (backgroundContext) {
             backgroundContext.reloadBackground();
           }
         }}
-        >
-          <ShuffleIcon/>
-        </Button>
-      </div>
-    
+      >
+        <ShuffleIcon />
+      </Button>
+    </div>
   );
 }

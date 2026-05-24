@@ -260,7 +260,7 @@ export default function Pomorodo() {
   const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
 
   return (
-    <Card className="mx-auto h-full w-full max-w-sm overflow-hidden p-2">
+    <Card className="flex flex-1 flex-col">
       <CardHeader>
         <Button
           type="button"
@@ -282,7 +282,7 @@ export default function Pomorodo() {
         </Button>
       </CardHeader>
 
-      <CardContent className="">
+      <CardContent>
         <div className={isPomodoroView ? "block" : "hidden"} aria-hidden={!isPomodoroView}>
           <div className="flex flex-col items-center justify-center">
             <div

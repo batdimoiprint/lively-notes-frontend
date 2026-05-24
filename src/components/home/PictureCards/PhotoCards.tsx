@@ -207,7 +207,7 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
           </div>
         </div>
         {/* Caption (truncated if too long or aligned empty space if missing) */}
-        <div className="mt-2 flex flex-1 justify-center">
+        <div className="my-0 mt-2 flex flex-1 justify-center gap-0">
           {currentPost?.caption ? (
             <p className="line-clamp-2 overflow-hidden text-xs text-ellipsis text-gray-700 dark:text-gray-300">
               {currentPost.caption}
