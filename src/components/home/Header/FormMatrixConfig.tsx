@@ -46,6 +46,7 @@ export default function FormMatrixConfig() {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Main Controls */}
       <div className="flex flex-row items-center justify-between">
         {/* <ModeToggle /> */}
         {/*Rainbow Toggle*/}
@@ -100,9 +101,12 @@ export default function FormMatrixConfig() {
         >
           {reset ? <Check /> : <RefreshCw />}
         </Button>
-
-        <FormBackgroundImage />
       </div>
+
+      {/* Background Image Upload */}
+      
+      <FormBackgroundImage />
+      
 
       {/* Speed Control */}
       <Label className="text-xs whitespace-nowrap">Speed: {99 - config.matrixspeed}ms</Label>

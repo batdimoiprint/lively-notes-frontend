@@ -170,7 +170,7 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
 
   return (
     <>
-      <Card className="flex h-[360px] w-[85vw] max-w-[18rem] shrink-0 snap-start flex-col justify-between gap-0 p-2 text-center sm:h-full sm:w-[18rem] sm:flex-none">
+      <Card className="flex max-w-80 flex-1 shrink-0 snap-start flex-col gap-0 p-2 sm:flex-none">
         <div className="relative flex aspect-square w-full shrink-0 items-center justify-center overflow-hidden">
           {/* 3-zone overlay: prev | open dialog | next */}
           <div className="absolute inset-0 z-10 flex">
@@ -207,7 +207,7 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
           </div>
         </div>
         {/* Caption (truncated if too long or aligned empty space if missing) */}
-        <div className="mt-2 flex min-h-[2.5rem] flex-1 items-center justify-center px-1">
+        <div className="mt-2 flex flex-1 justify-center">
           {currentPost?.caption ? (
             <p className="line-clamp-2 overflow-hidden text-xs text-ellipsis text-gray-700 dark:text-gray-300">
               {currentPost.caption}
@@ -218,7 +218,7 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
         </div>
         <div className="border-border/50 mt-2 flex shrink-0 flex-row items-center justify-between border-t pt-1.5">
           <div className="flex flex-row items-center gap-1">
-            <Heart size={16} className="fill-rose-500 text-rose-500" />
+            <Heart size={16} />
             <p className="text-xs font-bold">{currentPost?.likesCount?.toLocaleString() ?? 0}</p>
           </div>
           <div className="flex min-w-0 items-center gap-1.5">

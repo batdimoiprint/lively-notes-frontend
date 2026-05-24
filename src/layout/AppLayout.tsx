@@ -8,6 +8,7 @@ import { Fireworks } from "@fireworks-js/react";
 import { DEFAULT_MATRIX_CONFIG, type MatrixConfig } from "@/types/matrixConfig";
 import Snowfall from "react-snowfall";
 import { MatrixContext } from "@/context/MatrixContext";
+import { BackgroundContext } from "@/context/BackgroundContext";
 import { getBackgroundImage } from "@/api/backgroundImage";
 
 export default function AppLayout() {
@@ -23,18 +24,6 @@ export default function AppLayout() {
         console.log("No settings yet");
       }
     });
-
-    const loadBackgroundImage = async () => {
-      try {
-        const backgroundImage = await getBackgroundImage();
-
-        if (backgroundImage?.secure_url) {
-          setBackgroundImageUrl(backgroundImage.secure_url);
-        }
-      } catch (error) {
-        console.error("Failed to fetch background image:", error);
-      }
-    };
 
     loadBackgroundImage();
 
@@ -57,6 +46,18 @@ export default function AppLayout() {
     };
   }, []);
 
+  const loadBackgroundImage = async () => {
+    try {
+      const backgroundImage = await getBackgroundImage();
+
+      if (backgroundImage?.secure_url) {
+        setBackgroundImageUrl(backgroundImage.secure_url);
+      }
+    } catch (error) {
+      console.error("Failed to fetch background image:", error);
+    }
+  };
+
   // Season Context
   const now = new Date();
   const isChristmas = now.getMonth() === 11 && now.getDate() === 25;
@@ -64,9 +65,10 @@ export default function AppLayout() {
     (now.getMonth() === 11 && now.getDate() >= 30) || (now.getMonth() === 0 && now.getDate() <= 1);
   return (
     <main>
-      <MatrixContext.Provider value={{ config: matrixConfig, onConfigChange: setMatrixConfig }}>
-        <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <div className="relative z-1 max-h-270 max-w-480 overflow-hidden">
+      <BackgroundContext.Provider value={{ reloadBackground: loadBackgroundImage }}>
+        <MatrixContext.Provider value={{ config: matrixConfig, onConfigChange: setMatrixConfig }}>
+          <ErrorBoundary FallbackComponent={ErrorFallback}>
+            <div className="relative z-1 max-h-270 max-w-480 overflow-hidden">
             <Outlet />
           </div>
         </ErrorBoundary>
@@ -154,6 +156,7 @@ export default function AppLayout() {
           </div>
         </ErrorBoundary>
       </MatrixContext.Provider>
+    </BackgroundContext.Provider>
     </main>
   );
 }

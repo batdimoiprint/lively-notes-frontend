@@ -1,14 +1,16 @@
 import { uploadBackgroundImage } from "@/api/backgroundImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
 import { useMutation } from "@tanstack/react-query";
-import { Check, UploadCloud } from "lucide-react";
-import { useState } from "react";
+import { Check, ShuffleIcon, UploadCloud } from "lucide-react";
+import { useState, useContext } from "react";
 import { toast } from "sonner";
+import { BackgroundContext } from "@/context/BackgroundContext";
 
 export default function FormBackgroundImage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const backgroundContext = useContext(BackgroundContext);
 
   const mutation = useMutation({
     mutationFn: uploadBackgroundImage,
@@ -23,15 +25,13 @@ export default function FormBackgroundImage() {
   });
 
   return (
-    <div className="flex flex-col gap-2 rounded-md border p-3">
-      <Label htmlFor="background-image" className="text-xs whitespace-nowrap">
-        Background Image
-      </Label>
+    
+      
       <div className="flex flex-col gap-2 sm:flex-row">
         <Input
           id="background-image"
           type="file"
-          accept="image/*"
+          accept="image/jpeg, image/png, image/webp"
           onChange={(event) => {
             const file = event.target.files?.[0] ?? null;
             setSelectedFile(file);
@@ -49,10 +49,18 @@ export default function FormBackgroundImage() {
             mutation.mutate(selectedFile);
           }}
         >
-          {mutation.isSuccess ? <Check size={16} /> : <UploadCloud size={16} />}
-          Upload
+          {mutation.isSuccess ? <Check size={16} /> : <UploadCloud size={16} />}          
+        </Button>
+        <Button
+        onClick={() => {
+          if (backgroundContext) {
+            backgroundContext.reloadBackground();
+          }
+        }}
+        >
+          <ShuffleIcon/>
         </Button>
       </div>
-    </div>
+    
   );
 }

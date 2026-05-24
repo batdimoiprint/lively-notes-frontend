@@ -29,13 +29,13 @@ const PictureCards = React.memo(function PictureCards() {
   }, [posts]);
 
   return (
-    <div className="flex w-full flex-col gap-3 sm:h-[390px] sm:flex-row sm:items-stretch">
-      <IGUsernameSideCard />
-      <ScrollArea className="w-full max-w-5xl pb-4 sm:h-full">
+    <div className="flex flex-col sm:flex-row sm:items-stretch">
+      <ScrollArea className="max-w-5xl pb-2 sm:h-full">
         <div className="flex h-full snap-x snap-mandatory gap-2">
           {shuffledPosts.map((post) => (
             <PhotoCards key={post._id} post={post} />
           ))}
+          <IGUsernameSideCard />
         </div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>

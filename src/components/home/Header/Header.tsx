@@ -21,7 +21,7 @@ export default function Header({ selectedSection }: HeaderProps) {
   const [isHeaderToggled, setHeaderToggled] = useState<boolean>(false);
 
   return (
-    <Card className="flex sm:flex-1 flex-col">
+    <Card className="flex flex-col sm:flex-1">
       <CardHeader>
         <CardTitle>Lively Desktop Notes</CardTitle>
         <CardDescription>
@@ -35,7 +35,7 @@ export default function Header({ selectedSection }: HeaderProps) {
           />
         </CardAction>
       </CardHeader>
-      <CardContent className="bg-debug flex flex-1 flex-col">
+      <CardContent className="flex flex-1 flex-col">
         {isHeaderToggled ? <FormMatrixConfig /> : <FormNotes selectedSection={selectedSection} />}
       </CardContent>
     </Card>
