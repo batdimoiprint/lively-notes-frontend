@@ -170,7 +170,7 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
 
   return (
     <>
-      <Card className="flex max-w-80 flex-1 shrink-0 snap-start flex-col gap-0 p-2 sm:flex-none">
+      <Card className="flex w-[90%] max-w-80 flex-1 shrink-0 snap-start flex-col gap-0 p-2 sm:flex-none">
         <div className="relative flex aspect-square w-full shrink-0 items-center justify-center overflow-hidden">
           {/* 3-zone overlay: prev | open dialog | next */}
           <div className="absolute inset-0 z-10 flex">

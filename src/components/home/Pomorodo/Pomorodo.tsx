@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Trash2, Upload } from "lucide-react";
@@ -128,12 +128,6 @@ export default function Pomorodo() {
     }
   };
 
-  const totalMs = mode === "work" ? WORK_MS : breakKind === "long" ? LONG_BREAK_MS : SHORT_BREAK_MS;
-  const progressPercent = useMemo(() => {
-    const clamped = Math.min(totalMs, Math.max(0, remainingMs));
-    return ((totalMs - clamped) / totalMs) * 100;
-  }, [remainingMs, totalMs]);
-
   const start = () => {
     if (isRunning) return;
     // Best-effort: try to unlock audio on first user interaction.
@@ -250,15 +244,6 @@ export default function Pomorodo() {
   const hasSound = Boolean(soundQuery.data);
   const isPomodoroView = view === "pomodoro";
 
-  // SVG dimensions
-  const size = 240;
-  const strokeWidth = 8;
-  const center = size / 2;
-  const radius = center - strokeWidth;
-  const circumference = 2 * Math.PI * radius;
-  // Calculate offset so that it drains as time goes down
-  const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
-
   return (
     <Card className="flex flex-1 flex-col">
       <CardHeader>
@@ -282,137 +267,106 @@ export default function Pomorodo() {
         </Button>
       </CardHeader>
 
-      <CardContent>
-        <div className={isPomodoroView ? "block" : "hidden"} aria-hidden={!isPomodoroView}>
-          <div className="flex flex-col items-center justify-center">
-            <div
-              className="relative flex items-center justify-center"
-              style={{ width: size, height: size }}
-            >
-              {/* SVG Circular Progress */}
-              <svg
-                className="absolute inset-0 -rotate-90 transform drop-shadow-md"
-                width={size}
-                height={size}
-                viewBox={`0 0 ${size} ${size}`}
+      <CardContent className="flex flex-1 flex-col pb-4">
+        {/* Pomorodo View */}
+        <div
+          className={
+            isPomodoroView
+              ? "flex flex-1 flex-col items-center justify-center space-y-3 text-center "
+              : "hidden"
+          }
+          aria-hidden={!isPomodoroView}
+        >
+          <div className="space-y-0.5">
+            <p className="text-muted-foreground text-sm font-semibold tracking-wider uppercase">
+              {modeLabel}
+            </p>
+            <p className="text-4xl font-bold tracking-tight tabular-nums" aria-live="polite">
+              {formatTime(remainingMs)}
+            </p>
+            <p className="text-muted-foreground text-xs font-medium">
+              Session {Math.min(4, workSessionsCompleted + (mode === "work" ? 1 : 0))} / 4
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center gap-1">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="audio/*,.mp3,.wav,.m4a,.ogg,.webm,.aac"
+              className="hidden"
+              onChange={handleSoundUpload}
+              disabled={uploadMutation.isPending || deleteMutation.isPending}
+            />
+            <div className="flex items-center gap-1">
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                className="h-6 rounded-full px-2 text-[10px] font-semibold"
+                disabled={uploadMutation.isPending || deleteMutation.isPending}
+                onClick={() => fileInputRef.current?.click()}
               >
-                {/* Background circle */}
-                <circle
-                  className="text-muted stroke-current"
-                  strokeWidth={strokeWidth}
-                  fill="transparent"
-                  r={radius}
-                  cx={center}
-                  cy={center}
-                />
-                {/* Progress circle */}
-                <circle
-                  className="text-primary stroke-current transition-all duration-300 ease-linear"
-                  strokeWidth={strokeWidth}
-                  strokeDasharray={circumference}
-                  strokeDashoffset={strokeDashoffset}
-                  strokeLinecap="round"
-                  fill="transparent"
-                  r={radius}
-                  cx={center}
-                  cy={center}
-                />
-              </svg>
-
-              {/* Inner Content */}
-              <div className="z-10 flex flex-col items-center justify-center space-y-3 text-center">
-                <div className="space-y-0.5">
-                  <p className="text-muted-foreground text-sm font-semibold tracking-wider uppercase">
-                    {modeLabel}
-                  </p>
-                  <p className="text-4xl font-bold tracking-tight tabular-nums" aria-live="polite">
-                    {formatTime(remainingMs)}
-                  </p>
-                  <p className="text-muted-foreground text-xs font-medium">
-                    Session {Math.min(4, workSessionsCompleted + (mode === "work" ? 1 : 0))} / 4
-                  </p>
-                </div>
-
-                <div className="flex flex-col items-center gap-1">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="audio/*,.mp3,.wav,.m4a,.ogg,.webm,.aac"
-                    className="hidden"
-                    onChange={handleSoundUpload}
-                    disabled={uploadMutation.isPending || deleteMutation.isPending}
-                  />
-                  <div className="flex items-center gap-1">
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="secondary"
-                      className="h-6 rounded-full px-2 text-[10px] font-semibold"
-                      disabled={uploadMutation.isPending || deleteMutation.isPending}
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      {uploadMutation.isPending ? (
-                        <Spinner className="size-2.5" />
-                      ) : (
-                        <Upload className="size-2.5" />
-                      )}
-                      Upload sound
-                    </Button>
-                    {hasSound ? (
-                      <Button
-                        type="button"
-                        size="icon-sm"
-                        variant="ghost"
-                        className="h-6 w-6 rounded-full"
-                        disabled={uploadMutation.isPending || deleteMutation.isPending}
-                        onClick={handleSoundDelete}
-                      >
-                        {deleteMutation.isPending ? (
-                          <Spinner className="size-2.5" />
-                        ) : (
-                          <Trash2 className="size-2.5" />
-                        )}
-                      </Button>
-                    ) : null}
-                  </div>
-                  <p className="text-muted-foreground text-[10px]">
-                    Sound: {hasSound ? "active" : "none"}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {!isRunning ? (
-                    <Button
-                      onClick={start}
-                      size="sm"
-                      className="h-7 w-16 rounded-full px-0 text-xs shadow-sm"
-                    >
-                      Start
-                    </Button>
+                {uploadMutation.isPending ? (
+                  <Spinner className="size-2.5" />
+                ) : (
+                  <Upload className="size-2.5" />
+                )}
+                Upload sound
+              </Button>
+              {hasSound ? (
+                <Button
+                  type="button"
+                  size="icon-sm"
+                  variant="ghost"
+                  className="h-6 w-6 rounded-full"
+                  disabled={uploadMutation.isPending || deleteMutation.isPending}
+                  onClick={handleSoundDelete}
+                >
+                  {deleteMutation.isPending ? (
+                    <Spinner className="size-2.5" />
                   ) : (
-                    <Button
-                      onClick={pause}
-                      variant="secondary"
-                      size="sm"
-                      className="h-7 w-16 rounded-full px-0 text-xs shadow-sm"
-                    >
-                      Pause
-                    </Button>
+                    <Trash2 className="size-2.5" />
                   )}
-                  <Button
-                    onClick={reset}
-                    variant="ghost"
-                    size="sm"
-                    className="h-7 w-16 rounded-full px-0 text-xs"
-                  >
-                    Reset
-                  </Button>
-                </div>
-              </div>
+                </Button>
+              ) : null}
             </div>
+            <p className="text-muted-foreground text-[10px]">
+              Sound: {hasSound ? "active" : "none"}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {!isRunning ? (
+              <Button
+                onClick={start}
+                size="sm"
+                className="h-7 w-16 rounded-full px-0 text-xs shadow-sm"
+              >
+                Start
+              </Button>
+            ) : (
+              <Button
+                onClick={pause}
+                variant="secondary"
+                size="sm"
+                className="h-7 w-16 rounded-full px-0 text-xs shadow-sm"
+              >
+                Pause
+              </Button>
+            )}
+            <Button
+              onClick={reset}
+              variant="ghost"
+              size="sm"
+              className="h-7 w-16 rounded-full px-0 text-xs"
+            >
+              Reset
+            </Button>
           </div>
         </div>
 
+        {/* Time Blocks View */}
         <div className={isPomodoroView ? "hidden" : "block"} aria-hidden={isPomodoroView}>
           <DailyTimeBlocksContent />
         </div>

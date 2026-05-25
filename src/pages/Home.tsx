@@ -31,7 +31,7 @@ export default function Home() {
 
         {/* Below Grid */}
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <div className="flex h-155 flex-1 flex-row gap-4">
+          <div className="flex flex-1 flex-row gap-4">
             <div className="flex flex-1 flex-col">
               <TasksGrid selectedSection={selectedSection} onSectionSelect={setSelectedSection} />
             </div>
