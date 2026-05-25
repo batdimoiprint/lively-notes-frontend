@@ -15,7 +15,11 @@ interface ControlCardProps {
   onRandomize?: () => void;
 }
 
-export default function ControlCard({ onScrollLeft, onScrollRight, onRandomize }: ControlCardProps) {
+export default function ControlCard({
+  onScrollLeft,
+  onScrollRight,
+  onRandomize,
+}: ControlCardProps) {
   const [open, setOpen] = useState(false);
   const [igUsername, setIgUsername] = useState("");
 
@@ -47,7 +51,7 @@ export default function ControlCard({ onScrollLeft, onScrollRight, onRandomize }
 
   return (
     <Card
-      className={`relative flex ${open ? "flex-col" : "flex-row sm:flex-col"} h-90 w-full shrink-0 items-center justify-center overflow-hidden p-3 transition-all duration-300 sm:h-full ${open ? "sm:w-80" : "sm:w-16"} gap-3`}
+      className={`relative flex ${open ? "flex-col" : "flex-row sm:flex-col"} w-full shrink-0 items-center justify-center overflow-hidden p-3 transition-all duration-300 sm:h-full ${open ? "sm:w-80" : "sm:w-16"} gap-3`}
     >
       {!open ? (
         <Button
@@ -95,13 +99,17 @@ export default function ControlCard({ onScrollLeft, onScrollRight, onRandomize }
           </div>
         </div>
       )}
-      <div className={`flex gap-2 ${open ? "flex-row w-full px-2" : "flex-row sm:flex-col"}`}>
+      <div className={`flex gap-2 ${open ? "w-full flex-row px-2" : "flex-row sm:flex-col"}`}>
         <Button
           type="button"
           size={open ? "default" : "icon"}
           variant="outline"
           onClick={onScrollLeft}
-          className={open ? "h-10 flex-1" : "h-10 w-10 shrink-0 transition-transform duration-200 hover:scale-105"}
+          className={
+            open
+              ? "h-10 flex-1"
+              : "h-10 w-10 shrink-0 transition-transform duration-200 hover:scale-105"
+          }
           aria-label="Scroll Left"
         >
           <MoveLeft className="h-4 w-4" />
@@ -111,7 +119,11 @@ export default function ControlCard({ onScrollLeft, onScrollRight, onRandomize }
           size={open ? "default" : "icon"}
           variant="outline"
           onClick={onRandomize}
-          className={open ? "h-10 flex-1" : "h-10 w-10 shrink-0 transition-transform duration-200 hover:scale-105"}
+          className={
+            open
+              ? "h-10 flex-1"
+              : "h-10 w-10 shrink-0 transition-transform duration-200 hover:scale-105"
+          }
           aria-label="Randomize Posts"
         >
           <Shuffle className="h-4 w-4" />
@@ -121,7 +133,11 @@ export default function ControlCard({ onScrollLeft, onScrollRight, onRandomize }
           size={open ? "default" : "icon"}
           variant="outline"
           onClick={onScrollRight}
-          className={open ? "h-10 flex-1" : "h-10 w-10 shrink-0 transition-transform duration-200 hover:scale-105"}
+          className={
+            open
+              ? "h-10 flex-1"
+              : "h-10 w-10 shrink-0 transition-transform duration-200 hover:scale-105"
+          }
           aria-label="Scroll Right"
         >
           <MoveRight className="h-4 w-4" />

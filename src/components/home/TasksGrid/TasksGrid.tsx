@@ -36,8 +36,10 @@ interface TasksGridProps {
   onSectionSelect: (sectionId: string) => void;
 }
 
+const EMPTY_TASKS: Tasks[] = [];
+
 function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
-  const { data: tasks = [], isLoading, error } = useNotes();
+  const { data: tasks = EMPTY_TASKS, isLoading, error } = useNotes();
   const queryClient = useQueryClient();
   const [selectedTask, setSelectedTask] = useState<Tasks | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -238,12 +240,14 @@ interface MobileSectionTabsProps {
   sectionCounts: Record<string, number>;
 }
 
+const EMPTY_SECTIONS: Section[] = [];
+
 function MobileSectionTabs({
   selectedSection,
   onSectionSelect,
   sectionCounts,
 }: MobileSectionTabsProps) {
-  const { data: rawSections = [] } = useSections();
+  const { data: rawSections = EMPTY_SECTIONS } = useSections();
 
   const sections: Section[] = useMemo(() => {
     const hasDefault = rawSections.some((s) => s._id === "default");

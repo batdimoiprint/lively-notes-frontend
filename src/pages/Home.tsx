@@ -13,10 +13,10 @@ export default function Home() {
 
   return (
     <>
-      <main className="flex flex-col">
+      <main className="flex flex-1 flex-col gap-4 p-4">
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           {/* Headers */}
-          <div className="flex w-full flex-col sm:flex-row sm:items-stretch">
+          <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-stretch">
             <div className="order-2 flex flex-col sm:order-1">
               <Header selectedSection={selectedSection} />
             </div>
@@ -31,11 +31,11 @@ export default function Home() {
 
         {/* Below Grid */}
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <div className="flex max-w-480 overflow-hidden sm:h-[calc(100vh-280px)] sm:max-h-167.25">
-            <div className="min-w-0 flex-1">
+          <div className="flex h-155 flex-1 flex-row gap-4">
+            <div className="flex flex-1 flex-col">
               <TasksGrid selectedSection={selectedSection} onSectionSelect={setSelectedSection} />
             </div>
-            <div className="hidden w-80 shrink-0 lg:block">
+            <div className="">
               <TodoList />
             </div>
           </div>

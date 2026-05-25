@@ -31,14 +31,18 @@ const PictureCards = React.memo(function PictureCards() {
   }, [posts, handleRandomize]);
 
   const handleScrollLeft = React.useCallback(() => {
-    const viewport = document.getElementById("picture-cards-scroll-container")?.querySelector('[data-slot="scroll-area-viewport"]');
+    const viewport = document
+      .getElementById("picture-cards-scroll-container")
+      ?.querySelector('[data-slot="scroll-area-viewport"]');
     if (viewport) {
       viewport.scrollBy({ left: -340, behavior: "smooth" });
     }
   }, []);
 
   const handleScrollRight = React.useCallback(() => {
-    const viewport = document.getElementById("picture-cards-scroll-container")?.querySelector('[data-slot="scroll-area-viewport"]');
+    const viewport = document
+      .getElementById("picture-cards-scroll-container")
+      ?.querySelector('[data-slot="scroll-area-viewport"]');
     if (viewport) {
       viewport.scrollBy({ left: 340, behavior: "smooth" });
     }

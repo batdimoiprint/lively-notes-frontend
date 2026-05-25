@@ -232,12 +232,14 @@ function DroppableSection({
   );
 }
 
+const EMPTY_SECTIONS: Section[] = [];
+
 export default function SectionsSidebar({
   selectedSection,
   onSectionSelect,
   sectionCounts,
 }: SectionsSidebarProps) {
-  const { data: sections = [], isLoading } = useSections();
+  const { data: sections = EMPTY_SECTIONS, isLoading } = useSections();
   const queryClient = useQueryClient();
   const [isAdding, setIsAdding] = useState(false);
   const [newSectionTitle, setNewSectionTitle] = useState("");

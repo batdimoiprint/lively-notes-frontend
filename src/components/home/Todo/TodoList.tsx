@@ -11,8 +11,10 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Plus, Trash } from "lucide-react";
 
+const EMPTY_TODOS: Todo[] = [];
+
 export default function TodoList() {
-  const { data: todos = [], isLoading, error } = useTodos();
+  const { data: todos = EMPTY_TODOS, isLoading, error } = useTodos();
   const queryClient = useQueryClient();
   const [newTodoText, setNewTodoText] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -100,7 +102,7 @@ export default function TodoList() {
   if (error) return <div>Error loading todos</div>;
 
   return (
-    <Card className="flex h-full w-full flex-col overflow-hidden">
+    <Card className="flex h-full w-full flex-1 flex-col overflow-hidden">
       <CardHeader className="shrink-0 pb-2">
         <Label className="text-lg font-bold">Todo List</Label>
       </CardHeader>
