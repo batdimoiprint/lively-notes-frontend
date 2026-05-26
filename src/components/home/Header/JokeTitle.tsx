@@ -14,5 +14,9 @@ export default function JokeTitle() {
     }
     getData();
   }, []);
-  return <>{joke}</>;
+  return (
+    <div className="max-h-20 overflow-y-auto">
+      {joke}
+    </div>
+  );
 }
