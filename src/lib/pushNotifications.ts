@@ -1,5 +1,7 @@
 import api from "@/api/axiosInstance";
 
+const VAPID_PUBLIC_KEY = "BOTDduYjp3ldQdjF1MtnqkBTogp_tm1hIwyPOgV2_VUIoSJ-Czk3CQi0jjev6O1m6vjfooHyO4Z391nA2IiqcDA";
+
 let swRegistration: ServiceWorkerRegistration | null = null;
 
 /**
@@ -15,6 +17,12 @@ export async function initPushNotifications(): Promise<void> {
   try {
     swRegistration = await navigator.serviceWorker.register("/sw.js");
     console.log("Service worker registered");
+
+    // Auto-prompt user for notification permissions on load if not set yet
+    if (Notification.permission === "default") {
+      console.log("Automatically prompting for notification permission...");
+      await subscribeToPush();
+    }
   } catch (error) {
     console.error("Service worker registration failed:", error);
   }
@@ -41,12 +49,8 @@ export async function subscribeToPush(): Promise<boolean> {
   }
 
   try {
-    // Get VAPID public key from backend
-    const { data } = await api.get<{ publicKey: string }>("/api/push/vapid-public-key");
-    const vapidPublicKey = data.publicKey;
-
-    // Convert VAPID key to Uint8Array
-    const applicationServerKey = urlBase64ToUint8Array(vapidPublicKey);
+    // Convert hardcoded VAPID key to Uint8Array
+    const applicationServerKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
 
     // Subscribe to push
     const subscription = await swRegistration.pushManager.subscribe({
@@ -55,8 +59,12 @@ export async function subscribeToPush(): Promise<boolean> {
     });
 
     // Send subscription to backend
-    await api.post("/api/push/subscribe", subscription.toJSON());
-    console.log("Push subscription saved");
+    try {
+      await api.post("/api/push/subscribe", subscription.toJSON());
+      console.log("Push subscription saved on backend");
+    } catch (apiErr) {
+      console.warn("Could not save subscription on backend (possibly unauthenticated yet):", apiErr);
+    }
     return true;
   } catch (error) {
     console.error("Failed to subscribe to push:", error);
