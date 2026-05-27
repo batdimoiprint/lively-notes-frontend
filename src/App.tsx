@@ -6,6 +6,8 @@ import { createIDBPersister } from "./lib/idbPersister";
 import { BrowserRouter } from "react-router-dom";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { queryClient } from "@/api/queryClient";
+import { useEffect } from "react";
+import { initPushNotifications } from "@/lib/pushNotifications";
 // React Query
 const persister = createIDBPersister();
 
@@ -19,6 +21,10 @@ function getCacheBuster() {
 }
 
 function App() {
+  useEffect(() => {
+    initPushNotifications();
+  }, []);
+
   return (
     <>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">

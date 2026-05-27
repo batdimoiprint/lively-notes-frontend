@@ -3,13 +3,20 @@ import TasksGrid from "@/components/home/TasksGrid/TasksGrid";
 import TodoList from "@/components/home/Todo/TodoList";
 import { Toaster } from "@/components/ui/sonner";
 import PictureCards from "@/components/home/PictureCards/PictureCardsGroup";
-import Pomorodo from "@/components/home/Pomorodo/Pomorodo";
+import SpecialCard from "@/components/home/SpecialCard/SpecialCard";
+import NotesCalendar from "@/components/home/NotesCalendar/NotesCalendar";
+import ContentViewToggle, {
+  type ContentView,
+} from "@/components/home/ContentViewToggle/ContentViewToggle";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallback from "@/components/ErrorFallback";
 import { useState } from "react";
 
 export default function Home() {
   const [selectedSection, setSelectedSection] = useState<string>("default");
+  const [contentView, setContentView] = useState<ContentView>("notes");
+
+  const isCalendar = contentView === "calendar";
 
   return (
     <>
@@ -18,27 +25,48 @@ export default function Home() {
           {/* Headers */}
           <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-stretch">
             <div className="order-2 flex flex-col sm:order-1">
-              <Header selectedSection={selectedSection} />
+              {/* Toggle card replaces the Header when calendar is active */}
+              {isCalendar ? (
+                <ContentViewToggle
+                  view={contentView}
+                  onViewChange={setContentView}
+                />
+              ) : (
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-stretch">
+                  <ContentViewToggle
+                    view={contentView}
+                    onViewChange={setContentView}
+                  />
+                  <Header selectedSection={selectedSection} />
+                </div>
+              )}
             </div>
             <div className="order-1 flex flex-col sm:order-2 sm:flex-1">
               <PictureCards />
             </div>
             <div className="order-3 flex">
-              <Pomorodo />
+              <SpecialCard />
             </div>
           </div>
         </ErrorBoundary>
 
-        {/* Below Grid */}
+        {/* Content area — switches between Notes grid and Calendar */}
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <div className="flex flex-1 flex-row gap-4">
-            <div className="flex flex-1 flex-col">
-              <TasksGrid selectedSection={selectedSection} onSectionSelect={setSelectedSection} />
+          {isCalendar ? (
+            <NotesCalendar />
+          ) : (
+            <div className="flex flex-1 flex-row gap-4">
+              <div className="flex flex-1 flex-col">
+                <TasksGrid
+                  selectedSection={selectedSection}
+                  onSectionSelect={setSelectedSection}
+                />
+              </div>
+              <div className="">
+                <TodoList />
+              </div>
             </div>
-            <div className="">
-              <TodoList />
-            </div>
-          </div>
+          )}
         </ErrorBoundary>
       </main>
       <Toaster />
