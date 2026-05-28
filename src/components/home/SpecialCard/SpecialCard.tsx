@@ -12,7 +12,7 @@ export default function SpecialCard() {
   const isPomodoroView = view === "pomodoro";
 
   return (
-    <Card className="flex flex-1 flex-col">
+    <Card className="flex flex-1 flex-col bg-background/80 backdrop-blur-md">
       <CardHeader>
         <Button
           type="button"

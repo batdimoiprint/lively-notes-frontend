@@ -39,6 +39,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
 
 const DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -536,7 +537,7 @@ function CreateCalendarNoteForm({
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-64 p-3 flex flex-col gap-2 bg-popover/80 backdrop-blur-md border border-border/40 shadow-lg" align="start">
+            <PopoverContent className="w-64 p-3 flex flex-col gap-2 bg-background/80 backdrop-blur-md border border-border/40 shadow-lg" align="start">
               {showCustomDate ? (
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center justify-between border-b border-accent/20 pb-1">
@@ -564,7 +565,7 @@ function CreateCalendarNoteForm({
               ) : (
                 <div className="flex flex-col gap-1.5 py-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-muted-foreground font-medium">
+                    <span className="text-[11px] text-primary font-medium">
                       Date: {reminderDate ? format(reminderDate, "MMM d, yyyy") : "None"}
                     </span>
                     <Button
@@ -580,21 +581,20 @@ function CreateCalendarNoteForm({
               )}
 
               <div className="flex flex-col gap-2 border-t border-accent/20 pt-2">
-                <div className="flex items-center gap-2">
-                  <label className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      checked={isWholeDay}
-                      onChange={(e) => setIsWholeDay(e.target.checked)}
-                      className="h-3.5 w-3.5 rounded border-gray-300 text-primary focus:ring-primary accent-primary"
-                    />
+                <div className="flex items-center justify-between gap-2">
+                  <label htmlFor="whole-day-toggle" className="text-xs text-primary font-medium cursor-pointer select-none">
                     Whole Day
                   </label>
+                  <Switch
+                    id="whole-day-toggle"
+                    checked={isWholeDay}
+                    onCheckedChange={setIsWholeDay}
+                  />
                 </div>
 
                 {!isWholeDay && (
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs font-medium text-muted-foreground">Time:</span>
+                    <span className="text-xs font-medium text-primary">Time:</span>
                     <Input
                       type="time"
                       value={reminderTime}
@@ -625,12 +625,12 @@ function CreateCalendarNoteForm({
 
         {reminderDate && (
           <div className="flex items-center justify-between gap-2 pl-1">
-            <span className="text-[11px] text-muted-foreground font-medium shrink-0">Repeat:</span>
+            <span className="text-[11px] text-primary font-medium shrink-0">Repeat:</span>
             <Select value={reminderInterval} onValueChange={setReminderInterval}>
               <SelectTrigger className="h-8 text-xs flex-1 justify-between px-2 bg-background border-input">
                 <SelectValue placeholder="Select frequency" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-background/80 backdrop-blur-md">
                 <SelectItem value="once">Once (No Repeat)</SelectItem>
                 <SelectItem value="5m">Every 5 minutes</SelectItem>
                 <SelectItem value="15m">Every 15 minutes</SelectItem>
@@ -647,7 +647,7 @@ function CreateCalendarNoteForm({
             type="button"
             variant="outline"
             size="sm"
-            className="h-8 text-[10px] text-amber-600 border-amber-200/50 bg-amber-500/10 hover:bg-amber-500/20 hover:text-amber-700 w-full font-medium"
+            className="h-8 text-[10px] text-primary border-primary/20 bg-primary/10 hover:bg-primary/20 hover:text-primary w-full font-medium"
             onClick={handleEnablePush}
           >
             🔔 Enable notifications to receive alerts
@@ -708,7 +708,7 @@ function CalendarNoteCard({ note }: { note: CalendarNote }) {
           type="button"
           variant="ghost"
           size="icon"
-          className="text-destructive h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
+          className="text-primary h-6 w-6"
           onClick={() => deleteMutation.mutate(note._id)}
           disabled={deleteMutation.isPending}
         >
@@ -727,8 +727,8 @@ function CalendarNoteCard({ note }: { note: CalendarNote }) {
       {note.reminderAt && (
         <div className="flex flex-col gap-0.5 pl-5">
           <div className="flex items-center gap-1">
-            <Bell className="h-3 w-3 text-amber-500 shrink-0" />
-            <span className="text-[10px] text-amber-500 font-medium">
+            <Bell className="h-3 w-3 text-primary shrink-0" />
+            <span className="text-[10px] text-primary font-medium">
               {note.isWholeDay ? (
                 <span>
                   {new Date(note.reminderAt).toLocaleDateString([], {
