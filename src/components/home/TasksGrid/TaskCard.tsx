@@ -4,10 +4,10 @@ import type { Tasks } from "@/types/tasktypes";
 import { Label } from "@radix-ui/react-label";
 import type { UseMutationResult } from "@tanstack/react-query";
 import { Check, Trash, X } from "lucide-react";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { Textarea } from "@/components/ui/textarea";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { editNotes } from "@/api/notes";
 import { toast } from "sonner";
@@ -36,12 +36,12 @@ export default function TaskCard({
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const queryClient = useQueryClient();
-  const { register, handleSubmit, reset, watch } = useForm<Inputs>();
+  const { register, reset, watch } = useForm<Inputs>();
   const { data: settings } = useSettings();
 
   const titleTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const bodyTextareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const autoSaveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Watch form values for debounced auto-save
   const titleValue = watch("title");

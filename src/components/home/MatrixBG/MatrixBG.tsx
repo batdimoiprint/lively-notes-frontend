@@ -53,7 +53,9 @@ export default function MatrixBG() {
   useEffect(() => {
     const checkBattery = async () => {
       try {
-        const battery = (await (navigator as any).getBattery?.()) as BatteryManager | undefined;
+        const battery = (await (
+          navigator as Navigator & { getBattery?: () => Promise<BatteryManager> }
+        ).getBattery?.()) as BatteryManager | undefined;
         if (battery) {
           setIsOnBattery(!battery.charging || battery.level < 0.6);
 

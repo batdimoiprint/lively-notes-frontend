@@ -49,14 +49,14 @@ function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
   // Filter tasks by selected section - treat undefined/null sectionId as "default"
   const sectionTasks = useMemo(() => {
     return tasks.filter((task) => {
-      const taskSectionId = (task as any).sectionId || "default";
+      const taskSectionId = task.sectionId || "default";
       return taskSectionId === selectedSection;
     });
   }, [tasks, selectedSection]);
 
   const sectionCounts = useMemo(() => {
     return tasks.reduce<Record<string, number>>((counts, task) => {
-      const sectionId = (task as any).sectionId || "default";
+      const sectionId = task.sectionId || "default";
       counts[sectionId] = (counts[sectionId] ?? 0) + 1;
       return counts;
     }, {});
@@ -130,10 +130,10 @@ function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
   });
 
   // Custom collision detection - prioritize section droppables over sortable items
-  const customCollisionDetection = (args: any) => {
+  const customCollisionDetection: typeof closestCenter = (args) => {
     // First check for section droppables using pointerWithin
     const pointerCollisions = pointerWithin(args);
-    const sectionCollision = pointerCollisions.find((c: any) =>
+    const sectionCollision = pointerCollisions.find((c) =>
       String(c.id).startsWith("section-")
     );
     if (sectionCollision) {
@@ -156,7 +156,7 @@ function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
     if (overId.startsWith("section-")) {
       const targetSectionId = overId.replace("section-", "");
       const note = tasks.find((t) => t._id === activeId);
-      const currentSectionId = (note as any)?.sectionId || "default";
+      const currentSectionId = note?.sectionId || "default";
 
       if (note && currentSectionId !== targetSectionId) {
         moveSectionMutation.mutate({ noteId: activeId, sectionId: targetSectionId });

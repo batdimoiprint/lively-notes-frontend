@@ -12,7 +12,7 @@ import { editNotes } from "@/api/notes";
 export default function TaskSheet({ task }: { task: Tasks | null }) {
   const { register, reset, watch } = useForm<Inputs>();
   const bodyTextareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const autoSaveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSavedRef = useRef<{ title: string; body: string }>({ title: "", body: "" });
   const latestValuesRef = useRef<{ title: string; body: string }>({ title: "", body: "" });
   const taskRef = useRef<Tasks | null>(task);
@@ -89,7 +89,7 @@ export default function TaskSheet({ task }: { task: Tasks | null }) {
         clearTimeout(autoSaveTimeoutRef.current);
       }
     };
-  }, [titleValue, bodyValue, task?._id]);
+  }, [titleValue, bodyValue, task?._id, mutation, task]);
 
   // Debounced auto-save
   useEffect(() => {

@@ -1,5 +1,5 @@
 export const logger = {
-  error: (message: string, context?: Record<string, any>) => {
+  error: (message: string, context?: Record<string, unknown>) => {
     if (import.meta.env.DEV) {
       console.error(`[API Error] ${message}`, context);
     } else {
@@ -7,7 +7,7 @@ export const logger = {
       // Example: Sentry.captureException(context?.error || new Error(message), { extra: context });
     }
   },
-  info: (message: string, context?: Record<string, any>) => {
+  info: (message: string, context?: Record<string, unknown>) => {
     if (import.meta.env.DEV) {
       console.log(`[Info] ${message}`, context);
     } else {
