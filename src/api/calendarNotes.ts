@@ -43,22 +43,16 @@ export async function getCalendarNotesByMonth(
   year: number,
   month: number
 ): Promise<CalendarNote[]> {
-  const res = await api.get<CalendarNote[]>(
-    `/api/calendar-notes/month/${year}/${month}`
-  );
+  const res = await api.get<CalendarNote[]>(`/api/calendar-notes/month/${year}/${month}`);
   return res.data;
 }
 
-export async function createCalendarNote(
-  input: CreateCalendarNoteInput
-): Promise<CalendarNote> {
+export async function createCalendarNote(input: CreateCalendarNoteInput): Promise<CalendarNote> {
   const res = await api.post<CalendarNote>("/api/calendar-notes/", input);
   return res.data;
 }
 
-export async function updateCalendarNote(
-  input: UpdateCalendarNoteInput
-): Promise<unknown> {
+export async function updateCalendarNote(input: UpdateCalendarNoteInput): Promise<unknown> {
   const res = await api.patch("/api/calendar-notes/", input);
   return res.data;
 }

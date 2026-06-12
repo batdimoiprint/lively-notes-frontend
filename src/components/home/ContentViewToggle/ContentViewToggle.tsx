@@ -9,10 +9,7 @@ interface ContentViewToggleProps {
   onViewChange: (view: ContentView) => void;
 }
 
-export default function ContentViewToggle({
-  view,
-  onViewChange,
-}: ContentViewToggleProps) {
+export default function ContentViewToggle({ view, onViewChange }: ContentViewToggleProps) {
   const isNotes = view === "notes";
 
   return (

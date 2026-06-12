@@ -346,7 +346,7 @@ export default function PhotoCards({ post: initialPost }: { post?: IGPost }) {
           </div>
 
           {/* Bottom controls bar */}
-          <div className="flex shrink-0 items-center justify-between bg-black/80 px-4 py-3">
+          <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 bg-black/80 px-4 py-3">
             {/* Counter */}
             <span className="text-sm font-medium text-white/70">
               {imageIndex + 1} / {imageCount}

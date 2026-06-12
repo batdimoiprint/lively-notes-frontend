@@ -1,6 +1,7 @@
 import api from "@/api/axiosInstance";
 
-const VAPID_PUBLIC_KEY = "BOTDduYjp3ldQdjF1MtnqkBTogp_tm1hIwyPOgV2_VUIoSJ-Czk3CQi0jjev6O1m6vjfooHyO4Z391nA2IiqcDA";
+const VAPID_PUBLIC_KEY =
+  "BOTDduYjp3ldQdjF1MtnqkBTogp_tm1hIwyPOgV2_VUIoSJ-Czk3CQi0jjev6O1m6vjfooHyO4Z391nA2IiqcDA";
 
 let swRegistration: ServiceWorkerRegistration | null = null;
 
@@ -63,7 +64,10 @@ export async function subscribeToPush(): Promise<boolean> {
       await api.post("/api/push/subscribe", subscription.toJSON());
       console.log("Push subscription saved on backend");
     } catch (apiErr) {
-      console.warn("Could not save subscription on backend (possibly unauthenticated yet):", apiErr);
+      console.warn(
+        "Could not save subscription on backend (possibly unauthenticated yet):",
+        apiErr
+      );
     }
     return true;
   } catch (error) {

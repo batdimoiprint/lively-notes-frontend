@@ -295,9 +295,7 @@ export default function PomodoroTimer() {
             </Button>
           ) : null}
         </div>
-        <p className="text-muted-foreground text-[10px]">
-          Sound: {hasSound ? "active" : "none"}
-        </p>
+        <p className="text-muted-foreground text-[10px]">Sound: {hasSound ? "active" : "none"}</p>
       </div>
 
       <div className="flex items-center gap-2">

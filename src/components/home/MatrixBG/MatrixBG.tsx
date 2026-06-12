@@ -1,8 +1,14 @@
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useTheme } from "@/components/theme-provider";
 import { MatrixContext } from "@/context/MatrixContext";
 
 type RGB = { r: number; g: number; b: number };
+type BatteryManager = {
+  charging: boolean;
+  level: number;
+  addEventListener: (event: string, callback: () => void) => void;
+  removeEventListener: (event: string, callback: () => void) => void;
+};
 
 const hexToRGB = (hex: string): RGB => {
   const sanitized = hex.replace("#", "");
@@ -34,6 +40,7 @@ export default function MatrixBG() {
 
   const config = configContext?.config;
   const theme = useTheme();
+  const [isOnBattery, setIsOnBattery] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const dropsRef = useRef<number[]>([]);
@@ -41,6 +48,34 @@ export default function MatrixBG() {
   const intervalRef = useRef<number | null>(null);
   const fontSizeRef = useRef(12);
   const charactersRef = useRef("ᜀᜁᜂᜃᜄᜅᜆᜇᜈᜉᜊᜋᜌᜎᜏᜐᜑᜒᜓ᜔".split(""));
+
+  // Battery Status API
+  useEffect(() => {
+    const checkBattery = async () => {
+      try {
+        const battery = (await (navigator as any).getBattery?.()) as BatteryManager | undefined;
+        if (battery) {
+          setIsOnBattery(!battery.charging || battery.level < 0.6);
+
+          const handleBatteryChange = () => {
+            setIsOnBattery(!battery.charging || battery.level < 0.6);
+          };
+
+          battery.addEventListener("chargingchange", handleBatteryChange);
+          battery.addEventListener("levelchange", handleBatteryChange);
+
+          return () => {
+            battery.removeEventListener("chargingchange", handleBatteryChange);
+            battery.removeEventListener("levelchange", handleBatteryChange);
+          };
+        }
+      } catch {
+        // Battery API not available
+      }
+    };
+
+    checkBattery();
+  }, []);
 
   // Initialize canvas and columns
   useEffect(() => {
@@ -65,7 +100,7 @@ export default function MatrixBG() {
   // Draw loop
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || isOnBattery) return; // Skip animation on battery mode
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -114,7 +149,7 @@ export default function MatrixBG() {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [config, theme.theme]);
+  }, [config, theme.theme, isOnBattery]);
 
   return <canvas ref={canvasRef} className="fixed inset-0 z-0"></canvas>;
 }

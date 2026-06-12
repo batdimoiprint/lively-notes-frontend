@@ -72,7 +72,7 @@ export default function DailyTimeBlocks() {
   const { activeBlock } = useMemo(() => getNextBlockTransition(now), [now]);
 
   return (
-    <Card className="w-full max-w-md bg-background/80 backdrop-blur-md">
+    <Card className="bg-background/80 w-full max-w-md backdrop-blur-md">
       <CardHeader className="gap-1">
         <CardTitle>Daily Time Blocks</CardTitle>
         <CardDescription>

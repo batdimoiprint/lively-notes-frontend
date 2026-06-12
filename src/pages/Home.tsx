@@ -23,25 +23,19 @@ export default function Home() {
       <main className="flex flex-1 flex-col gap-4 p-4">
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           {/* Headers */}
-          <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-stretch">
-            <div className="order-2 flex flex-col sm:order-1">
+          <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-stretch">
+            <div className="order-2 flex flex-col lg:order-1">
               {/* Toggle card replaces the Header when calendar is active */}
               {isCalendar ? (
-                <ContentViewToggle
-                  view={contentView}
-                  onViewChange={setContentView}
-                />
+                <ContentViewToggle view={contentView} onViewChange={setContentView} />
               ) : (
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-stretch">
-                  <ContentViewToggle
-                    view={contentView}
-                    onViewChange={setContentView}
-                  />
+                  <ContentViewToggle view={contentView} onViewChange={setContentView} />
                   <Header selectedSection={selectedSection} />
                 </div>
               )}
             </div>
-            <div className="order-1 flex flex-col sm:order-2 sm:flex-1">
+            <div className="order-1 flex min-w-0 flex-col lg:order-2 lg:flex-1">
               <PictureCards />
             </div>
             <div className="order-3 flex">
@@ -55,14 +49,11 @@ export default function Home() {
           {isCalendar ? (
             <NotesCalendar />
           ) : (
-            <div className="flex flex-1 flex-row gap-4">
-              <div className="flex flex-1 flex-col">
-                <TasksGrid
-                  selectedSection={selectedSection}
-                  onSectionSelect={setSelectedSection}
-                />
+            <div className="flex flex-1 flex-col gap-4 lg:flex-row">
+              <div className="flex min-w-0 flex-1 flex-col">
+                <TasksGrid selectedSection={selectedSection} onSectionSelect={setSelectedSection} />
               </div>
-              <div className="">
+              <div className="flex w-full flex-col lg:w-80 xl:w-96">
                 <TodoList />
               </div>
             </div>

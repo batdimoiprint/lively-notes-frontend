@@ -6,7 +6,7 @@ export default function ErrorFallback({ error, resetErrorBoundary }: FallbackPro
   const message = error instanceof Error ? error.message : String(error);
 
   return (
-    <Card className={"relative z-1 mx-164 flex flex-col justify-center p-4"}>
+    <Card className={"relative z-1 mx-auto flex w-full max-w-md flex-col justify-center p-4"}>
       Something went wrong!
       <CardDescription>{message}</CardDescription>
       <Button onClick={resetErrorBoundary}>Retry</Button>

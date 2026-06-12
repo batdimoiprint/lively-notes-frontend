@@ -3,8 +3,8 @@ import { Spinner } from "@/components/ui/spinner";
 import type { Tasks } from "@/types/tasktypes";
 import { Label } from "@radix-ui/react-label";
 import type { UseMutationResult } from "@tanstack/react-query";
-import { Check, Trash, X, Save } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { Check, Trash, X } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -36,11 +36,16 @@ export default function TaskCard({
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const queryClient = useQueryClient();
-  const { register, handleSubmit, reset } = useForm<Inputs>();
+  const { register, handleSubmit, reset, watch } = useForm<Inputs>();
   const { data: settings } = useSettings();
 
   const titleTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const bodyTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Watch form values for debounced auto-save
+  const titleValue = watch("title");
+  const bodyValue = watch("body");
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task._id,
@@ -64,13 +69,45 @@ export default function TaskCard({
     mutationFn: editNotes,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
-      toast.info("Notes Update");
-      setIsExpanded(false);
+      toast.info("Notes saved");
     },
     onError: () => {
       toast.error("Failed to update notes");
     },
   });
+
+  // Debounced auto-save
+  useEffect(() => {
+    if (!isExpanded) return;
+
+    // Clear existing timeout
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    // Set new timeout for auto-save (1.5 seconds after last change)
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      if (titleValue && titleValue.trim()) {
+        const payload: Tasks = {
+          ...task,
+          title: titleValue,
+          body: bodyValue || "",
+        };
+        editMutation.mutate(payload);
+      }
+    }, 1500);
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [titleValue, bodyValue, isExpanded, task, editMutation]);
+
+  function deleteTask() {
+    setDeletingId(task._id);
+    mutation.mutate(task._id);
+  }
 
   useEffect(() => {
     reset({ title: task.title, body: task.body });
@@ -81,19 +118,6 @@ export default function TaskCard({
       }, 0);
     }
   }, [task, reset, isExpanded]);
-
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-    const payload: Tasks = { ...data, _id: task._id };
-    editMutation.mutate(payload);
-  };
-
-  function deleteTask() {
-    setDeletingId(task._id);
-    mutation.mutate(task._id);
-  }
-
-  const titleField = register("title", { required: "Title is required" });
-  const bodyField = register("body", { required: "Title is required" });
 
   const handleCardClick = () => {
     if (isDesktop) {
@@ -120,7 +144,7 @@ export default function TaskCard({
         {!isExpanded || isDesktop ? (
           <>
             <CardHeader>
-              <Label className="w-48 overflow-hidden font-bold text-ellipsis whitespace-nowrap">
+              <Label className="min-w-0 overflow-hidden font-bold text-ellipsis whitespace-nowrap">
                 {task.title}
               </Label>
               <CardAction onClick={(e) => e.stopPropagation()}>
@@ -147,32 +171,23 @@ export default function TaskCard({
             <CardContent className="break-words whitespace-break-spaces">{task.body}</CardContent>
           </>
         ) : (
-          <form onSubmit={handleSubmit(onSubmit)} className="relative z-10 flex flex-col gap-2 p-1">
+          <div className="relative z-10 flex flex-col gap-2 p-1">
             <div className="mb-1 flex items-center justify-between">
               <Textarea
-                {...titleField}
+                {...register("title", { required: "Title is required" })}
                 className="text-md m-0 min-h-0 resize-none border-none bg-transparent p-0 font-bold focus-visible:ring-0"
                 style={{ overflow: "hidden" }}
                 onChange={(e) => {
-                  titleField.onChange(e);
+                  register("title", { required: "Title is required" }).onChange(e);
                   resizeTextarea(e.target);
                 }}
                 ref={(e) => {
-                  titleField.ref(e);
+                  register("title", { required: "Title is required" }).ref(e);
                   titleTextareaRef.current = e;
                 }}
                 onClick={(e) => e.stopPropagation()}
               />
               <div className="flex shrink-0 gap-2">
-                <button
-                  type="submit"
-                  disabled={editMutation.isPending}
-                  className="rounded bg-transparent p-1"
-                  style={{ color: settings?.textColor || "#22c55e" }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {editMutation.isPending ? <Spinner /> : <Save size={18} />}
-                </button>
                 <X
                   className="cursor-pointer rounded p-1 text-gray-500"
                   size={26}
@@ -184,20 +199,20 @@ export default function TaskCard({
               </div>
             </div>
             <Textarea
-              {...bodyField}
+              {...register("body", { required: "Title is required" })}
               className="min-h-24 resize-none border-none bg-transparent p-0 text-sm whitespace-break-spaces focus-visible:ring-0"
               style={{ overflow: "hidden" }}
               onChange={(e) => {
-                bodyField.onChange(e);
+                register("body", { required: "Title is required" }).onChange(e);
                 resizeTextarea(e.target);
               }}
               ref={(e) => {
-                bodyField.ref(e);
+                register("body", { required: "Title is required" }).ref(e);
                 bodyTextareaRef.current = e;
               }}
               onClick={(e) => e.stopPropagation()}
             />
-          </form>
+          </div>
         )}
       </Card>
     </>

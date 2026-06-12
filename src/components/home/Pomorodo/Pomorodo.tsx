@@ -272,7 +272,7 @@ export default function Pomorodo() {
         <div
           className={
             isPomodoroView
-              ? "flex flex-1 flex-col items-center justify-center space-y-3 text-center "
+              ? "flex flex-1 flex-col items-center justify-center space-y-3 text-center"
               : "hidden"
           }
           aria-hidden={!isPomodoroView}

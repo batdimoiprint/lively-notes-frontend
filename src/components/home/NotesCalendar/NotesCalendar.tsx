@@ -126,9 +126,7 @@ export default function NotesCalendar() {
       const date = new Date(year, month, day);
       const dateKey = formatDateKey(date);
       const isToday =
-        day === today.getDate() &&
-        month === today.getMonth() &&
-        year === today.getFullYear();
+        day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
       days.push({
         day,
         isCurrentMonth: true,
@@ -159,25 +157,19 @@ export default function NotesCalendar() {
   // Sync selected day with updated data
   useEffect(() => {
     if (selectedDay) {
-      const updated = calendarDays.find(
-        (d) => d.dateKey === selectedDay.dateKey
-      );
+      const updated = calendarDays.find((d) => d.dateKey === selectedDay.dateKey);
       if (updated) setSelectedDay(updated);
     }
   }, [calendarDays, selectedDay]);
 
   const goToPrevMonth = useCallback(() => {
-    setCurrentDate(
-      (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1)
-    );
+    setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
     setSelectedDay(null);
     setShowForm(false);
   }, []);
 
   const goToNextMonth = useCallback(() => {
-    setCurrentDate(
-      (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1)
-    );
+    setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
     setSelectedDay(null);
     setShowForm(false);
   }, []);
@@ -204,8 +196,8 @@ export default function NotesCalendar() {
   return (
     <div className="flex flex-1 flex-col gap-4 lg:flex-row">
       {/* Calendar Grid */}
-      <Card className="flex flex-1 flex-col">
-        <CardHeader className="flex-row items-center justify-between pb-2">
+      <Card className="flex min-w-0 flex-1 flex-col">
+        <CardHeader className="flex-row flex-wrap items-center justify-between gap-2 pb-2">
           <div className="flex items-center gap-2">
             <CalendarDays className="text-primary h-5 w-5" />
             <CardTitle className="text-base">
@@ -251,7 +243,7 @@ export default function NotesCalendar() {
             {DAYS_OF_WEEK.map((day) => (
               <div
                 key={day}
-                className="text-muted-foreground py-1 text-center text-[10px] font-semibold uppercase tracking-wider"
+                className="text-muted-foreground py-1 text-center text-[10px] font-semibold tracking-wider uppercase"
               >
                 {day}
               </div>
@@ -261,9 +253,7 @@ export default function NotesCalendar() {
           {/* Calendar cells */}
           <div className="grid flex-1 grid-cols-7 gap-px">
             {calendarDays.map((dayData, idx) => {
-              const isSelected =
-                selectedDay &&
-                selectedDay.dateKey === dayData.dateKey;
+              const isSelected = selectedDay && selectedDay.dateKey === dayData.dateKey;
               const hasNotes = dayData.notes.length > 0;
 
               return (
@@ -275,14 +265,8 @@ export default function NotesCalendar() {
                     setShowForm(false);
                   }}
                   className={`group relative flex min-h-[2.5rem] flex-col items-center justify-start rounded-lg p-1 text-xs transition-all duration-150 sm:min-h-[3.5rem] ${
-                    !dayData.isCurrentMonth
-                      ? "text-muted-foreground/40"
-                      : "text-foreground"
-                  } ${
-                    dayData.isToday
-                      ? "bg-primary/10 ring-primary/30 font-bold ring-1"
-                      : ""
-                  } ${
+                    !dayData.isCurrentMonth ? "text-muted-foreground/40" : "text-foreground"
+                  } ${dayData.isToday ? "bg-primary/10 ring-primary/30 font-bold ring-1" : ""} ${
                     isSelected
                       ? "bg-primary text-primary-foreground ring-primary ring-2"
                       : "hover:bg-accent/60"
@@ -305,9 +289,7 @@ export default function NotesCalendar() {
                       {dayData.notes.length > 1 && (
                         <span
                           className={`text-[8px] font-medium ${
-                            isSelected
-                              ? "text-primary-foreground"
-                              : "text-primary"
+                            isSelected ? "text-primary-foreground" : "text-primary"
                           }`}
                         >
                           {dayData.notes.length}
@@ -326,9 +308,7 @@ export default function NotesCalendar() {
       <Card className="flex w-full flex-col lg:w-80">
         <CardHeader className="flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium">
-            {selectedDay
-              ? formatDisplayDate(selectedDay.date)
-              : "Select a day"}
+            {selectedDay ? formatDisplayDate(selectedDay.date) : "Select a day"}
           </CardTitle>
           {selectedDay && (
             <Button
@@ -339,11 +319,7 @@ export default function NotesCalendar() {
               onClick={() => setShowForm((v) => !v)}
               title="Add note"
             >
-              {showForm ? (
-                <X className="h-4 w-4" />
-              ) : (
-                <Plus className="h-4 w-4" />
-              )}
+              {showForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
             </Button>
           )}
         </CardHeader>
@@ -491,10 +467,7 @@ function CreateCalendarNoteForm({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="bg-accent/30 flex flex-col gap-2 rounded-lg p-3"
-    >
+    <form onSubmit={handleSubmit} className="bg-accent/30 flex flex-col gap-2 rounded-lg p-3">
       <Input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
@@ -509,7 +482,7 @@ function CreateCalendarNoteForm({
         className="min-h-[60px] resize-none text-sm"
       />
 
-      <div className="flex flex-col gap-2 pt-1 border-t border-accent/20">
+      <div className="border-accent/20 flex flex-col gap-2 border-t pt-1">
         <div className="flex items-center gap-1.5">
           <Popover>
             <PopoverTrigger asChild>
@@ -517,7 +490,7 @@ function CreateCalendarNoteForm({
                 type="button"
                 variant="outline"
                 className={cn(
-                  "h-8 flex-1 justify-start text-left font-normal text-xs px-2 gap-1.5 border-input bg-background/60 backdrop-blur-md hover:bg-background/80",
+                  "border-input bg-background/60 hover:bg-background/80 h-8 flex-1 justify-start gap-1.5 px-2 text-left text-xs font-normal backdrop-blur-md",
                   !reminderDate && "text-muted-foreground"
                 )}
                 onClick={() => {
@@ -530,22 +503,26 @@ function CreateCalendarNoteForm({
                 <Bell className="h-3.5 w-3.5 shrink-0" />
                 {reminderDate ? (
                   <span className="truncate">
-                    {format(reminderDate, "MMM d, yyyy")} {isWholeDay ? "(Whole Day)" : `at ${reminderTime}`}
+                    {format(reminderDate, "MMM d, yyyy")}{" "}
+                    {isWholeDay ? "(Whole Day)" : `at ${reminderTime}`}
                   </span>
                 ) : (
                   <span>Set reminder (optional)</span>
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-64 p-3 flex flex-col gap-2 bg-background/80 backdrop-blur-md border border-border/40 shadow-lg" align="start">
+            <PopoverContent
+              className="bg-background/80 border-border/40 flex w-64 flex-col gap-2 border p-3 shadow-lg backdrop-blur-md"
+              align="start"
+            >
               {showCustomDate ? (
                 <div className="flex flex-col gap-2">
-                  <div className="flex items-center justify-between border-b border-accent/20 pb-1">
+                  <div className="border-accent/20 flex items-center justify-between border-b pb-1">
                     <span className="text-[11px] font-semibold">Select Date</span>
                     <Button
                       type="button"
                       variant="ghost"
-                      className="h-6 px-1.5 text-[10px] text-primary"
+                      className="text-primary h-6 px-1.5 text-[10px]"
                       onClick={() => {
                         setReminderDate(initialDate);
                         setShowCustomDate(false);
@@ -565,13 +542,13 @@ function CreateCalendarNoteForm({
               ) : (
                 <div className="flex flex-col gap-1.5 py-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-primary font-medium">
+                    <span className="text-primary text-[11px] font-medium">
                       Date: {reminderDate ? format(reminderDate, "MMM d, yyyy") : "None"}
                     </span>
                     <Button
                       type="button"
                       variant="ghost"
-                      className="h-6 px-1.5 text-[10px] text-primary"
+                      className="text-primary h-6 px-1.5 text-[10px]"
                       onClick={() => setShowCustomDate(true)}
                     >
                       Change date
@@ -580,9 +557,12 @@ function CreateCalendarNoteForm({
                 </div>
               )}
 
-              <div className="flex flex-col gap-2 border-t border-accent/20 pt-2">
+              <div className="border-accent/20 flex flex-col gap-2 border-t pt-2">
                 <div className="flex items-center justify-between gap-2">
-                  <label htmlFor="whole-day-toggle" className="text-xs text-primary font-medium cursor-pointer select-none">
+                  <label
+                    htmlFor="whole-day-toggle"
+                    className="text-primary cursor-pointer text-xs font-medium select-none"
+                  >
                     Whole Day
                   </label>
                   <Switch
@@ -593,13 +573,13 @@ function CreateCalendarNoteForm({
                 </div>
 
                 {!isWholeDay && (
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs font-medium text-primary">Time:</span>
+                  <div className="mt-1 flex items-center gap-2">
+                    <span className="text-primary text-xs font-medium">Time:</span>
                     <Input
                       type="time"
                       value={reminderTime}
                       onChange={(e) => setReminderTime(e.target.value)}
-                      className="h-8 w-28 text-xs bg-background/50 border-input"
+                      className="bg-background/50 border-input h-8 w-28 text-xs"
                     />
                   </div>
                 )}
@@ -609,7 +589,7 @@ function CreateCalendarNoteForm({
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="h-8 text-xs text-destructive mt-1 border border-destructive/20 hover:bg-destructive/10"
+                    className="text-destructive border-destructive/20 hover:bg-destructive/10 mt-1 h-8 border text-xs"
                     onClick={() => {
                       setReminderDate(undefined);
                       setShowCustomDate(false);
@@ -625,9 +605,9 @@ function CreateCalendarNoteForm({
 
         {reminderDate && (
           <div className="flex items-center justify-between gap-2 pl-1">
-            <span className="text-[11px] text-primary font-medium shrink-0">Repeat:</span>
+            <span className="text-primary shrink-0 text-[11px] font-medium">Repeat:</span>
             <Select value={reminderInterval} onValueChange={setReminderInterval}>
-              <SelectTrigger className="h-8 text-xs flex-1 justify-between px-2 bg-background border-input">
+              <SelectTrigger className="bg-background border-input h-8 flex-1 justify-between px-2 text-xs">
                 <SelectValue placeholder="Select frequency" />
               </SelectTrigger>
               <SelectContent className="bg-background/80 backdrop-blur-md">
@@ -647,7 +627,7 @@ function CreateCalendarNoteForm({
             type="button"
             variant="outline"
             size="sm"
-            className="h-8 text-[10px] text-primary border-primary/20 bg-primary/10 hover:bg-primary/20 hover:text-primary w-full font-medium"
+            className="text-primary border-primary/20 bg-primary/10 hover:bg-primary/20 hover:text-primary h-8 w-full text-[10px] font-medium"
             onClick={handleEnablePush}
           >
             🔔 Enable notifications to receive alerts
@@ -655,7 +635,7 @@ function CreateCalendarNoteForm({
         )}
       </div>
 
-      <div className="flex gap-2 mt-1">
+      <div className="mt-1 flex gap-2">
         <Button
           type="submit"
           size="sm"
@@ -700,9 +680,7 @@ function CalendarNoteCard({ note }: { note: CalendarNote }) {
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-start gap-2">
           <FileText className="text-primary mt-0.5 h-3.5 w-3.5 shrink-0" />
-          <span className="text-sm font-medium leading-tight">
-            {note.title}
-          </span>
+          <span className="text-sm leading-tight font-medium">{note.title}</span>
         </div>
         <Button
           type="button"
@@ -720,15 +698,13 @@ function CalendarNoteCard({ note }: { note: CalendarNote }) {
         </Button>
       </div>
       {note.body && (
-        <p className="text-muted-foreground pl-5 text-xs leading-relaxed">
-          {note.body}
-        </p>
+        <p className="text-muted-foreground pl-5 text-xs leading-relaxed">{note.body}</p>
       )}
       {note.reminderAt && (
         <div className="flex flex-col gap-0.5 pl-5">
           <div className="flex items-center gap-1">
-            <Bell className="h-3 w-3 text-primary shrink-0" />
-            <span className="text-[10px] text-primary font-medium">
+            <Bell className="text-primary h-3 w-3 shrink-0" />
+            <span className="text-primary text-[10px] font-medium">
               {note.isWholeDay ? (
                 <span>
                   {new Date(note.reminderAt).toLocaleDateString([], {
@@ -749,7 +725,7 @@ function CalendarNoteCard({ note }: { note: CalendarNote }) {
             </span>
           </div>
           {note.reminderInterval && note.reminderInterval !== "once" && (
-            <span className="text-[9px] text-muted-foreground font-semibold uppercase tracking-wider pl-4">
+            <span className="text-muted-foreground pl-4 text-[9px] font-semibold tracking-wider uppercase">
               🔁 {getFrequencyLabel(note.reminderInterval)}
             </span>
           )}

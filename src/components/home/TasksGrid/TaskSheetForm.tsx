@@ -1,22 +1,26 @@
-import { DialogContent } from "@/components/ui/dialog";
+import { DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { type Inputs, type Tasks } from "@/types/tasktypes";
-import { Save } from "lucide-react";
-import { Button } from "../../ui/button";
-
-import { editNotes } from "@/api/notes";
-import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useEffect, useRef } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import { editNotes } from "@/api/notes";
+
 export default function TaskSheet({ task }: { task: Tasks | null }) {
-  const { register, handleSubmit, reset } = useForm<Inputs>();
+  const { register, reset, watch } = useForm<Inputs>();
   const bodyTextareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const [result, setResult] = useState<React.ReactNode>("Save");
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastSavedRef = useRef<{ title: string; body: string }>({ title: "", body: "" });
+  const latestValuesRef = useRef<{ title: string; body: string }>({ title: "", body: "" });
+  const taskRef = useRef<Tasks | null>(task);
   const queryClient = useQueryClient();
+
+  // Watch form values
+  const titleValue = watch("title");
+  const bodyValue = watch("body");
 
   const resizeTextarea = (textarea: HTMLTextAreaElement | null) => {
     if (!textarea) return;
@@ -26,44 +30,111 @@ export default function TaskSheet({ task }: { task: Tasks | null }) {
 
   const mutation = useMutation({
     mutationFn: editNotes,
-    onMutate: () => {
-      setResult(<Spinner />);
-    },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+      lastSavedRef.current = {
+        title: variables.title,
+        body: variables.body,
+      };
       queryClient.invalidateQueries({ queryKey: ["notes"] });
-      setResult(
-        <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5em" }}>
-          Notes Updated!
-        </span>
-      );
-      toast.info("Notes Update");
-      setTimeout(() => {
-        setResult("Save");
-      }, 2000);
+      toast.info("Notes saved");
     },
     onError: () => {
       toast.error("Failed to update notes");
     },
   });
 
+  const mutateRef = useRef<typeof mutation.mutate | null>(null);
+
   useEffect(() => {
-    reset({ title: task?.title ?? "", body: task?.body ?? "" });
+    taskRef.current = task;
+  }, [task]);
+
+  useEffect(() => {
+    mutateRef.current = mutation.mutate;
+  }, [mutation.mutate]);
+
+  useEffect(() => {
+    if (!task?._id) return;
+
+    const nextValues = {
+      title: titleValue ?? "",
+      body: bodyValue ?? "",
+    };
+
+    latestValuesRef.current = nextValues;
+
+    if (
+      nextValues.title === lastSavedRef.current.title &&
+      nextValues.body === lastSavedRef.current.body
+    ) {
+      return;
+    }
+
+    if (!nextValues.title.trim()) return;
+
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      mutation.mutate({
+        ...task,
+        title: nextValues.title,
+        body: nextValues.body,
+      });
+    }, 1500);
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [titleValue, bodyValue, task?._id]);
+
+  // Debounced auto-save
+  useEffect(() => {
+    const nextTaskValues = {
+      title: task?.title ?? "",
+      body: task?.body ?? "",
+    };
+
+    lastSavedRef.current = nextTaskValues;
+    latestValuesRef.current = nextTaskValues;
+    reset(nextTaskValues);
     requestAnimationFrame(() => {
       resizeTextarea(bodyTextareaRef.current);
     });
   }, [task, reset]);
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-    const payload: Tasks = { ...data, _id: task?._id ?? "" };
-    mutation.mutate(payload);
-  };
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+
+      const { title, body } = latestValuesRef.current;
+      const currentTask = taskRef.current;
+      if (
+        currentTask?._id &&
+        title.trim() &&
+        (title !== lastSavedRef.current.title || body !== lastSavedRef.current.body)
+      ) {
+        mutateRef.current?.({
+          ...currentTask,
+          title,
+          body,
+        });
+      }
+    };
+  }, []);
 
   const titleField = register("title", { required: "Title is required" });
   const bodyField = register("body", { required: "Title is required" });
 
   return (
     <DialogContent className="max-h-[90vh] overflow-hidden p-0">
-      <form className="flex max-h-[90vh] flex-col gap-4 p-6" onSubmit={handleSubmit(onSubmit)}>
+      <DialogTitle className="sr-only">Edit Task</DialogTitle>
+      <div className="flex max-h-[90vh] flex-col gap-4 p-6">
         {/* Title input in header */}
         <div className="flex flex-col gap-2">
           <input
@@ -89,11 +160,7 @@ export default function TaskSheet({ task }: { task: Tasks | null }) {
             placeholder="Body"
           />
         </ScrollArea>
-        <Button className="self-end" disabled={mutation.isPending} type="submit">
-          <Save />
-          {result}
-        </Button>
-      </form>
+      </div>
     </DialogContent>
   );
 }

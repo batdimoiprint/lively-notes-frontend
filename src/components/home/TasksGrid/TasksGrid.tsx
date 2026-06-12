@@ -188,7 +188,7 @@ function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
           collisionDetection={customCollisionDetection}
           onDragEnd={handleDragEnd}
         >
-          {/* Mobile: tabs on top, notes below. sm+: sidebar left, notes right */}
+          {/* Mobile: tabs on top, notes below. md+: sidebar left, notes right */}
           <MobileSectionTabs
             selectedSection={selectedSection}
             onSectionSelect={onSectionSelect}
@@ -197,7 +197,7 @@ function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
 
           <div className="flex h-full gap-4">
             {/* Desktop sidebar — hidden on mobile */}
-            <div className="hidden sm:block">
+            <div className="hidden md:block">
               <SectionsSidebar
                 selectedSection={selectedSection}
                 onSectionSelect={onSectionSelect}
@@ -210,7 +210,7 @@ function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
                 items={displayTasks.map((t) => t._id)}
                 strategy={rectSortingStrategy}
               >
-                <div className="grid gap-4 sm:grid-cols-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                   {displayTasks.map((task: Tasks) => (
                     <TaskCard
                       key={task._id}
@@ -267,7 +267,7 @@ function MobileSectionTabs({
   }, [rawSections, sectionCounts]);
 
   return (
-    <div className="mb-3 sm:hidden">
+    <div className="mb-3 md:hidden">
       <ScrollArea className="w-full">
         <div className="flex gap-2 pb-1">
           {sections.map((section) => {
