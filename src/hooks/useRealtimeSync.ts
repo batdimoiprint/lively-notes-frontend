@@ -46,23 +46,16 @@ export function useRealtimeSync(enabled: boolean = true) {
 
     // Calculate robust API Base URL for SSE
     const getSseBaseUrl = () => {
-      const hostname = window.location.hostname;
-      const isLocal = hostname === "localhost" || hostname === "127.0.0.1";
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      );
+      const isLocal =
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1" ||
+        window.location.hostname.startsWith("192.168.");
 
-      if (!import.meta.env.PROD) {
-        return isMobile ? "http://192.168.1.6:3000" : "http://localhost:3000";
+      if (isLocal) {
+        return "http://localhost:3000";
       }
 
-      // If running on local file system or local desktop webview (Wallpaper Engine) in PROD
-      if (isLocal || window.location.protocol === "file:") {
-        return "https://1ai6l6vwae.execute-api.ap-southeast-1.amazonaws.com";
-      }
-
-      // Default relative path for Vercel production proxy
-      return "";
+      return "https://1ai6l6vwae.execute-api.ap-southeast-1.amazonaws.com";
     };
 
     let eventSource: EventSource | null = null;
