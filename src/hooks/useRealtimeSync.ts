@@ -1,11 +1,17 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { queryClient } from "@/api/queryClient";
+import api from "@/api/axiosInstance";
 
 interface SyncEventData {
   domain: string;
   action: string;
   id?: string;
   timestamp?: number;
+}
+
+interface SyncStatusResponse {
+  lastEventTimestamp: number;
+  lastEvent: SyncEventData | null;
 }
 
 const DOMAIN_QUERY_KEY_MAP: Record<string, string[]> = {
@@ -19,83 +25,126 @@ const DOMAIN_QUERY_KEY_MAP: Record<string, string[]> = {
 };
 
 export function useRealtimeSync(enabled: boolean = true) {
+  const lastProcessedTimeRef = useRef<number>(Date.now());
+
   useEffect(() => {
-    if (!enabled || typeof window === "undefined" || typeof window.EventSource === "undefined") {
+    if (!enabled || typeof window === "undefined") {
       return;
     }
 
-    let eventSource: EventSource | null = null;
-    let reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
-    let delay = 1000; // 1s initial delay
-    const MAX_DELAY = 30000; // 30s max delay
-
-    const isMobile = () => {
-      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      );
+    // Force active query refetch for domain
+    const triggerRefetch = (domain?: string) => {
+      const queryKey = domain ? DOMAIN_QUERY_KEY_MAP[domain] : undefined;
+      if (queryKey) {
+        void queryClient.refetchQueries({ queryKey, type: "all" });
+        void queryClient.invalidateQueries({ queryKey, refetchType: "all" });
+      } else {
+        void queryClient.refetchQueries({ type: "all" });
+        void queryClient.invalidateQueries({ refetchType: "all" });
+      }
     };
 
-    const LOCAL_API_HOST = "http://localhost:3000";
-    const MOBILE_API_HOST = "http://192.168.1.6:3000";
-    const baseURL = import.meta.env.PROD ? "" : isMobile() ? MOBILE_API_HOST : LOCAL_API_HOST;
+    // Calculate robust API Base URL for SSE
+    const getSseBaseUrl = () => {
+      const hostname = window.location.hostname;
+      const isLocal = hostname === "localhost" || hostname === "127.0.0.1";
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
 
-    function connect() {
+      if (!import.meta.env.PROD) {
+        return isMobile ? "http://192.168.1.6:3000" : "http://localhost:3000";
+      }
+
+      // If running on local file system or local desktop webview (Wallpaper Engine) in PROD
+      if (isLocal || window.location.protocol === "file:") {
+        return "https://1ai6l6vwae.execute-api.ap-southeast-1.amazonaws.com";
+      }
+
+      // Default relative path for Vercel production proxy
+      return "";
+    };
+
+    let eventSource: EventSource | null = null;
+    let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+    let isCleanedUp = false;
+
+    const connectSse = () => {
+      if (isCleanedUp) return;
+
       if (eventSource) {
         eventSource.close();
       }
 
-      eventSource = new EventSource(`${baseURL}/api/sync/events`, {
-        withCredentials: true,
-      });
+      const baseUrl = getSseBaseUrl();
+      const sseUrl = `${baseUrl}/api/sync/events`;
 
-      eventSource.onopen = () => {
-        // Reset backoff delay on successful connection
-        delay = 1000;
-        // Invalidate main queries on reconnect to sync missed updates
-        void queryClient.invalidateQueries();
-      };
+      try {
+        eventSource = new EventSource(sseUrl, { withCredentials: true });
 
-      const handleSyncEvent = (e: MessageEvent) => {
-        try {
-          const payload: SyncEventData = JSON.parse(e.data);
-          if (!payload || !payload.domain) return;
+        eventSource.onopen = () => {
+          // Sync any updates missed during reconnect
+          triggerRefetch();
+        };
 
-          const queryKey = DOMAIN_QUERY_KEY_MAP[payload.domain];
-          if (queryKey) {
-            void queryClient.invalidateQueries({ queryKey });
-          } else {
-            void queryClient.invalidateQueries();
+        const handleSyncMessage = (e: MessageEvent) => {
+          try {
+            const payload: SyncEventData = JSON.parse(e.data);
+            if (!payload || !payload.domain) return;
+
+            if (payload.timestamp) {
+              lastProcessedTimeRef.current = Math.max(
+                lastProcessedTimeRef.current,
+                payload.timestamp
+              );
+            }
+            triggerRefetch(payload.domain);
+          } catch (err) {
+            console.error("Failed to parse SSE sync payload:", err);
           }
-        } catch (err) {
-          console.error("Error parsing sync SSE payload:", err);
+        };
+
+        eventSource.addEventListener("sync", handleSyncMessage as EventListener);
+
+        eventSource.onerror = () => {
+          if (eventSource) {
+            eventSource.close();
+            eventSource = null;
+          }
+
+          // Auto reconnect after 1s (handles AWS API Gateway 29s timeout)
+          if (!isCleanedUp) {
+            reconnectTimer = setTimeout(connectSse, 1000);
+          }
+        };
+      } catch (err) {
+        console.error("SSE connection error:", err);
+        if (!isCleanedUp) {
+          reconnectTimer = setTimeout(connectSse, 2000);
         }
-      };
+      }
+    };
 
-      eventSource.addEventListener("sync", handleSyncEvent as EventListener);
+    connectSse();
 
-      eventSource.onerror = () => {
-        if (eventSource) {
-          eventSource.close();
-          eventSource = null;
+    // ── Bulletproof Fallback Polling (Wallpaper Engine & Background Webview) ──
+    const pollInterval = setInterval(async () => {
+      try {
+        const res = await api.get<SyncStatusResponse>("/api/sync/status");
+        if (res.data && res.data.lastEventTimestamp > lastProcessedTimeRef.current) {
+          lastProcessedTimeRef.current = res.data.lastEventTimestamp;
+          triggerRefetch(res.data.lastEvent?.domain);
         }
-
-        // Schedule reconnection with exponential backoff
-        reconnectTimeout = setTimeout(() => {
-          delay = Math.min(delay * 2, MAX_DELAY);
-          connect();
-        }, delay);
-      };
-    }
-
-    connect();
+      } catch (err) {
+        // Silent poll error fallback
+      }
+    }, 3000);
 
     return () => {
-      if (reconnectTimeout) {
-        clearTimeout(reconnectTimeout);
-      }
-      if (eventSource) {
-        eventSource.close();
-      }
+      isCleanedUp = true;
+      clearInterval(pollInterval);
+      if (reconnectTimer) clearTimeout(reconnectTimer);
+      if (eventSource) eventSource.close();
     };
   }, [enabled]);
 }
