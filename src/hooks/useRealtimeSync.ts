@@ -65,7 +65,8 @@ export function useRealtimeSync(enabled: boolean = true) {
       }
 
       const baseUrl = getSseBaseUrl();
-      const sseUrl = `${baseUrl}/api/notes?sync=events`;
+      const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : "";
+      const sseUrl = `${baseUrl}/api/notes?sync=events${token ? `&token=${encodeURIComponent(token)}` : ""}`;
 
       try {
         eventSource = new EventSource(sseUrl, { withCredentials: true });
@@ -128,7 +129,7 @@ export function useRealtimeSync(enabled: boolean = true) {
       } catch (err) {
         // Silent poll error fallback
       }
-    }, 3000);
+    }, 1500);
 
     return () => {
       isCleanedUp = true;
