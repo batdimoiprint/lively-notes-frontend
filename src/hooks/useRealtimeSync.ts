@@ -24,6 +24,18 @@ const DOMAIN_QUERY_KEY_MAP: Record<string, string[]> = {
   sound: ["pomodoroSound"],
 };
 
+/**
+ * Realtime sync via MongoDB-backed polling.
+ *
+ * SSE is intentionally NOT used because AWS API Gateway HTTP API
+ * hard-kills connections after 29 seconds, and each Lambda invocation
+ * has its own in-memory connection Map — SSE broadcasts can never
+ * reach other clients.
+ *
+ * Polling /api/notes?sync=status every 1.5s is the reliable path.
+ * The endpoint reads sync state from MongoDB (persisted by every
+ * mutation's broadcastSyncEvent call).
+ */
 export function useRealtimeSync(enabled: boolean = true) {
   const lastProcessedTimeRef = useRef<number>(Date.now());
 
@@ -44,98 +56,44 @@ export function useRealtimeSync(enabled: boolean = true) {
       }
     };
 
-    // Calculate robust API Base URL for SSE
-    const getSseBaseUrl = () => {
-      const isLocalBackend = window.location.port === "3000";
-      if (isLocalBackend) {
-        return "http://localhost:3000";
-      }
-      return "https://1ai6l6vwae.execute-api.ap-southeast-1.amazonaws.com";
-    };
-
-    let eventSource: EventSource | null = null;
-    let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
-    let isCleanedUp = false;
-
-    const connectSse = () => {
-      if (isCleanedUp) return;
-
-      if (eventSource) {
-        eventSource.close();
-      }
-
-      const baseUrl = getSseBaseUrl();
-      const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : "";
-      const sseUrl = `${baseUrl}/api/notes?sync=events${token ? `&token=${encodeURIComponent(token)}` : ""}`;
-
-      try {
-        eventSource = new EventSource(sseUrl, { withCredentials: true });
-
-        eventSource.onopen = () => {
-          // Sync any updates missed during reconnect
-          triggerRefetch();
-        };
-
-        const handleSyncMessage = (e: MessageEvent) => {
-          try {
-            const payload: SyncEventData = JSON.parse(e.data);
-            if (!payload || !payload.domain) return;
-
-            if (payload.timestamp) {
-              lastProcessedTimeRef.current = Math.max(
-                lastProcessedTimeRef.current,
-                payload.timestamp
-              );
-            }
-            triggerRefetch(payload.domain);
-          } catch (err) {
-            console.error("Failed to parse SSE sync payload:", err);
-          }
-        };
-
-        eventSource.addEventListener("sync", handleSyncMessage as EventListener);
-
-        eventSource.onerror = () => {
-          if (eventSource) {
-            eventSource.close();
-            eventSource = null;
-          }
-
-          // Auto reconnect after 1s (handles AWS API Gateway 29s timeout)
-          if (!isCleanedUp) {
-            reconnectTimer = setTimeout(connectSse, 1000);
-          }
-        };
-      } catch (err) {
-        console.error("SSE connection error:", err);
-        if (!isCleanedUp) {
-          reconnectTimer = setTimeout(connectSse, 2000);
-        }
-      }
-    };
-
-    connectSse();
-
-    // ── Bulletproof Fallback Polling (Wallpaper Engine & Background Webview) ──
+    // ── Polling-based realtime sync ──────────────────────────────
     const pollInterval = setInterval(async () => {
       try {
         const res = await api.get<SyncStatusResponse>("/api/notes?sync=status", {
-          headers: { "X-Sync": "status" }
+          headers: { "X-Sync": "status" },
         });
-        if (res.data && res.data.lastEventTimestamp > lastProcessedTimeRef.current) {
+        if (
+          res.data &&
+          res.data.lastEventTimestamp > lastProcessedTimeRef.current
+        ) {
           lastProcessedTimeRef.current = res.data.lastEventTimestamp;
           triggerRefetch(res.data.lastEvent?.domain);
         }
-      } catch (err) {
-        // Silent poll error fallback
+      } catch {
+        // Silent poll error — network blip, cold start, etc.
       }
     }, 1500);
 
+    // Do an immediate poll on mount to catch any missed updates
+    (async () => {
+      try {
+        const res = await api.get<SyncStatusResponse>("/api/notes?sync=status", {
+          headers: { "X-Sync": "status" },
+        });
+        if (
+          res.data &&
+          res.data.lastEventTimestamp > lastProcessedTimeRef.current
+        ) {
+          lastProcessedTimeRef.current = res.data.lastEventTimestamp;
+          triggerRefetch(res.data.lastEvent?.domain);
+        }
+      } catch {
+        // Silent
+      }
+    })();
+
     return () => {
-      isCleanedUp = true;
       clearInterval(pollInterval);
-      if (reconnectTimer) clearTimeout(reconnectTimer);
-      if (eventSource) eventSource.close();
     };
   }, [enabled]);
 }
