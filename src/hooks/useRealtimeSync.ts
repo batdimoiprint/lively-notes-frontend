@@ -46,15 +46,10 @@ export function useRealtimeSync(enabled: boolean = true) {
 
     // Calculate robust API Base URL for SSE
     const getSseBaseUrl = () => {
-      const isLocal =
-        window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1" ||
-        window.location.hostname.startsWith("192.168.");
-
-      if (isLocal) {
+      const isLocalBackend = window.location.port === "3000";
+      if (isLocalBackend) {
         return "http://localhost:3000";
       }
-
       return "https://1ai6l6vwae.execute-api.ap-southeast-1.amazonaws.com";
     };
 
