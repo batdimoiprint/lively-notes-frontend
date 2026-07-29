@@ -33,9 +33,8 @@ export function useTodos() {
     queryKey: ["todos"],
     queryFn: getTodos,
     enabled: true,
-    staleTime: Infinity,
+    staleTime: 0,
     retry: 2,
     refetchOnWindowFocus: true,
-    networkMode: "offlineFirst",
   });
 }

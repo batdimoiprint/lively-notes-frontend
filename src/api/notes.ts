@@ -50,9 +50,8 @@ export function useNotes() {
     queryKey: ["notes"],
     queryFn: getNotes,
     enabled: true,
-    staleTime: Infinity,
+    staleTime: 0,
     retry: 2,
     refetchOnWindowFocus: true,
-    networkMode: "offlineFirst",
   });
 }

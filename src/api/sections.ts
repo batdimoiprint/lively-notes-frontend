@@ -44,9 +44,8 @@ export function useSections() {
     queryKey: ["sections"],
     queryFn: getSections,
     enabled: true,
-    staleTime: Infinity,
+    staleTime: 0,
     retry: 2,
     refetchOnWindowFocus: true,
-    networkMode: "offlineFirst",
   });
 }
