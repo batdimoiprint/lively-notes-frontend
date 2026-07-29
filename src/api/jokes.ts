@@ -1,4 +1,4 @@
-import api from "./axiosInstance";
+import axios from "axios";
 
 const url = "https://api.api-ninjas.com/v1/jokes";
 const options = {
@@ -9,7 +9,7 @@ const options = {
 // Had to limit this on prod because of api limits lol
 export default async function getJoke() {
   if (import.meta.env.PROD === true) {
-    const res = await api.get(url, options);
+    const res = await axios.get(url, options);
     const response = await res.data;
     return response;
   } else {
