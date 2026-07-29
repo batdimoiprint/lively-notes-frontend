@@ -1,10 +1,13 @@
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/hooks/useAuth";
+import { useRealtimeSync } from "@/hooks/useRealtimeSync";
 import { Navigate, Outlet } from "react-router-dom";
 
 // layout/ProtectedLayout.tsx
 export default function ProtectedLayout() {
   const { data: user, isLoading, error } = useAuth();
+  useRealtimeSync(!!user);
+
   if (isLoading) return <Spinner />;
   if (error) return <Navigate to="/denied" replace />;
   if (!user) return <Navigate to="/" replace />;
