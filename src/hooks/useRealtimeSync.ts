@@ -77,7 +77,7 @@ export function useRealtimeSync(enabled: boolean = true) {
       }
 
       const baseUrl = getSseBaseUrl();
-      const sseUrl = `${baseUrl}/api/notes/sync/events`;
+      const sseUrl = `${baseUrl}/api/notes/sync-events`;
 
       try {
         eventSource = new EventSource(sseUrl, { withCredentials: true });
@@ -130,7 +130,7 @@ export function useRealtimeSync(enabled: boolean = true) {
     // ── Bulletproof Fallback Polling (Wallpaper Engine & Background Webview) ──
     const pollInterval = setInterval(async () => {
       try {
-        const res = await api.get<SyncStatusResponse>("/api/notes/sync/status");
+        const res = await api.get<SyncStatusResponse>("/api/notes/sync-status");
         if (res.data && res.data.lastEventTimestamp > lastProcessedTimeRef.current) {
           lastProcessedTimeRef.current = res.data.lastEventTimestamp;
           triggerRefetch(res.data.lastEvent?.domain);
