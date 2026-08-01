@@ -245,7 +245,7 @@ export default function Pomorodo() {
   const isPomodoroView = view === "pomodoro";
 
   return (
-    <Card className="flex flex-1 flex-col">
+    <Card className="bg-card/45 flex flex-1 flex-col">
       <CardHeader>
         <Button
           type="button"
