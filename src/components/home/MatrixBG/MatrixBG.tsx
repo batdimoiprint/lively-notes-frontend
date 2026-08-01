@@ -41,6 +41,7 @@ export default function MatrixBG() {
   const config = configContext?.config;
   const theme = useTheme();
   const [isOnBattery, setIsOnBattery] = useState(false);
+  const [fontLoaded, setFontLoaded] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const dropsRef = useRef<number[]>([]);
@@ -48,6 +49,13 @@ export default function MatrixBG() {
   const intervalRef = useRef<number | null>(null);
   const fontSizeRef = useRef(12);
   const charactersRef = useRef("ᜀᜁᜂᜃᜄᜅᜆᜇᜈᜉᜊᜋᜌᜎᜏᜐᜑᜒᜓ᜔".split(""));
+
+  // Load Noto Sans Tagalog font before drawing
+  useEffect(() => {
+    document.fonts.ready.then(() => {
+      setFontLoaded(true);
+    });
+  }, []);
 
   // Battery Status API
   useEffect(() => {
@@ -102,7 +110,7 @@ export default function MatrixBG() {
   // Draw loop
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || isOnBattery) return; // Skip animation on battery mode
+    if (!canvas || isOnBattery || !fontLoaded) return; // Skip animation on battery mode or font not loaded
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -118,7 +126,7 @@ export default function MatrixBG() {
       ctx.fillStyle = `rgba(${backgroundRGB.r},${backgroundRGB.g},${backgroundRGB.b}, ${config.trailOpacity})`;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.font = `${fontSizeRef.current}px arial`;
+      ctx.font = `${fontSizeRef.current}px "Noto Sans Tagalog", arial`;
 
       for (let i = 0; i < dropsRef.current.length; i++) {
         const text =
@@ -151,7 +159,7 @@ export default function MatrixBG() {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [config, theme.theme, isOnBattery]);
+  }, [config, theme.theme, isOnBattery, fontLoaded]);
 
   return <canvas ref={canvasRef} className="fixed inset-0 z-0"></canvas>;
 }

@@ -3,6 +3,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: "Noto Sans Tagalog";
+  src: url("/fonts/NotoSansTagalog-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 
