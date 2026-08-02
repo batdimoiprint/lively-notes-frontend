@@ -19,7 +19,6 @@ export default function Home() {
 
   const isCalendar = contentView === "calendar";
   const isJobs = contentView === "jobs";
-  const isNotes = contentView === "notes";
 
   return (
     <>
@@ -28,15 +27,10 @@ export default function Home() {
           {/* Headers */}
           <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-stretch">
             <div className="order-2 flex flex-col lg:order-1">
-              {/* Toggle card replaces the Header when a non-notes view is active */}
-              {!isNotes ? (
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-stretch">
                 <ContentViewToggle view={contentView} onViewChange={setContentView} />
-              ) : (
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-stretch">
-                  <ContentViewToggle view={contentView} onViewChange={setContentView} />
-                  <Header selectedSection={selectedSection} />
-                </div>
-              )}
+                <Header selectedSection={selectedSection} />
+              </div>
             </div>
             <div className="order-1 flex min-w-0 flex-col lg:order-2 lg:flex-1">
               <PictureCards />
