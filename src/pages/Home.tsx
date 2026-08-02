@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import PictureCards from "@/components/home/PictureCards/PictureCardsGroup";
 import SpecialCard from "@/components/home/SpecialCard/SpecialCard";
 import NotesCalendar from "@/components/home/NotesCalendar/NotesCalendar";
+import JobTracker from "@/components/home/JobTracker/JobTracker";
 import ContentViewToggle, {
   type ContentView,
 } from "@/components/home/ContentViewToggle/ContentViewToggle";
@@ -17,6 +18,8 @@ export default function Home() {
   const [contentView, setContentView] = useState<ContentView>("notes");
 
   const isCalendar = contentView === "calendar";
+  const isJobs = contentView === "jobs";
+  const isNotes = contentView === "notes";
 
   return (
     <>
@@ -25,8 +28,8 @@ export default function Home() {
           {/* Headers */}
           <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-stretch">
             <div className="order-2 flex flex-col lg:order-1">
-              {/* Toggle card replaces the Header when calendar is active */}
-              {isCalendar ? (
+              {/* Toggle card replaces the Header when a non-notes view is active */}
+              {!isNotes ? (
                 <ContentViewToggle view={contentView} onViewChange={setContentView} />
               ) : (
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-stretch">
@@ -44,10 +47,12 @@ export default function Home() {
           </div>
         </ErrorBoundary>
 
-        {/* Content area — switches between Notes grid and Calendar */}
+        {/* Content area — switches between Notes grid, Calendar, and Job Tracker */}
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           {isCalendar ? (
             <NotesCalendar />
+          ) : isJobs ? (
+            <JobTracker />
           ) : (
             <div className="flex flex-1 flex-col gap-4 lg:flex-row">
               <div className="flex min-w-0 flex-1 flex-col">
