@@ -34,7 +34,7 @@ export default function JobTracker() {
 
   return (
     <div className="flex w-full min-w-0 flex-1 flex-col">
-      <Card className="flex min-w-0 flex-1 flex-col">
+      <Card className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <CardHeader className="flex-row flex-wrap items-center justify-between gap-2 pb-2">
           <div className="flex items-center gap-2">
             <Briefcase className="text-primary h-5 w-5" />
@@ -53,7 +53,7 @@ export default function JobTracker() {
             Add Job
           </Button>
         </CardHeader>
-        <CardContent className="flex flex-1 flex-col gap-3 px-3 pb-3">
+        <CardContent className="flex flex-1 flex-col gap-3 overflow-y-auto max-h-[calc(100vh-260px)] min-h-[400px] px-3 pb-3 pr-2">
           {sortedJobs.length === 0 ? (
             <div className="text-muted-foreground flex flex-1 flex-col items-center justify-center gap-2 py-12 text-center">
               <Briefcase className="h-8 w-8 opacity-30" />
