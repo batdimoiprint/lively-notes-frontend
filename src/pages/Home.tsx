@@ -22,7 +22,7 @@ export default function Home() {
 
   return (
     <>
-      <main className="flex flex-1 flex-col gap-4 p-4">
+      <main className="flex min-h-screen flex-1 flex-col gap-4 overflow-y-auto p-4 pb-20">
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           {/* Headers */}
           <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-stretch">

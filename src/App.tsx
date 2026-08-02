@@ -39,11 +39,7 @@ function App() {
             >
               <AppRoute />
             </PersistQueryClientProvider>
-            {import.meta.env.PROD === true ? (
-              <ReactQueryDevtools initialIsOpen={false} />
-            ) : (
-              <ReactQueryDevtools initialIsOpen={true} />
-            )}
+            <ReactQueryDevtools initialIsOpen={false} />
           </QueryClientProvider>
         </BrowserRouter>
       </ThemeProvider>

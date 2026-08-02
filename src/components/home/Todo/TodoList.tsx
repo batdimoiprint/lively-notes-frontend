@@ -128,7 +128,7 @@ export default function TodoList() {
           </Button>
         </form>
 
-        <ScrollArea className="min-h-0 flex-1">
+        <ScrollArea className="h-full max-h-[calc(100vh-280px)] min-h-[400px] flex-1">
           <div className="flex flex-col gap-2 pr-4">
             {todos.length === 0 ? (
               <p className="text-muted-foreground text-center text-sm">
