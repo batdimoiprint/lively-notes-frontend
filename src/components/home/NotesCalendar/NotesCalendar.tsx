@@ -335,7 +335,7 @@ export default function NotesCalendar() {
           )}
 
           {/* Notes list */}
-          <ScrollArea className="h-full max-h-[calc(100vh-280px)] min-h-[400px] flex-1">
+          <ScrollArea className="h-full min-h-0 flex-1">
             {selectedDay ? (
               selectedDay.notes.length > 0 ? (
                 <div className="flex flex-col gap-2">

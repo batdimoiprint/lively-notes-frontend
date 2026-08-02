@@ -22,7 +22,7 @@ export default function Home() {
 
   return (
     <>
-      <main className="flex min-h-screen flex-1 flex-col gap-4 overflow-y-auto p-4 pb-20">
+      <main className="flex h-screen w-screen flex-col gap-3 overflow-hidden p-3">
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           {/* Headers */}
           <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-stretch">
@@ -48,11 +48,11 @@ export default function Home() {
           ) : isJobs ? (
             <JobTracker />
           ) : (
-            <div className="flex flex-1 flex-col gap-4 lg:flex-row">
-              <div className="flex min-w-0 flex-1 flex-col">
+            <div className="flex flex-1 min-h-0 flex-col gap-3 lg:flex-row overflow-hidden">
+              <div className="flex min-w-0 flex-1 flex-col h-full overflow-hidden">
                 <TasksGrid selectedSection={selectedSection} onSectionSelect={setSelectedSection} />
               </div>
-              <div className="flex w-full flex-col lg:w-80 xl:w-96">
+              <div className="flex w-full flex-col lg:w-80 xl:w-96 h-full overflow-hidden">
                 <TodoList />
               </div>
             </div>

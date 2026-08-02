@@ -33,9 +33,9 @@ export default function JobTracker() {
   if (error) return <div>Error loading job applications</div>;
 
   return (
-    <div className="flex w-full min-w-0 flex-1 flex-col">
-      <Card className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <CardHeader className="flex-row flex-wrap items-center justify-between gap-2 pb-2">
+    <div className="flex h-full w-full min-w-0 flex-1 flex-col overflow-hidden">
+      <Card className="flex h-full min-w-0 flex-1 flex-col overflow-hidden">
+        <CardHeader className="shrink-0 flex-row flex-wrap items-center justify-between gap-2 pb-2">
           <div className="flex items-center gap-2">
             <Briefcase className="text-primary h-5 w-5" />
             <CardTitle className="text-base">Job Tracker</CardTitle>
@@ -53,9 +53,9 @@ export default function JobTracker() {
             Add Job
           </Button>
         </CardHeader>
-        <CardContent className="flex flex-1 flex-col gap-3 overflow-y-auto max-h-[calc(100vh-260px)] min-h-[400px] px-3 pb-3 pr-2">
+        <CardContent className="flex flex-1 min-h-0 flex-col gap-2 overflow-hidden p-3 pt-0">
           {sortedJobs.length === 0 ? (
-            <div className="text-muted-foreground flex flex-1 flex-col items-center justify-center gap-2 py-12 text-center">
+            <div className="text-muted-foreground flex flex-1 flex-col items-center justify-center gap-2 py-8 text-center">
               <Briefcase className="h-8 w-8 opacity-30" />
               <p className="text-xs">No job applications yet</p>
               <Button
@@ -70,7 +70,7 @@ export default function JobTracker() {
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid flex-1 min-h-0 grid-cols-1 gap-2.5 md:grid-cols-2 xl:grid-cols-3 overflow-hidden">
               {sortedJobs.map((job) => (
                 <JobCard key={job._id} job={job} onEdit={handleEdit} />
               ))}

@@ -205,7 +205,7 @@ function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
               />
             </div>
 
-            <ScrollArea className="h-full max-h-[calc(100vh-280px)] min-h-[450px] flex-1">
+            <ScrollArea className="h-full min-h-0 flex-1">
               <SortableContext
                 items={displayTasks.map((t) => t._id)}
                 strategy={rectSortingStrategy}
