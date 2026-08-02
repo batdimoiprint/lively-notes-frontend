@@ -69,24 +69,24 @@ export interface UpdateJobApplicationInput {
 // ── API functions ─────────────────────────────────────────────────────
 
 export async function getJobApplications(): Promise<JobApplication[]> {
-  const res = await api.get<JobApplication[]>("/api/job-applications/");
+  const res = await api.get<JobApplication[]>("/api/job-applications");
   return res.data;
 }
 
 export async function createJobApplication(
   input: CreateJobApplicationInput
 ): Promise<JobApplication> {
-  const res = await api.post<JobApplication>("/api/job-applications/", input);
+  const res = await api.post<JobApplication>("/api/job-applications", input);
   return res.data;
 }
 
 export async function updateJobApplication(input: UpdateJobApplicationInput): Promise<unknown> {
-  const res = await api.patch("/api/job-applications/", input);
+  const res = await api.patch("/api/job-applications", input);
   return res.data;
 }
 
 export async function deleteJobApplication(id: string): Promise<unknown> {
-  const res = await api.delete("/api/job-applications/", { data: { _id: id } });
+  const res = await api.delete("/api/job-applications", { data: { _id: id } });
   return res.data;
 }
 
