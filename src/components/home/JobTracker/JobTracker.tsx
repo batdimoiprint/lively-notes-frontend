@@ -53,7 +53,7 @@ export default function JobTracker() {
             Add Job
           </Button>
         </CardHeader>
-        <CardContent className="flex flex-1 min-h-0 flex-col gap-2 overflow-hidden p-3 pt-0">
+        <CardContent className="flex flex-1 min-h-0 flex-col gap-2 overflow-y-auto p-3 pt-0 pr-2">
           {sortedJobs.length === 0 ? (
             <div className="text-muted-foreground flex flex-1 flex-col items-center justify-center gap-2 py-8 text-center">
               <Briefcase className="h-8 w-8 opacity-30" />
@@ -70,7 +70,7 @@ export default function JobTracker() {
               </Button>
             </div>
           ) : (
-            <div className="grid flex-1 min-h-0 grid-cols-1 gap-2.5 md:grid-cols-2 xl:grid-cols-3 overflow-hidden">
+            <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2 xl:grid-cols-3">
               {sortedJobs.map((job) => (
                 <JobCard key={job._id} job={job} onEdit={handleEdit} />
               ))}
