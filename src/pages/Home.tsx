@@ -24,11 +24,20 @@ export default function Home() {
   return (
     <>
       <main className="flex min-h-screen w-screen flex-col gap-3 overflow-y-auto p-3 lg:h-screen lg:overflow-hidden">
+        <ContentViewToggle
+          view={contentView}
+          onViewChange={setContentView}
+          hideHeaders={hideHeaders}
+          onHideHeadersChange={setHideHeaders}
+        />
+
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           {/* Headers */}
           <div
-            className={`flex w-full flex-col gap-4 lg:flex-row lg:items-stretch transition-all duration-300 ${
-              hideHeaders ? "h-0 overflow-hidden opacity-0 pointer-events-none gap-0" : ""
+            className={`flex w-full flex-col gap-4 lg:flex-row lg:items-stretch transition-all duration-300 origin-top overflow-hidden ${
+              hideHeaders 
+                ? "max-h-0 opacity-0 pointer-events-none gap-0 scale-y-0" 
+                : "max-h-[500px] opacity-100 scale-y-100"
             }`}
           >
             <div className="order-1 flex min-w-0 flex-col lg:order-2 lg:flex-1">
@@ -40,18 +49,7 @@ export default function Home() {
           </div>
         </ErrorBoundary>
 
-        <ContentViewToggle
-          view={contentView}
-          onViewChange={setContentView}
-          hideHeaders={hideHeaders}
-          onHideHeadersChange={setHideHeaders}
-        />
 
-        {hideHeaders && (
-          <div className="flex shrink-0 items-center justify-between px-1">
-            <h2 className="text-xl font-bold tracking-tight">Lively Desktop Notes</h2>
-          </div>
-        )}
 
         {/* Content area — switches between Notes grid, Calendar, and Job Tracker */}
         <ErrorBoundary FallbackComponent={ErrorFallback}>

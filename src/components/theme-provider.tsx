@@ -56,7 +56,8 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   const value = {
     theme,
     setTheme: (theme: Theme) => {
-      console.log(theme);
+      localStorage.setItem(props.storageKey || "vite-ui-theme", theme);
+      setTheme(theme);
     },
   };
 
