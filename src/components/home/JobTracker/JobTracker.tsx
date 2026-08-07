@@ -3,7 +3,7 @@ import { useJobApplications, type JobApplication, updateJobApplication, deleteJo
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { Briefcase, Plus, Trash2, ExternalLink } from "lucide-react";
+import { Briefcase, Plus, Trash2, ExternalLink, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,19 +11,26 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import JobFormDialog from "./JobFormDialog";
 import { normalizeUrl } from "./jobDisplay";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  type SortingState,
+  flexRender,
+  createColumnHelper,
+  type HeaderGroup,
+  type Header,
+  type Row,
+  type Cell,
+} from "@tanstack/react-table";
 
 const EMPTY_JOBS: JobApplication[] = [];
-
 
 export default function JobTracker() {
   const { data: jobs = EMPTY_JOBS, isLoading, error } = useJobApplications();
   const [showForm, setShowForm] = useState(false);
+  const [sorting, setSorting] = useState<SortingState>([]);
   const queryClient = useQueryClient();
-
-  const sortedJobs = useMemo(
-    () => [...jobs].sort((a, b) => b.dateApplied.localeCompare(a.dateApplied)),
-    [jobs]
-  );
 
   const updateMutation = useMutation({
     mutationFn: updateJobApplication,
@@ -56,6 +63,141 @@ export default function JobTracker() {
     updateMutation.mutate({ _id: jobId, status: value });
   };
 
+  const columnHelper = createColumnHelper<JobApplication>();
+
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor("company", {
+        header: "Company",
+        cell: (info) => (
+          <Input
+            className="h-8 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
+            defaultValue={info.getValue()}
+            onBlur={(e) => handleCellBlur(info.row.original._id, "company", e.target.value)}
+          />
+        ),
+      }),
+      columnHelper.accessor("position", {
+        header: "Position",
+        cell: (info) => (
+          <Input
+            className="h-8 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
+            defaultValue={info.getValue()}
+            onBlur={(e) => handleCellBlur(info.row.original._id, "position", e.target.value)}
+          />
+        ),
+      }),
+      columnHelper.accessor("dateApplied", {
+        header: "Date Applied",
+        cell: (info) => (
+          <Input
+            type="date"
+            className="h-8 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
+            defaultValue={info.getValue()}
+            onBlur={(e) => handleCellBlur(info.row.original._id, "dateApplied", e.target.value)}
+          />
+        ),
+      }),
+      columnHelper.accessor("status", {
+        header: "Status",
+        cell: (info) => (
+          <Select
+            defaultValue={info.getValue()}
+            onValueChange={(val) => handleStatusChange(info.row.original._id, val as JobStatus)}
+          >
+            <SelectTrigger className="h-8 border-none bg-transparent shadow-none focus:ring-1 focus:ring-ring">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {JOB_STATUS_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ),
+      }),
+      columnHelper.accessor("link", {
+        header: "Link",
+        cell: (info) => {
+          const val = info.getValue() || "";
+          return (
+            <div className="flex items-center gap-1">
+              <Input
+                className="h-8 flex-1 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
+                defaultValue={val}
+                onBlur={(e) => handleCellBlur(info.row.original._id, "link", e.target.value)}
+              />
+              {val && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 shrink-0"
+                  asChild
+                >
+                  <a href={normalizeUrl(val)} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </Button>
+              )}
+            </div>
+          );
+        },
+      }),
+      columnHelper.accessor("reference", {
+        header: "Reference",
+        cell: (info) => (
+          <Input
+            className="h-8 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
+            defaultValue={info.getValue() || ""}
+            onBlur={(e) => handleCellBlur(info.row.original._id, "reference", e.target.value)}
+          />
+        ),
+      }),
+      columnHelper.accessor("notes", {
+        header: "Notes",
+        cell: (info) => (
+          <Input
+            className="h-8 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
+            defaultValue={info.getValue() || ""}
+            onBlur={(e) => handleCellBlur(info.row.original._id, "notes", e.target.value)}
+          />
+        ),
+      }),
+      columnHelper.display({
+        id: "actions",
+        header: "Actions",
+        cell: (info) => (
+          <div className="text-center">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-destructive hover:text-destructive"
+              onClick={() => deleteMutation.mutate(info.row.original._id)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        ),
+      }),
+    ],
+    [jobs]
+  );
+
+  const table = useReactTable({
+    data: jobs,
+    columns,
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
+
   if (isLoading) return <Spinner />;
   if (error) return <div>Error loading job applications</div>;
 
@@ -81,7 +223,7 @@ export default function JobTracker() {
           </Button>
         </CardHeader>
         <CardContent className="flex flex-1 min-h-0 flex-col gap-2 overflow-y-auto p-3 pt-0 pr-2">
-          {sortedJobs.length === 0 ? (
+          {jobs.length === 0 ? (
             <div className="text-muted-foreground flex flex-1 flex-col items-center justify-center gap-2 py-8 text-center">
               <Briefcase className="h-8 w-8 opacity-30" />
               <p className="text-xs">No job applications yet</p>
@@ -100,110 +242,62 @@ export default function JobTracker() {
             <div className="rounded-md border overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[180px]">Company</TableHead>
-                    <TableHead className="w-[180px]">Position</TableHead>
-                    <TableHead className="w-[120px]">Date Applied</TableHead>
-                    <TableHead className="w-[140px]">Status</TableHead>
-                    <TableHead className="w-[200px]">Link</TableHead>
-                    <TableHead className="w-[150px]">Reference</TableHead>
-                    <TableHead className="w-[250px]">Notes</TableHead>
-                    <TableHead className="w-[60px] text-center">Actions</TableHead>
-                  </TableRow>
+                  {table.getHeaderGroups().map((headerGroup: HeaderGroup<JobApplication>) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header: Header<JobApplication, unknown>) => {
+                        const canSort = header.column.getCanSort();
+                        const isSorted = header.column.getIsSorted();
+
+                        return (
+                          <TableHead
+                            key={header.id}
+                            className={canSort ? "cursor-pointer select-none hover:bg-muted/50" : ""}
+                            onClick={header.column.getToggleSortingHandler()}
+                            style={{
+                              width:
+                                header.id === "company" || header.id === "position"
+                                  ? "180px"
+                                  : header.id === "dateApplied"
+                                    ? "120px"
+                                    : header.id === "status"
+                                      ? "140px"
+                                      : header.id === "link"
+                                        ? "200px"
+                                        : header.id === "reference"
+                                          ? "150px"
+                                          : header.id === "notes"
+                                            ? "250px"
+                                            : "60px",
+                            }}
+                          >
+                            <div className="flex items-center gap-1.5 font-semibold text-xs text-muted-foreground">
+                              {flexRender(header.column.columnDef.header, header.getContext())}
+                              {canSort && (
+                                <span className="shrink-0 text-muted-foreground/50">
+                                  {isSorted === "asc" ? (
+                                    <ArrowUp className="h-3 w-3 text-primary" />
+                                  ) : isSorted === "desc" ? (
+                                    <ArrowDown className="h-3 w-3 text-primary" />
+                                  ) : (
+                                    <ArrowUpDown className="h-3 w-3" />
+                                  )}
+                                </span>
+                              )}
+                            </div>
+                          </TableHead>
+                        );
+                      })}
+                    </TableRow>
+                  ))}
                 </TableHeader>
                 <TableBody>
-                  {sortedJobs.map((job) => (
-                    <TableRow key={job._id}>
-                      <TableCell className="p-1">
-                        <Input
-                          className="h-8 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
-                          defaultValue={job.company}
-                          onBlur={(e) => handleCellBlur(job._id, "company", e.target.value)}
-                        />
-                      </TableCell>
-                      <TableCell className="p-1">
-                        <Input
-                          className="h-8 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
-                          defaultValue={job.position}
-                          onBlur={(e) => handleCellBlur(job._id, "position", e.target.value)}
-                        />
-                      </TableCell>
-                      <TableCell className="p-1">
-                        <Input
-                          type="date"
-                          className="h-8 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
-                          defaultValue={job.dateApplied}
-                          onBlur={(e) => handleCellBlur(job._id, "dateApplied", e.target.value)}
-                        />
-                      </TableCell>
-                      <TableCell className="p-1">
-                        <Select
-                          defaultValue={job.status}
-                          onValueChange={(val) => handleStatusChange(job._id, val as JobStatus)}
-                        >
-                          <SelectTrigger className="h-8 border-none bg-transparent shadow-none focus:ring-1 focus:ring-ring">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {JOB_STATUS_OPTIONS.map((opt) => (
-                              <SelectItem key={opt.value} value={opt.value}>
-                                {opt.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </TableCell>
-                      <TableCell className="p-1">
-                        <div className="flex items-center gap-1">
-                          <Input
-                            className="h-8 flex-1 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
-                            defaultValue={job.link || ""}
-                            onBlur={(e) => handleCellBlur(job._id, "link", e.target.value)}
-                          />
-                          {job.link && (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="h-6 w-6 shrink-0"
-                              asChild
-                            >
-                              <a
-                                href={normalizeUrl(job.link)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                <ExternalLink className="h-3 w-3" />
-                              </a>
-                            </Button>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="p-1">
-                        <Input
-                          className="h-8 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
-                          defaultValue={job.reference || ""}
-                          onBlur={(e) => handleCellBlur(job._id, "reference", e.target.value)}
-                        />
-                      </TableCell>
-                      <TableCell className="p-1">
-                        <Input
-                          className="h-8 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
-                          defaultValue={job.notes || ""}
-                          onBlur={(e) => handleCellBlur(job._id, "notes", e.target.value)}
-                        />
-                      </TableCell>
-                      <TableCell className="p-1 text-center">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 text-destructive hover:text-destructive"
-                          onClick={() => deleteMutation.mutate(job._id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
+                  {table.getRowModel().rows.map((row: Row<JobApplication>) => (
+                    <TableRow key={row.id}>
+                      {row.getVisibleCells().map((cell: Cell<JobApplication, unknown>) => (
+                        <TableCell key={cell.id} className="p-1">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      ))}
                     </TableRow>
                   ))}
                 </TableBody>
@@ -213,10 +307,8 @@ export default function JobTracker() {
         </CardContent>
       </Card>
 
-      <JobFormDialog
-        open={showForm}
-        onOpenChange={setShowForm}
-      />
+      <JobFormDialog open={showForm} onOpenChange={setShowForm} />
     </div>
   );
 }
+
