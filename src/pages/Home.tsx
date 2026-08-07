@@ -16,22 +16,21 @@ import { useState } from "react";
 export default function Home() {
   const [selectedSection, setSelectedSection] = useState<string>("default");
   const [contentView, setContentView] = useState<ContentView>("notes");
+  const [hideHeaders, setHideHeaders] = useState<boolean>(false);
 
   const isCalendar = contentView === "calendar";
   const isJobs = contentView === "jobs";
 
   return (
     <>
-      <main className="flex h-screen w-screen flex-col gap-3 overflow-hidden p-3">
+      <main className="flex min-h-screen w-screen flex-col gap-3 overflow-y-auto p-3 lg:h-screen lg:overflow-hidden">
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           {/* Headers */}
-          <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-stretch">
-            <div className="order-2 flex flex-col lg:order-1">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-stretch">
-                <ContentViewToggle view={contentView} onViewChange={setContentView} />
-                <Header selectedSection={selectedSection} />
-              </div>
-            </div>
+          <div
+            className={`flex w-full flex-col gap-4 lg:flex-row lg:items-stretch transition-all duration-300 ${
+              hideHeaders ? "h-0 overflow-hidden opacity-0 pointer-events-none gap-0" : ""
+            }`}
+          >
             <div className="order-1 flex min-w-0 flex-col lg:order-2 lg:flex-1">
               <PictureCards />
             </div>
@@ -40,6 +39,19 @@ export default function Home() {
             </div>
           </div>
         </ErrorBoundary>
+
+        <ContentViewToggle
+          view={contentView}
+          onViewChange={setContentView}
+          hideHeaders={hideHeaders}
+          onHideHeadersChange={setHideHeaders}
+        />
+
+        {hideHeaders && (
+          <div className="flex shrink-0 items-center justify-between px-1">
+            <h2 className="text-xl font-bold tracking-tight">Lively Desktop Notes</h2>
+          </div>
+        )}
 
         {/* Content area — switches between Notes grid, Calendar, and Job Tracker */}
         <ErrorBoundary FallbackComponent={ErrorFallback}>
@@ -52,8 +64,11 @@ export default function Home() {
               <div className="flex min-w-0 flex-1 flex-col h-full overflow-hidden">
                 <TasksGrid selectedSection={selectedSection} onSectionSelect={setSelectedSection} />
               </div>
-              <div className="flex w-full flex-col lg:w-80 xl:w-96 h-full overflow-hidden">
-                <TodoList />
+              <div className="flex w-full flex-col lg:w-80 xl:w-96 h-full gap-3 overflow-hidden">
+                <Header selectedSection={selectedSection} />
+                <div className="flex-1 min-h-0 overflow-hidden">
+                  <TodoList />
+                </div>
               </div>
             </div>
           )}
