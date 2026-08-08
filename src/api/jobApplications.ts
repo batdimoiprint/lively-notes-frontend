@@ -7,7 +7,9 @@ export type JobStatus =
   | "interview"
   | "offer"
   | "rejected"
-  | "withdrawn";
+  | "withdrawn"
+  | "viewed"
+  | "ghosted";
 
 export const JOB_STATUS_OPTIONS: { value: JobStatus; label: string }[] = [
   { value: "applied", label: "Applied" },
@@ -16,6 +18,8 @@ export const JOB_STATUS_OPTIONS: { value: JobStatus; label: string }[] = [
   { value: "offer", label: "Offer" },
   { value: "rejected", label: "Rejected" },
   { value: "withdrawn", label: "Withdrawn" },
+  { value: "viewed", label: "Viewed" },
+  { value: "ghosted", label: "Ghosted" },
 ];
 
 export const JOB_STATUS_LABELS: Record<JobStatus, string> = Object.fromEntries(

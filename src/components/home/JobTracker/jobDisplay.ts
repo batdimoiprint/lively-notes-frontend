@@ -7,6 +7,8 @@ export const STATUS_BADGE_CLASSES: Record<JobStatus, string> = {
   offer: "bg-green-500/15 text-green-500",
   rejected: "bg-red-500/15 text-red-500",
   withdrawn: "bg-gray-500/15 text-gray-500",
+  viewed: "bg-teal-500/15 text-teal-400",
+  ghosted: "bg-slate-500/15 text-slate-400",
 };
 
 export function normalizeUrl(url: string): string {
