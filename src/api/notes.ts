@@ -7,6 +7,15 @@ export async function getNotes() {
   return res.data;
 }
 
+export interface NoteSearchResult extends Tasks {
+  sectionTitle: string;
+}
+
+export async function searchNotes(query: string) {
+  const res = await api.get<NoteSearchResult[]>("/api/notes/search", { params: { q: query } });
+  return res.data;
+}
+
 export async function deleteNotes(id: string) {
   const res = await api.delete("/api/notes/", { data: { _id: id } });
   return res.status;

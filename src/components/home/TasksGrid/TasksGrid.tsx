@@ -12,6 +12,7 @@ import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
 import TaskCard from "./TaskCard";
 import TaskSheet from "./TaskSheetForm";
+import NotesSearchCard from "./NotesSearchCard";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
 import {
@@ -193,6 +194,13 @@ function TasksGrid({ selectedSection, onSectionSelect }: TasksGridProps) {
             selectedSection={selectedSection}
             onSectionSelect={onSectionSelect}
             sectionCounts={sectionCounts}
+          />
+
+          <NotesSearchCard
+            onSelect={(note) => {
+              onSectionSelect(note.sectionId || "default");
+              setSelectedTask(note);
+            }}
           />
 
           <div className="flex h-full gap-4">
