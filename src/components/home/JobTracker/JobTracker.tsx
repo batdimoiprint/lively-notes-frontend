@@ -3,7 +3,7 @@ import { useJobApplications, type JobApplication, updateJobApplication, deleteJo
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { Briefcase, Plus, Trash2, ExternalLink, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Briefcase, Plus, Trash2, ExternalLink, ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -14,6 +14,7 @@ import { normalizeUrl } from "./jobDisplay";
 import {
   useReactTable,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   type SortingState,
   flexRender,
@@ -23,6 +24,7 @@ import {
   type Row,
   type Cell,
 } from "@tanstack/react-table";
+import { matchesJobSearch } from "./jobSearch";
 
 const EMPTY_JOBS: JobApplication[] = [];
 
@@ -30,6 +32,7 @@ export default function JobTracker() {
   const { data: jobs = EMPTY_JOBS, isLoading, error } = useJobApplications();
   const [showForm, setShowForm] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = useState("");
   const queryClient = useQueryClient();
 
   const updateMutation = useMutation({
@@ -192,9 +195,13 @@ export default function JobTracker() {
     columns,
     state: {
       sorting,
+      globalFilter,
     },
     onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: (row, _columnId, filterValue) => matchesJobSearch(row.original, filterValue),
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
 
@@ -209,18 +216,33 @@ export default function JobTracker() {
             <Briefcase className="text-primary h-5 w-5" />
             <CardTitle className="text-base">Job Tracker (Spreadsheet View)</CardTitle>
             <span className="text-muted-foreground text-xs">
-              {jobs.length} {jobs.length === 1 ? "application" : "applications"}
+              {globalFilter.trim() ? table.getFilteredRowModel().rows.length : jobs.length}{" "}
+              {(globalFilter.trim() ? table.getFilteredRowModel().rows.length : jobs.length) === 1
+                ? "application"
+                : "applications"}
             </span>
           </div>
-          <Button
-            type="button"
-            size="sm"
-            className="h-8 gap-1 text-xs"
-            onClick={() => setShowForm(true)}
-          >
-            <Plus className="h-4 w-4" />
-            Add Job
-          </Button>
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2" />
+              <Input
+                aria-label="Search job applications"
+                placeholder="Search applications..."
+                value={globalFilter}
+                onChange={(event) => setGlobalFilter(event.target.value)}
+                className="h-8 w-56 pl-8 text-xs"
+              />
+            </div>
+            <Button
+              type="button"
+              size="sm"
+              className="h-8 gap-1 text-xs"
+              onClick={() => setShowForm(true)}
+            >
+              <Plus className="h-4 w-4" />
+              Add Job
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="flex flex-1 min-h-0 flex-col gap-2 overflow-y-auto p-3 pt-0 pr-2">
           {jobs.length === 0 ? (
@@ -236,6 +258,20 @@ export default function JobTracker() {
               >
                 <Plus className="h-3.5 w-3.5" />
                 Add your first job
+              </Button>
+            </div>
+          ) : table.getRowModel().rows.length === 0 ? (
+            <div className="text-muted-foreground flex flex-1 flex-col items-center justify-center gap-2 py-8 text-center">
+              <Search className="h-8 w-8 opacity-30" />
+              <p className="text-xs">No matching applications</p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="mt-2 h-7 text-xs"
+                onClick={() => setGlobalFilter("")}
+              >
+                Clear search
               </Button>
             </div>
           ) : (
@@ -311,4 +347,3 @@ export default function JobTracker() {
     </div>
   );
 }
-
