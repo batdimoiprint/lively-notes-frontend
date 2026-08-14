@@ -6,6 +6,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Briefcase, Plus, Trash2, ExternalLink, ArrowUpDown, ArrowUp, ArrowDown, Search, X } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -30,25 +31,26 @@ import { matchesJobSearch } from "./jobSearch";
 const EMPTY_JOBS: JobApplication[] = [];
 const columnHelper = createColumnHelper<JobApplication>();
 
-const getColumnWidth = (columnId: string) => {
+const getColumnStyles = (columnId: string): React.CSSProperties => {
   switch (columnId) {
     case "company":
+      return { minWidth: "120px", maxWidth: "200px" };
     case "position":
-      return "180px";
+      return { minWidth: "130px", maxWidth: "220px" };
     case "dateApplied":
-      return "140px";
+      return { minWidth: "130px", maxWidth: "150px" };
     case "status":
-      return "150px";
+      return { minWidth: "130px", maxWidth: "160px" };
     case "link":
-      return "180px";
+      return { minWidth: "140px", maxWidth: "220px" };
     case "reference":
-      return "140px";
+      return { minWidth: "130px", maxWidth: "180px" };
     case "notes":
-      return "220px";
+      return { minWidth: "160px", maxWidth: "260px" };
     case "actions":
-      return "70px";
+      return { minWidth: "60px", maxWidth: "70px" };
     default:
-      return undefined;
+      return {};
   }
 };
 
@@ -103,8 +105,9 @@ export default function JobTracker() {
         header: "Company",
         filterFn: "includesString",
         cell: (info) => (
-          <Input
-            className="h-8 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
+          <Textarea
+            rows={1}
+            className="min-h-8 w-full resize-none border-none bg-transparent px-2 py-1.5 text-xs leading-snug shadow-none field-sizing-content focus-visible:ring-1 focus-visible:ring-ring whitespace-normal break-words"
             defaultValue={info.getValue()}
             onBlur={(e) => handleCellBlur(info.row.original._id, "company", e.target.value)}
           />
@@ -114,8 +117,9 @@ export default function JobTracker() {
         header: "Position",
         filterFn: "includesString",
         cell: (info) => (
-          <Input
-            className="h-8 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
+          <Textarea
+            rows={1}
+            className="min-h-8 w-full resize-none border-none bg-transparent px-2 py-1.5 text-xs leading-snug shadow-none field-sizing-content focus-visible:ring-1 focus-visible:ring-ring whitespace-normal break-words"
             defaultValue={info.getValue()}
             onBlur={(e) => handleCellBlur(info.row.original._id, "position", e.target.value)}
           />
@@ -127,7 +131,7 @@ export default function JobTracker() {
         cell: (info) => (
           <Input
             type="date"
-            className="h-8 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="h-8 w-full border-none bg-transparent px-2 py-1 text-xs shadow-none focus-visible:ring-1 focus-visible:ring-ring"
             defaultValue={info.getValue()}
             onBlur={(e) => handleCellBlur(info.row.original._id, "dateApplied", e.target.value)}
           />
@@ -144,7 +148,7 @@ export default function JobTracker() {
             defaultValue={info.getValue()}
             onValueChange={(val) => handleStatusChange(info.row.original._id, val as JobStatus)}
           >
-            <SelectTrigger className="h-8 border-none bg-transparent shadow-none focus:ring-1 focus:ring-ring">
+            <SelectTrigger className="h-auto min-h-8 w-full border-none bg-transparent px-2 py-1 text-xs shadow-none whitespace-normal focus:ring-1 focus:ring-ring">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -163,9 +167,10 @@ export default function JobTracker() {
         cell: (info) => {
           const val = info.getValue() || "";
           return (
-            <div className="flex items-center gap-1">
-              <Input
-                className="h-8 flex-1 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
+            <div className="flex items-start gap-1">
+              <Textarea
+                rows={1}
+                className="min-h-8 flex-1 resize-none border-none bg-transparent px-2 py-1.5 text-xs leading-snug shadow-none field-sizing-content focus-visible:ring-1 focus-visible:ring-ring whitespace-normal break-all"
                 defaultValue={val}
                 onBlur={(e) => handleCellBlur(info.row.original._id, "link", e.target.value)}
               />
@@ -174,7 +179,7 @@ export default function JobTracker() {
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="h-6 w-6 shrink-0"
+                  className="mt-1 h-6 w-6 shrink-0"
                   asChild
                 >
                   <a href={normalizeUrl(val)} target="_blank" rel="noopener noreferrer">
@@ -190,8 +195,9 @@ export default function JobTracker() {
         header: "Reference",
         filterFn: "includesString",
         cell: (info) => (
-          <Input
-            className="h-8 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
+          <Textarea
+            rows={1}
+            className="min-h-8 w-full resize-none border-none bg-transparent px-2 py-1.5 text-xs leading-snug shadow-none field-sizing-content focus-visible:ring-1 focus-visible:ring-ring whitespace-normal break-words"
             defaultValue={info.getValue() || ""}
             onBlur={(e) => handleCellBlur(info.row.original._id, "reference", e.target.value)}
           />
@@ -201,8 +207,9 @@ export default function JobTracker() {
         header: "Notes",
         filterFn: "includesString",
         cell: (info) => (
-          <Input
-            className="h-8 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
+          <Textarea
+            rows={1}
+            className="min-h-8 w-full resize-none border-none bg-transparent px-2 py-1.5 text-xs leading-snug shadow-none field-sizing-content focus-visible:ring-1 focus-visible:ring-ring whitespace-normal break-words"
             defaultValue={info.getValue() || ""}
             onBlur={(e) => handleCellBlur(info.row.original._id, "notes", e.target.value)}
           />
@@ -212,7 +219,7 @@ export default function JobTracker() {
         id: "actions",
         header: "Actions",
         cell: (info) => (
-          <div className="text-center">
+          <div className="text-center pt-1">
             <Button
               type="button"
               variant="ghost"
@@ -226,7 +233,7 @@ export default function JobTracker() {
         ),
       }),
     ],
-    [jobs]
+    [handleCellBlur, handleStatusChange, deleteMutation]
   );
 
   const table = useReactTable({
@@ -334,9 +341,7 @@ export default function JobTracker() {
                             key={header.id}
                             className={canSort ? "cursor-pointer select-none hover:bg-muted/50" : ""}
                             onClick={header.column.getToggleSortingHandler()}
-                            style={{
-                              width: getColumnWidth(header.id),
-                            }}
+                            style={getColumnStyles(header.id)}
                           >
                             <div className="flex items-center gap-1.5 font-semibold text-xs text-muted-foreground">
                               {flexRender(header.column.columnDef.header, header.getContext())}
@@ -367,9 +372,7 @@ export default function JobTracker() {
                         <TableHead
                           key={`filter-${header.id}`}
                           className="p-1.5 h-auto align-middle"
-                          style={{
-                            width: getColumnWidth(header.id),
-                          }}
+                          style={getColumnStyles(header.id)}
                         >
                           {header.id === "status" ? (
                             <Select
@@ -445,7 +448,11 @@ export default function JobTracker() {
                   {table.getRowModel().rows.map((row: Row<JobApplication>) => (
                     <TableRow key={row.id}>
                       {row.getVisibleCells().map((cell: Cell<JobApplication, unknown>) => (
-                        <TableCell key={cell.id} className="p-1">
+                        <TableCell
+                          key={cell.id}
+                          className="p-1 align-top whitespace-normal break-words"
+                          style={getColumnStyles(cell.column.id)}
+                        >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </TableCell>
                       ))}
