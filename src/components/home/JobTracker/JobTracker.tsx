@@ -1,9 +1,9 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useJobApplications, type JobApplication, updateJobApplication, deleteJobApplication, type JobStatus, JOB_STATUS_OPTIONS } from "@/api/jobApplications";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { Briefcase, Plus, Trash2, ExternalLink, ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
+import { Briefcase, Plus, Trash2, ExternalLink, ArrowUpDown, ArrowUp, ArrowDown, Search, X } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -17,6 +17,7 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   type SortingState,
+  type ColumnFiltersState,
   flexRender,
   createColumnHelper,
   type HeaderGroup,
@@ -27,11 +28,35 @@ import {
 import { matchesJobSearch } from "./jobSearch";
 
 const EMPTY_JOBS: JobApplication[] = [];
+const columnHelper = createColumnHelper<JobApplication>();
+
+const getColumnWidth = (columnId: string) => {
+  switch (columnId) {
+    case "company":
+    case "position":
+      return "180px";
+    case "dateApplied":
+      return "140px";
+    case "status":
+      return "150px";
+    case "link":
+      return "180px";
+    case "reference":
+      return "140px";
+    case "notes":
+      return "220px";
+    case "actions":
+      return "70px";
+    default:
+      return undefined;
+  }
+};
 
 export default function JobTracker() {
   const { data: jobs = EMPTY_JOBS, isLoading, error } = useJobApplications();
   const [showForm, setShowForm] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const queryClient = useQueryClient();
 
@@ -56,22 +81,27 @@ export default function JobTracker() {
     },
   });
 
-  const handleCellBlur = (jobId: string, field: keyof JobApplication, value: string) => {
-    const job = jobs.find((j) => j._id === jobId);
-    if (!job || job[field] === value) return;
-    updateMutation.mutate({ _id: jobId, [field]: value });
-  };
+  const handleCellBlur = useCallback(
+    (jobId: string, field: keyof JobApplication, value: string) => {
+      const job = jobs.find((j) => j._id === jobId);
+      if (!job || job[field] === value) return;
+      updateMutation.mutate({ _id: jobId, [field]: value });
+    },
+    [jobs, updateMutation]
+  );
 
-  const handleStatusChange = (jobId: string, value: JobStatus) => {
-    updateMutation.mutate({ _id: jobId, status: value });
-  };
-
-  const columnHelper = createColumnHelper<JobApplication>();
+  const handleStatusChange = useCallback(
+    (jobId: string, value: JobStatus) => {
+      updateMutation.mutate({ _id: jobId, status: value });
+    },
+    [updateMutation]
+  );
 
   const columns = useMemo(
     () => [
       columnHelper.accessor("company", {
         header: "Company",
+        filterFn: "includesString",
         cell: (info) => (
           <Input
             className="h-8 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
@@ -82,6 +112,7 @@ export default function JobTracker() {
       }),
       columnHelper.accessor("position", {
         header: "Position",
+        filterFn: "includesString",
         cell: (info) => (
           <Input
             className="h-8 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
@@ -92,6 +123,7 @@ export default function JobTracker() {
       }),
       columnHelper.accessor("dateApplied", {
         header: "Date Applied",
+        filterFn: "includesString",
         cell: (info) => (
           <Input
             type="date"
@@ -103,6 +135,10 @@ export default function JobTracker() {
       }),
       columnHelper.accessor("status", {
         header: "Status",
+        filterFn: (row, columnId, filterValue) => {
+          if (!filterValue || filterValue === "all") return true;
+          return row.getValue(columnId) === filterValue;
+        },
         cell: (info) => (
           <Select
             defaultValue={info.getValue()}
@@ -123,6 +159,7 @@ export default function JobTracker() {
       }),
       columnHelper.accessor("link", {
         header: "Link",
+        filterFn: "includesString",
         cell: (info) => {
           const val = info.getValue() || "";
           return (
@@ -151,6 +188,7 @@ export default function JobTracker() {
       }),
       columnHelper.accessor("reference", {
         header: "Reference",
+        filterFn: "includesString",
         cell: (info) => (
           <Input
             className="h-8 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
@@ -161,6 +199,7 @@ export default function JobTracker() {
       }),
       columnHelper.accessor("notes", {
         header: "Notes",
+        filterFn: "includesString",
         cell: (info) => (
           <Input
             className="h-8 border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-ring"
@@ -195,15 +234,20 @@ export default function JobTracker() {
     columns,
     state: {
       sorting,
+      columnFilters,
       globalFilter,
     },
     onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: (row, _columnId, filterValue) => matchesJobSearch(row.original, filterValue),
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
+
+  const hasActiveFilters = Boolean(globalFilter.trim()) || columnFilters.length > 0;
+  const filteredCount = table.getFilteredRowModel().rows.length;
 
   if (isLoading) return <Spinner />;
   if (error) return <div>Error loading job applications</div>;
@@ -216,10 +260,8 @@ export default function JobTracker() {
             <Briefcase className="text-primary h-5 w-5" />
             <CardTitle className="text-base">Job Tracker (Spreadsheet View)</CardTitle>
             <span className="text-muted-foreground text-xs">
-              {globalFilter.trim() ? table.getFilteredRowModel().rows.length : jobs.length}{" "}
-              {(globalFilter.trim() ? table.getFilteredRowModel().rows.length : jobs.length) === 1
-                ? "application"
-                : "applications"}
+              {hasActiveFilters ? `${filteredCount} of ${jobs.length}` : jobs.length}{" "}
+              {jobs.length === 1 ? "application" : "applications"}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -269,9 +311,12 @@ export default function JobTracker() {
                 variant="outline"
                 size="sm"
                 className="mt-2 h-7 text-xs"
-                onClick={() => setGlobalFilter("")}
+                onClick={() => {
+                  setGlobalFilter("");
+                  setColumnFilters([]);
+                }}
               >
-                Clear search
+                Clear search & filters
               </Button>
             </div>
           ) : (
@@ -290,20 +335,7 @@ export default function JobTracker() {
                             className={canSort ? "cursor-pointer select-none hover:bg-muted/50" : ""}
                             onClick={header.column.getToggleSortingHandler()}
                             style={{
-                              width:
-                                header.id === "company" || header.id === "position"
-                                  ? "180px"
-                                  : header.id === "dateApplied"
-                                    ? "120px"
-                                    : header.id === "status"
-                                      ? "140px"
-                                      : header.id === "link"
-                                        ? "200px"
-                                        : header.id === "reference"
-                                          ? "150px"
-                                          : header.id === "notes"
-                                            ? "250px"
-                                            : "60px",
+                              width: getColumnWidth(header.id),
                             }}
                           >
                             <div className="flex items-center gap-1.5 font-semibold text-xs text-muted-foreground">
@@ -325,6 +357,89 @@ export default function JobTracker() {
                       })}
                     </TableRow>
                   ))}
+                  {/* Dedicated filter row for column filters / status dropdown */}
+                  <TableRow className="bg-muted/30 hover:bg-muted/30 border-t">
+                    {table.getHeaderGroups()[0]?.headers.map((header) => {
+                      const column = header.column;
+                      const filterVal = (column.getFilterValue() as string) ?? "";
+
+                      return (
+                        <TableHead
+                          key={`filter-${header.id}`}
+                          className="p-1.5 h-auto align-middle"
+                          style={{
+                            width: getColumnWidth(header.id),
+                          }}
+                        >
+                          {header.id === "status" ? (
+                            <Select
+                              value={filterVal || "all"}
+                              onValueChange={(val) =>
+                                column.setFilterValue(val === "all" ? undefined : val)
+                              }
+                            >
+                              <SelectTrigger
+                                size="sm"
+                                className="h-7 w-full border-input/60 bg-background/80 px-2 text-xs font-normal shadow-none hover:bg-background focus:ring-1"
+                              >
+                                <SelectValue placeholder="All Statuses" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="all" className="text-xs">
+                                  All Statuses
+                                </SelectItem>
+                                {JOB_STATUS_OPTIONS.map((opt) => (
+                                  <SelectItem key={opt.value} value={opt.value} className="text-xs">
+                                    {opt.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          ) : header.id === "company" ||
+                            header.id === "position" ||
+                            header.id === "reference" ||
+                            header.id === "notes" ? (
+                            <Input
+                              placeholder={`Filter ${header.id}...`}
+                              value={filterVal}
+                              onChange={(e) => column.setFilterValue(e.target.value || undefined)}
+                              className="h-7 text-xs font-normal bg-background/80 shadow-none px-2 border-input/60 focus-visible:ring-1"
+                            />
+                          ) : header.id === "dateApplied" ? (
+                            <Input
+                              type="date"
+                              value={filterVal}
+                              onChange={(e) => column.setFilterValue(e.target.value || undefined)}
+                              className="h-7 text-xs font-normal bg-background/80 shadow-none px-2 border-input/60 focus-visible:ring-1"
+                            />
+                          ) : header.id === "link" ? (
+                            <Input
+                              placeholder="Filter link..."
+                              value={filterVal}
+                              onChange={(e) => column.setFilterValue(e.target.value || undefined)}
+                              className="h-7 text-xs font-normal bg-background/80 shadow-none px-2 border-input/60 focus-visible:ring-1"
+                            />
+                          ) : header.id === "actions" ? (
+                            <div className="flex items-center justify-center">
+                              {columnFilters.length > 0 && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-7 px-1.5 text-[11px] text-muted-foreground hover:text-foreground"
+                                  onClick={() => setColumnFilters([])}
+                                  title="Reset column filters"
+                                >
+                                  <X className="mr-0.5 h-3 w-3" />
+                                  Reset
+                                </Button>
+                              )}
+                            </div>
+                          ) : null}
+                        </TableHead>
+                      );
+                    })}
+                  </TableRow>
                 </TableHeader>
                 <TableBody>
                   {table.getRowModel().rows.map((row: Row<JobApplication>) => (
