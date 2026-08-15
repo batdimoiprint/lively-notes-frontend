@@ -31,6 +31,24 @@ import { matchesJobSearch } from "./jobSearch";
 const EMPTY_JOBS: JobApplication[] = [];
 const columnHelper = createColumnHelper<JobApplication>();
 
+export function JobLinkEditor({
+  value,
+  onBlur,
+}: {
+  value: string;
+  onBlur: React.FocusEventHandler<HTMLTextAreaElement>;
+}) {
+  return (
+    <Textarea
+      rows={1}
+      title={value}
+      className="min-h-8 w-full resize-none truncate border-none bg-transparent px-2 py-1.5 text-xs leading-snug shadow-none field-sizing-content focus-visible:ring-1 focus-visible:ring-ring whitespace-nowrap"
+      defaultValue={value}
+      onBlur={onBlur}
+    />
+  );
+}
+
 const getColumnStyles = (columnId: string): React.CSSProperties => {
   switch (columnId) {
     case "company":
@@ -168,11 +186,11 @@ export default function JobTracker() {
           const val = info.getValue() || "";
           return (
             <div className="flex items-start gap-1">
-              <Textarea
-                rows={1}
-                className="min-h-8 flex-1 resize-none border-none bg-transparent px-2 py-1.5 text-xs leading-snug shadow-none field-sizing-content focus-visible:ring-1 focus-visible:ring-ring whitespace-normal break-all"
-                defaultValue={val}
-                onBlur={(e) => handleCellBlur(info.row.original._id, "link", e.target.value)}
+              <JobLinkEditor
+                value={val}
+                onBlur={(event) =>
+                  handleCellBlur(info.row.original._id, "link", event.target.value)
+                }
               />
               {val && (
                 <Button
