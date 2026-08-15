@@ -25,6 +25,7 @@ dist-ssr
 *.sw?
 .vercel
 .env*.local
+.superpowers/
 
 # Local Obsidian notes vault
 vault/
