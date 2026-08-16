@@ -55,6 +55,8 @@ const getColumnStyles = (columnId: string): React.CSSProperties => {
       return { minWidth: "120px", maxWidth: "200px" };
     case "position":
       return { minWidth: "130px", maxWidth: "220px" };
+    case "preferredRank":
+      return { minWidth: "70px", maxWidth: "90px" };
     case "dateApplied":
       return { minWidth: "130px", maxWidth: "150px" };
     case "status":
@@ -110,6 +112,18 @@ export default function JobTracker() {
     [jobs, updateMutation]
   );
 
+  const handleRankBlur = useCallback(
+    (jobId: string, value: string) => {
+      const job = jobs.find((j) => j._id === jobId);
+      const trimmed = value.trim();
+      const parsed = trimmed === "" ? null : parseInt(trimmed, 10);
+      const validRank = parsed !== null && !isNaN(parsed) && parsed > 0 ? parsed : null;
+      if (!job || (job.preferredRank ?? null) === validRank) return;
+      updateMutation.mutate({ _id: jobId, preferredRank: validRank });
+    },
+    [jobs, updateMutation]
+  );
+
   const handleStatusChange = useCallback(
     (jobId: string, value: JobStatus) => {
       updateMutation.mutate({ _id: jobId, status: value });
@@ -142,6 +156,28 @@ export default function JobTracker() {
             onBlur={(e) => handleCellBlur(info.row.original._id, "position", e.target.value)}
           />
         ),
+      }),
+      columnHelper.accessor("preferredRank", {
+        header: "Rank",
+        filterFn: (row, columnId, filterValue) => {
+          if (!filterValue) return true;
+          const rank = row.getValue(columnId);
+          if (rank == null) return false;
+          return String(rank).includes(String(filterValue).trim());
+        },
+        cell: (info) => {
+          const val = info.getValue();
+          return (
+            <Input
+              type="number"
+              min={1}
+              placeholder="-"
+              className="h-8 w-full border-none bg-transparent px-2 py-1 text-xs text-center shadow-none focus-visible:ring-1 focus-visible:ring-ring [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              defaultValue={val != null ? val : ""}
+              onBlur={(e) => handleRankBlur(info.row.original._id, e.target.value)}
+            />
+          );
+        },
       }),
       columnHelper.accessor("dateApplied", {
         header: "Date Applied",
@@ -251,7 +287,7 @@ export default function JobTracker() {
         ),
       }),
     ],
-    [handleCellBlur, handleStatusChange, deleteMutation]
+    [handleCellBlur, handleRankBlur, handleStatusChange, deleteMutation]
   );
 
   const table = useReactTable({
@@ -416,6 +452,14 @@ export default function JobTracker() {
                                 ))}
                               </SelectContent>
                             </Select>
+                          ) : header.id === "preferredRank" ? (
+                            <Input
+                              type="number"
+                              placeholder="Rank..."
+                              value={filterVal}
+                              onChange={(e) => column.setFilterValue(e.target.value || undefined)}
+                              className="h-7 text-xs font-normal bg-background/80 shadow-none px-1 text-center border-input/60 focus-visible:ring-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            />
                           ) : header.id === "company" ||
                             header.id === "position" ||
                             header.id === "reference" ||

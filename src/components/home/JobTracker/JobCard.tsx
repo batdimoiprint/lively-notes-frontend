@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
-import { CalendarDays, Check, ExternalLink, Pencil, Trash, User, X } from "lucide-react";
+import { CalendarDays, Check, ExternalLink, Pencil, Star, Trash, User, X } from "lucide-react";
 import StageList from "./StageList";
 import { STATUS_BADGE_CLASSES, normalizeUrl, formatDateApplied } from "./jobDisplay";
 
@@ -113,8 +113,14 @@ export default function JobCard({ job, onEdit }: JobCardProps) {
         </div>
       </div>
 
-      {/* Meta: status, date, reference */}
+      {/* Meta: status, date, reference, preferred rank */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        {job.preferredRank != null && (
+          <span className="bg-amber-500/15 text-amber-500 flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wider uppercase">
+            <Star className="h-2.5 w-2.5 fill-amber-500" />
+            Rank #{job.preferredRank}
+          </span>
+        )}
         <span
           className={`rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wider uppercase ${STATUS_BADGE_CLASSES[job.status]}`}
         >

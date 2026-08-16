@@ -38,6 +38,7 @@ export interface JobApplication {
   company: string;
   position: string;
   dateApplied: string; // "YYYY-MM-DD"
+  preferredRank?: number | null;
   status: JobStatus;
   link?: string;
   reference?: string;
@@ -51,6 +52,7 @@ export interface CreateJobApplicationInput {
   company: string;
   position: string;
   dateApplied: string;
+  preferredRank?: number | null;
   status: JobStatus;
   link?: string;
   reference?: string;
@@ -63,6 +65,7 @@ export interface UpdateJobApplicationInput {
   company?: string;
   position?: string;
   dateApplied?: string;
+  preferredRank?: number | null;
   status?: JobStatus;
   link?: string;
   reference?: string;

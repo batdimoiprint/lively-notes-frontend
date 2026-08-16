@@ -51,6 +51,9 @@ function JobFormDialogContent({ job, onDone }: { job?: JobApplication; onDone: (
   const [company, setCompany] = useState(job?.company ?? "");
   const [position, setPosition] = useState(job?.position ?? "");
   const [dateApplied, setDateApplied] = useState(job?.dateApplied ?? "");
+  const [preferredRank, setPreferredRank] = useState<string>(
+    job?.preferredRank != null ? String(job.preferredRank) : ""
+  );
   const [status, setStatus] = useState<JobStatus>(job?.status ?? "applied");
   const [link, setLink] = useState(job?.link ?? "");
   const [reference, setReference] = useState(job?.reference ?? "");
@@ -99,12 +102,16 @@ function JobFormDialogContent({ job, onDone }: { job?: JobApplication; onDone: (
       return;
     }
 
+    const rankVal = preferredRank.trim() === "" ? null : parseInt(preferredRank.trim(), 10);
+    const parsedRank = rankVal !== null && !isNaN(rankVal) && rankVal > 0 ? rankVal : null;
+
     if (isEdit && job) {
       updateMutation.mutate({
         _id: job._id,
         company: company.trim(),
         position: position.trim(),
         dateApplied,
+        preferredRank: parsedRank,
         status,
         link: link.trim() || undefined,
         reference: reference.trim() || undefined,
@@ -115,6 +122,7 @@ function JobFormDialogContent({ job, onDone }: { job?: JobApplication; onDone: (
         company: company.trim(),
         position: position.trim(),
         dateApplied,
+        preferredRank: parsedRank,
         status,
         link: link.trim() || undefined,
         reference: reference.trim() || undefined,
@@ -180,6 +188,18 @@ function JobFormDialogContent({ job, onDone }: { job?: JobApplication; onDone: (
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          <div className="flex w-full sm:w-28 flex-col gap-1.5">
+            <Label htmlFor="job-preferred-rank">Pref. Rank</Label>
+            <Input
+              id="job-preferred-rank"
+              type="number"
+              min="1"
+              value={preferredRank}
+              onChange={(e) => setPreferredRank(e.target.value)}
+              placeholder="e.g. 1"
+              disabled={isPending}
+            />
           </div>
         </div>
         <div className="flex flex-col gap-1.5">

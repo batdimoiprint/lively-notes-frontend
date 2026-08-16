@@ -9,6 +9,7 @@ export function matchesJobSearch(job: JobApplication, query: string): boolean {
     job.company,
     job.position,
     job.dateApplied,
+    job.preferredRank != null ? String(job.preferredRank) : null,
     job.status,
     job.link,
     job.reference,
