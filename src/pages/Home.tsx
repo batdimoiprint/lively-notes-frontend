@@ -42,7 +42,10 @@ export default function Home() {
                   : "max-h-[500px] opacity-100 scale-y-100"
               }`}
             >
-              <div className="flex w-full lg:w-80">
+              <div className="order-1 flex min-w-0 flex-col lg:order-1 lg:flex-1">
+                <Header selectedSection={selectedSection} />
+              </div>
+              <div className="order-2 flex">
                 <SpecialCard />
               </div>
             </div>
@@ -62,11 +65,8 @@ export default function Home() {
               <div className="flex min-w-0 flex-1 flex-col h-full overflow-hidden">
                 <TasksGrid selectedSection={selectedSection} onSectionSelect={setSelectedSection} />
               </div>
-              <div className="flex w-full flex-col lg:w-80 xl:w-96 h-full gap-3 overflow-hidden">
-                <Header selectedSection={selectedSection} />
-                <div className="flex-1 min-h-0 overflow-hidden">
-                  <TodoList />
-                </div>
+              <div className="flex w-full flex-col lg:w-80 xl:w-96 h-full overflow-hidden">
+                <TodoList />
               </div>
             </div>
           )}
