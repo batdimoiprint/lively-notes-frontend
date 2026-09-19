@@ -37,9 +37,21 @@ MemoizedImage.displayName = "MemoizedImage";
 
 const PAGE_SIZE = 20;
 
+const PRESET_COLORS = [
+  { name: "Green", hex: "#22c55e" },
+  { name: "Forest", hex: "#15803d" },
+  { name: "Pink", hex: "#ec4899" },
+  { name: "Blue", hex: "#3b82f6" },
+  { name: "Red", hex: "#ef4444" },
+  { name: "Yellow", hex: "#eab308" },
+  { name: "Purple", hex: "#a855f7" },
+  { name: "Black", hex: "#18181b" },
+  { name: "White", hex: "#f4f4f5" },
+];
+
 export default function ColorSearch() {
-  const [colorInput, setColorInput] = useState<string>("#ff3b30");
-  const [hexText, setHexText] = useState<string>("#ff3b30");
+  const [colorInput, setColorInput] = useState<string>("#22c55e");
+  const [hexText, setHexText] = useState<string>("#22c55e");
   const [activeHex, setActiveHex] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const [selectedImage, setSelectedImage] = useState<ImageItem | null>(null);
@@ -54,6 +66,13 @@ export default function ColorSearch() {
   const handleColorChange = (newColor: string) => {
     setColorInput(newColor);
     setHexText(newColor);
+  };
+
+  const handleSelectPreset = (hex: string) => {
+    setColorInput(hex);
+    setHexText(hex);
+    setActiveHex(hex);
+    setPage(1);
   };
 
   const handleHexBlur = () => {
@@ -164,6 +183,25 @@ export default function ColorSearch() {
               <Search className="h-3.5 w-3.5" />
               <span>Search</span>
             </Button>
+          </div>
+
+          {/* Quick preset swatches */}
+          <div className="flex items-center gap-1 pl-1">
+            {PRESET_COLORS.map((preset) => (
+              <button
+                key={preset.name}
+                type="button"
+                title={preset.name}
+                onClick={() => handleSelectPreset(preset.hex)}
+                className={`h-5 w-5 rounded-full border transition-transform hover:scale-125 shadow-xs cursor-pointer ${
+                  activeHex.toLowerCase() === preset.hex.toLowerCase()
+                    ? "ring-2 ring-primary ring-offset-1 scale-110"
+                    : "border-black/20"
+                }`}
+                style={{ backgroundColor: preset.hex }}
+                aria-label={`Search ${preset.name}`}
+              />
+            ))}
           </div>
 
           {activeHex && (
