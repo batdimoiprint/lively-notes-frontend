@@ -2,10 +2,10 @@ import Header from "@/components/home/Header/Header";
 import TasksGrid from "@/components/home/TasksGrid/TasksGrid";
 import TodoList from "@/components/home/Todo/TodoList";
 import { Toaster } from "@/components/ui/sonner";
-import PictureCards from "@/components/home/PictureCards/PictureCardsGroup";
 import SpecialCard from "@/components/home/SpecialCard/SpecialCard";
 import NotesCalendar from "@/components/home/NotesCalendar/NotesCalendar";
 import JobTracker from "@/components/home/JobTracker/JobTracker";
+import PicturesView from "@/components/home/PicturesView/PicturesView";
 import ContentViewToggle, {
   type ContentView,
 } from "@/components/home/ContentViewToggle/ContentViewToggle";
@@ -20,6 +20,7 @@ export default function Home() {
 
   const isCalendar = contentView === "calendar";
   const isJobs = contentView === "jobs";
+  const isPictures = contentView === "pictures";
 
   return (
     <>
@@ -31,32 +32,31 @@ export default function Home() {
           onHideHeadersChange={setHideHeaders}
         />
 
-        <ErrorBoundary FallbackComponent={ErrorFallback}>
-          {/* Headers */}
-          <div
-            className={`flex w-full flex-col gap-4 lg:flex-row lg:items-stretch transition-all duration-300 origin-top overflow-hidden ${
-              hideHeaders 
-                ? "max-h-0 opacity-0 pointer-events-none gap-0 scale-y-0" 
-                : "max-h-[500px] opacity-100 scale-y-100"
-            }`}
-          >
-            <div className="order-1 flex min-w-0 flex-col lg:order-2 lg:flex-1">
-              <PictureCards />
+        {/* Headers Drawer — shown for notes/calendar/jobs when not hidden */}
+        {!isPictures && (
+          <ErrorBoundary FallbackComponent={ErrorFallback}>
+            <div
+              className={`flex w-full flex-col gap-4 lg:flex-row lg:items-stretch transition-all duration-300 origin-top overflow-hidden ${
+                hideHeaders 
+                  ? "max-h-0 opacity-0 pointer-events-none gap-0 scale-y-0" 
+                  : "max-h-[500px] opacity-100 scale-y-100"
+              }`}
+            >
+              <div className="flex w-full lg:w-80">
+                <SpecialCard />
+              </div>
             </div>
-            <div className="order-3 flex">
-              <SpecialCard />
-            </div>
-          </div>
-        </ErrorBoundary>
+          </ErrorBoundary>
+        )}
 
-
-
-        {/* Content area — switches between Notes grid, Calendar, and Job Tracker */}
+        {/* Content area — switches between Notes grid, Calendar, Job Tracker, and Pictures */}
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           {isCalendar ? (
             <NotesCalendar />
           ) : isJobs ? (
             <JobTracker />
+          ) : isPictures ? (
+            <PicturesView />
           ) : (
             <div className="flex flex-1 min-h-0 flex-col gap-3 lg:flex-row overflow-hidden">
               <div className="flex min-w-0 flex-1 flex-col h-full overflow-hidden">

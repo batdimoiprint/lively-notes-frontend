@@ -1,10 +1,10 @@
-import { LayoutGrid, CalendarDays, UserRound, Eye, EyeOff, Sun, Moon } from "lucide-react";
+import { LayoutGrid, CalendarDays, UserRound, Images, Eye, EyeOff, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { useTheme } from "@/components/theme-provider";
 
-export type ContentView = "notes" | "calendar" | "jobs";
+export type ContentView = "notes" | "calendar" | "jobs" | "pictures";
 
 interface ContentViewToggleProps {
   view: ContentView;
@@ -56,6 +56,17 @@ export default function ContentViewToggle({
         >
           <UserRound className="h-4 w-4" />
           <span className="hidden sm:inline text-xs font-semibold">Jobs</span>
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant={view === "pictures" ? "default" : "outline"}
+          className="h-9 gap-1.5 px-3 transition-transform duration-200 hover:scale-105"
+          onClick={() => onViewChange("pictures")}
+          aria-label="Pictures view"
+        >
+          <Images className="h-4 w-4" />
+          <span className="hidden sm:inline text-xs font-semibold">Pictures</span>
         </Button>
       </div>
 
