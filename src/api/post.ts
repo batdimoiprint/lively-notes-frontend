@@ -11,6 +11,8 @@ export interface IGPost {
   cloudinaryPics: {
     public_id: string;
     secure_url: string;
+    colors?: [string, number][];
+    predominant?: [string, number][];
   }[];
 }
 
@@ -75,5 +77,34 @@ export async function runActorForUsername(username: string) {
     username,
   });
 
+  return res.data;
+}
+
+export interface ColorSearchImage {
+  public_id: string;
+  secure_url: string;
+  score: number;
+  matchedColor: string;
+  matchedPercentage: number;
+  postUrl: string;
+  ownerUsername: string;
+  caption: string;
+}
+
+export interface ColorSearchResult {
+  images: ColorSearchImage[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+export async function searchByColor(
+  hex: string,
+  page = 1,
+  limit = 20
+): Promise<ColorSearchResult> {
+  const res = await api.get<ColorSearchResult>("/api/igpost/search-by-color", {
+    params: { hex, page, limit },
+  });
   return res.data;
 }
