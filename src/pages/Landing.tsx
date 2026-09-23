@@ -16,7 +16,7 @@ function Landing() {
   const mutation = useMutation({
     mutationFn: Login,
     onSuccess: () => {
-      navigate("home");
+      navigate("home", { state: { openQuickCapture: true } });
     },
     onError: () => {
       setValid(true);
@@ -33,7 +33,7 @@ function Landing() {
 
   useEffect(() => {
     if (!isLoading && user) {
-      navigate("home");
+      navigate("home", { state: { openQuickCapture: true } });
     }
   }, [isLoading, user, navigate]);
 

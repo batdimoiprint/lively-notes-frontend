@@ -9,14 +9,45 @@ import PicturesView from "@/components/home/PicturesView/PicturesView";
 import ContentViewToggle, {
   type ContentView,
 } from "@/components/home/ContentViewToggle/ContentViewToggle";
+import QuickCaptureModal from "@/components/home/QuickCaptureModal/QuickCaptureModal";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallback from "@/components/ErrorFallback";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 export default function Home() {
+  const location = useLocation();
   const [selectedSection, setSelectedSection] = useState<string>("default");
   const [contentView, setContentView] = useState<ContentView>("notes");
   const [hideHeaders, setHideHeaders] = useState<boolean>(false);
+  const [isQuickCaptureOpen, setIsQuickCaptureOpen] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (location.state?.openQuickCapture) {
+      setIsQuickCaptureOpen(true);
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isSuperOrAlt = e.metaKey || (e.altKey && !e.ctrlKey);
+      if (isSuperOrAlt && e.key.toLowerCase() === "n") {
+        e.preventDefault();
+        setIsQuickCaptureOpen((prev) => !prev);
+      }
+    };
+
+    const handleOpenQuickCapture = () => {
+      setIsQuickCaptureOpen(true);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("open-quick-capture", handleOpenQuickCapture);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("open-quick-capture", handleOpenQuickCapture);
+    };
+  }, []);
 
   const isCalendar = contentView === "calendar";
   const isJobs = contentView === "jobs";
@@ -30,16 +61,17 @@ export default function Home() {
           onViewChange={setContentView}
           hideHeaders={hideHeaders}
           onHideHeadersChange={setHideHeaders}
+          onOpenQuickCapture={() => setIsQuickCaptureOpen(true)}
         />
 
         {/* Headers Drawer — shown for notes/calendar/jobs when not hidden */}
         {!isPictures && (
           <ErrorBoundary FallbackComponent={ErrorFallback}>
             <div
-              className={`flex w-full flex-col gap-4 lg:flex-row lg:items-stretch transition-all duration-300 origin-top overflow-hidden ${
-                hideHeaders 
-                  ? "max-h-0 opacity-0 pointer-events-none gap-0 scale-y-0" 
-                  : "max-h-[500px] opacity-100 scale-y-100"
+              className={`flex w-full origin-top flex-col gap-4 overflow-hidden transition-all duration-300 lg:flex-row lg:items-stretch ${
+                hideHeaders
+                  ? "pointer-events-none max-h-0 scale-y-0 gap-0 opacity-0"
+                  : "max-h-[500px] scale-y-100 opacity-100"
               }`}
             >
               <div className="order-1 flex min-w-0 flex-col lg:order-1 lg:flex-1">
@@ -61,17 +93,22 @@ export default function Home() {
           ) : isPictures ? (
             <PicturesView />
           ) : (
-            <div className="flex flex-1 min-h-0 flex-col gap-3 lg:flex-row overflow-hidden">
-              <div className="flex min-w-0 flex-1 flex-col h-full overflow-hidden">
+            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden lg:flex-row">
+              <div className="flex h-full min-w-0 flex-1 flex-col overflow-hidden">
                 <TasksGrid selectedSection={selectedSection} onSectionSelect={setSelectedSection} />
               </div>
-              <div className="flex w-full flex-col lg:w-80 xl:w-96 h-full overflow-hidden">
+              <div className="flex h-full w-full flex-col overflow-hidden lg:w-80 xl:w-96">
                 <TodoList />
               </div>
             </div>
           )}
         </ErrorBoundary>
       </main>
+      <QuickCaptureModal
+        open={isQuickCaptureOpen}
+        onOpenChange={setIsQuickCaptureOpen}
+        selectedSection={selectedSection}
+      />
       <Toaster />
     </>
   );
