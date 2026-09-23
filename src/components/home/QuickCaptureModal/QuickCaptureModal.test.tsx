@@ -87,3 +87,28 @@ test("closes modal when clicking close or cancel button", async () => {
   fireEvent.click(cancelButton);
   expect(handleOpenChange).toHaveBeenCalledWith(false);
 });
+
+test("shows modal back again after timeout when closed", () => {
+  vi.useFakeTimers();
+  const handleOpenChange = vi.fn();
+
+  renderWithQuery(
+    <QuickCaptureModal
+      open={false}
+      onOpenChange={handleOpenChange}
+      selectedSection="default"
+      autoReopenDelayMs={5000}
+    />
+  );
+
+  expect(handleOpenChange).not.toHaveBeenCalled();
+
+  vi.advanceTimersByTime(4999);
+  expect(handleOpenChange).not.toHaveBeenCalled();
+
+  vi.advanceTimersByTime(1);
+  expect(handleOpenChange).toHaveBeenCalledWith(true);
+
+  vi.useRealTimers();
+});
+

@@ -18,6 +18,7 @@ export interface QuickCaptureModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   selectedSection?: string;
+  autoReopenDelayMs?: number;
 }
 
 export function formatQuickNoteTitle(date: Date = new Date()): string {
@@ -35,10 +36,20 @@ export default function QuickCaptureModal({
   open,
   onOpenChange,
   selectedSection = "default",
+  autoReopenDelayMs = 5000,
 }: QuickCaptureModalProps) {
   const [content, setContent] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!open && autoReopenDelayMs && autoReopenDelayMs > 0) {
+      const timer = setTimeout(() => {
+        onOpenChange(true);
+      }, autoReopenDelayMs);
+      return () => clearTimeout(timer);
+    }
+  }, [open, autoReopenDelayMs, onOpenChange]);
 
   useEffect(() => {
     if (open) {

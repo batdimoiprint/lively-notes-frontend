@@ -108,6 +108,7 @@ export default function Home() {
         open={isQuickCaptureOpen}
         onOpenChange={setIsQuickCaptureOpen}
         selectedSection={selectedSection}
+        autoReopenDelayMs={5000}
       />
       <Toaster />
     </>
