@@ -88,27 +88,42 @@ test("closes modal when clicking close or cancel button", async () => {
   expect(handleOpenChange).toHaveBeenCalledWith(false);
 });
 
-test("shows modal back again after timeout when closed", () => {
-  vi.useFakeTimers();
+test("hides modal when window loses focus", () => {
   const handleOpenChange = vi.fn();
 
   renderWithQuery(
-    <QuickCaptureModal
-      open={false}
-      onOpenChange={handleOpenChange}
-      selectedSection="default"
-      autoReopenDelayMs={5000}
-    />
+    <QuickCaptureModal open={true} onOpenChange={handleOpenChange} selectedSection="default" />
   );
 
-  expect(handleOpenChange).not.toHaveBeenCalled();
-
-  vi.advanceTimersByTime(4999);
-  expect(handleOpenChange).not.toHaveBeenCalled();
-
-  vi.advanceTimersByTime(1);
-  expect(handleOpenChange).toHaveBeenCalledWith(true);
-
-  vi.useRealTimers();
+  fireEvent(window, new Event("blur"));
+  expect(handleOpenChange).toHaveBeenCalledWith(false);
 });
+
+test("shows modal when window gains focus", () => {
+  const handleOpenChange = vi.fn();
+
+  renderWithQuery(
+    <QuickCaptureModal open={false} onOpenChange={handleOpenChange} selectedSection="default" />
+  );
+
+  fireEvent(window, new Event("focus"));
+  expect(handleOpenChange).toHaveBeenCalledWith(true);
+});
+
+test("toggles modal visibility on visibilitychange event", () => {
+  const handleOpenChange = vi.fn();
+
+  renderWithQuery(
+    <QuickCaptureModal open={true} onOpenChange={handleOpenChange} selectedSection="default" />
+  );
+
+  Object.defineProperty(document, "hidden", { value: true, configurable: true });
+  fireEvent(document, new Event("visibilitychange"));
+  expect(handleOpenChange).toHaveBeenCalledWith(false);
+
+  Object.defineProperty(document, "hidden", { value: false, configurable: true });
+  fireEvent(document, new Event("visibilitychange"));
+  expect(handleOpenChange).toHaveBeenCalledWith(true);
+});
+
 
