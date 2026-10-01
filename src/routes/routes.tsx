@@ -13,6 +13,8 @@ export default function AppRoute() {
         <Route path="/" element={<Landing />} />
         <Route element={<ProtectedLayout />}>
           <Route path="home" element={<Home />} />
+          <Route path="eden" element={<Home />} />
+          <Route path="notebook" element={<Home />} />
         </Route>
         <Route path="/*" element={<NotFound />} />
         <Route path="/denied" element={<Denied />} />

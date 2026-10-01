@@ -8,13 +8,14 @@ import {
   Sun,
   Moon,
   SquarePen,
+  BookOpen,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { useTheme } from "@/components/theme-provider";
 
-export type ContentView = "notes" | "calendar" | "jobs" | "pictures";
+export type ContentView = "notes" | "calendar" | "jobs" | "pictures" | "eden";
 
 interface ContentViewToggleProps {
   view: ContentView;
@@ -79,6 +80,17 @@ export default function ContentViewToggle({
         >
           <Images className="h-4 w-4" />
           <span className="hidden text-xs font-semibold sm:inline">Pictures</span>
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant={view === "eden" ? "default" : "outline"}
+          className="h-9 gap-1.5 px-3 transition-transform duration-200 hover:scale-105"
+          onClick={() => onViewChange("eden")}
+          aria-label="EDEN Notebook view"
+        >
+          <BookOpen className="h-4 w-4" />
+          <span className="hidden text-xs font-semibold sm:inline">EDEN</span>
         </Button>
       </div>
 

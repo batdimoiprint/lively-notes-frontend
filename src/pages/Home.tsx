@@ -6,6 +6,7 @@ import SpecialCard from "@/components/home/SpecialCard/SpecialCard";
 import NotesCalendar from "@/components/home/NotesCalendar/NotesCalendar";
 import JobTracker from "@/components/home/JobTracker/JobTracker";
 import PicturesView from "@/components/home/PicturesView/PicturesView";
+import EdenNotebook from "@/components/home/EdenNotebook/EdenNotebook";
 import ContentViewToggle, {
   type ContentView,
 } from "@/components/home/ContentViewToggle/ContentViewToggle";
@@ -18,9 +19,32 @@ import { useLocation } from "react-router-dom";
 export default function Home() {
   const location = useLocation();
   const [selectedSection, setSelectedSection] = useState<string>("default");
-  const [contentView, setContentView] = useState<ContentView>("notes");
+  const [contentView, setContentView] = useState<ContentView>(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const viewParam = searchParams.get("view");
+    if (
+      viewParam === "eden" ||
+      window.location.pathname === "/eden" ||
+      window.location.pathname === "/notebook"
+    ) {
+      return "eden";
+    }
+    return "notes";
+  });
   const [hideHeaders, setHideHeaders] = useState<boolean>(false);
   const [isQuickCaptureOpen, setIsQuickCaptureOpen] = useState<boolean>(true);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const viewParam = searchParams.get("view");
+    if (
+      viewParam === "eden" ||
+      location.pathname === "/eden" ||
+      location.pathname === "/notebook"
+    ) {
+      setContentView("eden");
+    }
+  }, [location]);
 
   useEffect(() => {
     if (location.state?.openQuickCapture) {
@@ -52,6 +76,7 @@ export default function Home() {
   const isCalendar = contentView === "calendar";
   const isJobs = contentView === "jobs";
   const isPictures = contentView === "pictures";
+  const isEden = contentView === "eden";
 
   return (
     <>
@@ -64,7 +89,7 @@ export default function Home() {
           onOpenQuickCapture={() => setIsQuickCaptureOpen(true)}
         />
 
-        {/* Headers Drawer — shown for notes/calendar/jobs when not hidden */}
+        {/* Headers Drawer — shown for notes/calendar/jobs/eden when not hidden */}
         {!isPictures && (
           <ErrorBoundary FallbackComponent={ErrorFallback}>
             <div
@@ -84,7 +109,7 @@ export default function Home() {
           </ErrorBoundary>
         )}
 
-        {/* Content area — switches between Notes grid, Calendar, Job Tracker, and Pictures */}
+        {/* Content area — switches between Notes grid, Calendar, Job Tracker, Pictures, and EDEN Notebook */}
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           {isCalendar ? (
             <NotesCalendar />
@@ -92,6 +117,8 @@ export default function Home() {
             <JobTracker />
           ) : isPictures ? (
             <PicturesView hideHeaders={hideHeaders} />
+          ) : isEden ? (
+            <EdenNotebook hideHeaders={hideHeaders} />
           ) : (
             <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden lg:flex-row">
               <div className="flex h-full min-w-0 flex-1 flex-col overflow-hidden">
