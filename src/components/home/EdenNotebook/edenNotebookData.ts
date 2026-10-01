@@ -13,6 +13,48 @@ export interface EdenNotebookEntry {
 
 export const INITIAL_EDEN_NOTEBOOK_ENTRIES: EdenNotebookEntry[] = [
   {
+    id: "eden-task-2026-10-01",
+    title: "TASKS 10-1-26",
+    date: "2026-10-01",
+    whatIdidLastWorkday:
+      "• Build and testing of AI VA on the Apex Human portal\n• Recording of setup on Neon DB, Composio, and Google AI Studio\n• Recording and compression of AI VA markdown docs\n• Apex Human reference product rebuild on portal",
+    whatIWillDoToday: "Record the build for AI-VA through the Apex Human website",
+    blockers: "None",
+    notes: "DTR Log In: Record the build for AI-VA through the Apex Human website",
+    rawContent: `TASKS 10-1-26\nWhat I did last workday:\nBuild and testing of AI VA on the Apex Human portal; recording of setup on Neon DB, Composio, Google AI Studio; and Apex Human rebuild\nWhat I will do today:\nRecord the build for AI-VA through the Apex Human website\nBlockers/Urgent Concerns/Other Concerns:\nNone`,
+    createdAt: "2026-10-01T09:00:00.000Z",
+    updatedAt: "2026-10-01T09:00:00.000Z",
+  },
+  {
+    id: "eden-task-2026-09-29",
+    title: "TASKS 9-29-26",
+    date: "2026-09-29",
+    whatIdidLastWorkday:
+      "Final build of AI VA, producing markdown files for AI VA on Apex Human, and Maker QA pass",
+    whatIWillDoToday:
+      "• Build and testing of AI VA on the Apex Human portal\n• Recording of setup on Neon DB, Composio, and Google AI Studio\n• Recording and compression of AI VA markdown docs\n• Apex Human reference product rebuild on portal",
+    blockers: "None",
+    notes:
+      "DTR Log In: Build and testing of AI VA on the Apex Human portal\nDTR Log Out: Recording of setup on Neon DB, Composio, and Google AI Studio; recording and compression of AI VA markdown docs; and Apex Human reference product rebuild on portal",
+    rawContent: `TASKS 9-29-26\nWhat I did last workday:\nFinal build of AI VA, producing markdown files for AI VA on Apex Human, and Maker QA pass\nWhat I will do today:\n• Build and testing of AI VA on the Apex Human portal\n• Recording of setup on Neon DB, Composio, and Google AI Studio\n• Recording and compression of AI VA markdown docs\n• Apex Human reference product rebuild on portal\nBlockers/Urgent Concerns/Other Concerns:\nNone`,
+    createdAt: "2026-09-29T09:00:00.000Z",
+    updatedAt: "2026-09-29T09:00:00.000Z",
+  },
+  {
+    id: "eden-task-2026-09-28",
+    title: "TASKS 9-28-26",
+    date: "2026-09-28",
+    whatIdidLastWorkday: "Finalized build of the AI VA\nMaker QA pass",
+    whatIWillDoToday:
+      "• Continue build of AI VA reference product\n• Final build of AI VA, producing markdown files for AI VA on Apex Human, and a short Maker QA pass",
+    blockers: "None",
+    notes:
+      "DTR Log In: Continue build of AI VA reference product\nDTR Log Out: Final build of AI VA, producing markdown files for AI VA on Apex Human, and a short Maker QA pass",
+    rawContent: `TASKS 9-28-26\nWhat I did last workday:\nFinalized build of the AI VA and Maker QA pass\nWhat I will do today:\nContinue build of AI VA reference product; Final build of AI VA, producing markdown files for AI VA on Apex Human, and a short Maker QA pass\nBlockers/Urgent Concerns/Other Concerns:\nNone`,
+    createdAt: "2026-09-28T09:00:00.000Z",
+    updatedAt: "2026-09-28T09:00:00.000Z",
+  },
+  {
     id: "eden-task-2026-09-26",
     title: "TASK 9-26-26",
     date: "2026-09-26",

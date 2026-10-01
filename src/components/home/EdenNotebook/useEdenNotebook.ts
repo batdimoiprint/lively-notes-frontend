@@ -11,6 +11,11 @@ export function useEdenNotebook() {
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
+          const existingIds = new Set(parsed.map((p: EdenNotebookEntry) => p.id));
+          const missing = INITIAL_EDEN_NOTEBOOK_ENTRIES.filter((init) => !existingIds.has(init.id));
+          if (missing.length > 0) {
+            return [...missing, ...parsed];
+          }
           return parsed;
         }
       }

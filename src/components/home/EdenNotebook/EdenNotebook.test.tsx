@@ -15,10 +15,13 @@ describe("EDEN Notebook Component", () => {
     });
   });
 
-  test("contains all initial seeded entries from TASKS 9-1-26 through TASK 9-26-26", () => {
-    expect(INITIAL_EDEN_NOTEBOOK_ENTRIES.length).toBeGreaterThanOrEqual(14);
+  test("contains all initial seeded entries from TASKS 9-1-26 through TASKS 10-1-26", () => {
+    expect(INITIAL_EDEN_NOTEBOOK_ENTRIES.length).toBeGreaterThanOrEqual(17);
 
     const titles = INITIAL_EDEN_NOTEBOOK_ENTRIES.map((e) => e.title);
+    expect(titles).toContain("TASKS 10-1-26");
+    expect(titles).toContain("TASKS 9-29-26");
+    expect(titles).toContain("TASKS 9-28-26");
     expect(titles).toContain("TASK 9-26-26");
     expect(titles).toContain("TASK 9-25-26");
     expect(titles).toContain("TASKS 9-24-26");
