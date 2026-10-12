@@ -1,3 +1,4 @@
+import { Markdown } from "@/components/ui/markdown";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import {
   useCalendarNotes,
@@ -698,7 +699,9 @@ function CalendarNoteCard({ note }: { note: CalendarNote }) {
         </Button>
       </div>
       {note.body && (
-        <p className="text-muted-foreground pl-5 text-xs leading-relaxed">{note.body}</p>
+        <Markdown className="text-muted-foreground pl-5 text-xs leading-relaxed">
+          {note.body}
+        </Markdown>
       )}
       {note.reminderAt && (
         <div className="flex flex-col gap-0.5 pl-5">

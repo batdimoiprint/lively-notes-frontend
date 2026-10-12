@@ -15,6 +15,7 @@ import { type Inputs } from "@/types/tasktypes";
 import { useSettings } from "@/api/settings";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { Markdown } from "@/components/ui/markdown";
 
 interface TaskCardProps {
   task: Tasks;
@@ -168,7 +169,9 @@ export default function TaskCard({
                 </span>
               </CardAction>
             </CardHeader>
-            <CardContent className="break-words whitespace-break-spaces">{task.body}</CardContent>
+            <CardContent>
+              <Markdown>{task.body}</Markdown>
+            </CardContent>
           </>
         ) : (
           <div className="relative z-10 flex flex-col gap-2 p-1">
