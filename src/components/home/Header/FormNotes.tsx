@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { MarkdownEditor } from "@/components/ui/markdown-editor";
 import { Label } from "@radix-ui/react-label";
 import { createNotes } from "@/api/notes";
 import { type Inputs } from "@/types/tasktypes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Spinner } from "../../ui/spinner";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { Controller, useForm, type SubmitHandler } from "react-hook-form";
 import { useState } from "react";
 import { Check } from "lucide-react";
 import { toast } from "sonner";
@@ -18,6 +18,7 @@ interface FormNotesProps {
 export default function FormNotes({ selectedSection }: FormNotesProps) {
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
     reset,
@@ -63,12 +64,18 @@ export default function FormNotes({ selectedSection }: FormNotesProps) {
         placeholder={errors.title ? errors.title.message : "Title"}
       />
 
-      <Textarea
-        className="overflow-hidden sm:flex-1"
-        {...register("body", {
-          required: "Body is required",
-        })}
-        placeholder={errors.body ? errors.body.message : "Body"}
+      <Controller
+        name="body"
+        control={control}
+        rules={{ required: "Body is required" }}
+        render={({ field }) => (
+          <MarkdownEditor
+            value={field.value ?? ""}
+            onChange={field.onChange}
+            placeholder={errors.body ? errors.body.message : "Body"}
+            className="border-input min-h-24 rounded-md border px-3 py-2 sm:flex-1"
+          />
+        )}
       />
 
       <Button disabled={mutation.isPending} type="submit">

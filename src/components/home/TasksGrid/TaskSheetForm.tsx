@@ -1,7 +1,7 @@
 import { DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { type Inputs, type Tasks } from "@/types/tasktypes";
-import { Textarea } from "@/components/ui/textarea";
+import { MarkdownEditor } from "@/components/ui/markdown-editor";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
@@ -10,8 +10,7 @@ import { toast } from "sonner";
 import { editNotes } from "@/api/notes";
 
 export default function TaskSheet({ task }: { task: Tasks | null }) {
-  const { register, reset, watch } = useForm<Inputs>();
-  const bodyTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const { register, reset, watch, setValue } = useForm<Inputs>();
   const autoSaveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSavedRef = useRef<{ title: string; body: string }>({ title: "", body: "" });
   const latestValuesRef = useRef<{ title: string; body: string }>({ title: "", body: "" });
@@ -21,12 +20,6 @@ export default function TaskSheet({ task }: { task: Tasks | null }) {
   // Watch form values
   const titleValue = watch("title");
   const bodyValue = watch("body");
-
-  const resizeTextarea = (textarea: HTMLTextAreaElement | null) => {
-    if (!textarea) return;
-    textarea.style.height = "auto";
-    textarea.style.height = `${textarea.scrollHeight}px`;
-  };
 
   const mutation = useMutation({
     mutationFn: editNotes,
@@ -101,9 +94,6 @@ export default function TaskSheet({ task }: { task: Tasks | null }) {
     lastSavedRef.current = nextTaskValues;
     latestValuesRef.current = nextTaskValues;
     reset(nextTaskValues);
-    requestAnimationFrame(() => {
-      resizeTextarea(bodyTextareaRef.current);
-    });
   }, [task, reset]);
 
   useEffect(() => {
@@ -129,7 +119,6 @@ export default function TaskSheet({ task }: { task: Tasks | null }) {
   }, []);
 
   const titleField = register("title", { required: "Title is required" });
-  const bodyField = register("body", { required: "Title is required" });
 
   return (
     <DialogContent className="max-h-[90vh] overflow-hidden p-0">
@@ -147,17 +136,11 @@ export default function TaskSheet({ task }: { task: Tasks | null }) {
           />
         </div>
         <ScrollArea className="min-h-0 flex-1 rounded-md border-none">
-          <Textarea
-            {...bodyField}
-            ref={(element) => {
-              bodyField.ref(element);
-              bodyTextareaRef.current = element;
-            }}
-            className="min-h-48 resize-none overflow-hidden border-none bg-transparent whitespace-break-spaces focus-visible:ring-0"
-            onInput={(event: React.FormEvent<HTMLTextAreaElement>) =>
-              resizeTextarea(event.currentTarget)
-            }
+          <MarkdownEditor
+            value={bodyValue ?? ""}
+            onChange={(markdown) => setValue("body", markdown)}
             placeholder="Body"
+            className="min-h-48"
           />
         </ScrollArea>
       </div>

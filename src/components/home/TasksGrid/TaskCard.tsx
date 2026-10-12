@@ -16,6 +16,7 @@ import { useSettings } from "@/api/settings";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Markdown } from "@/components/ui/markdown";
+import { MarkdownEditor } from "@/components/ui/markdown-editor";
 
 interface TaskCardProps {
   task: Tasks;
@@ -37,11 +38,10 @@ export default function TaskCard({
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const queryClient = useQueryClient();
-  const { register, reset, watch } = useForm<Inputs>();
+  const { register, reset, watch, setValue } = useForm<Inputs>();
   const { data: settings } = useSettings();
 
   const titleTextareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const bodyTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const autoSaveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Watch form values for debounced auto-save
@@ -115,7 +115,6 @@ export default function TaskCard({
     if (isExpanded) {
       setTimeout(() => {
         resizeTextarea(titleTextareaRef.current);
-        resizeTextarea(bodyTextareaRef.current);
       }, 0);
     }
   }, [task, reset, isExpanded]);
@@ -201,19 +200,11 @@ export default function TaskCard({
                 />
               </div>
             </div>
-            <Textarea
-              {...register("body", { required: "Title is required" })}
-              className="min-h-24 resize-none border-none bg-transparent p-0 text-sm whitespace-break-spaces focus-visible:ring-0"
-              style={{ overflow: "hidden" }}
-              onChange={(e) => {
-                register("body", { required: "Title is required" }).onChange(e);
-                resizeTextarea(e.target);
-              }}
-              ref={(e) => {
-                register("body", { required: "Title is required" }).ref(e);
-                bodyTextareaRef.current = e;
-              }}
-              onClick={(e) => e.stopPropagation()}
+            <MarkdownEditor
+              value={bodyValue ?? ""}
+              onChange={(markdown) => setValue("body", markdown)}
+              placeholder="Body"
+              className="min-h-24"
             />
           </div>
         )}
