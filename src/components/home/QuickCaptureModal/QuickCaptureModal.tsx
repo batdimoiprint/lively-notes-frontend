@@ -31,14 +31,33 @@ export function formatQuickNoteTitle(date: Date = new Date()): string {
   });
 }
 
+const DRAFT_KEY = "quick-capture-draft";
+
+function readDraft(): string {
+  try {
+    return localStorage.getItem(DRAFT_KEY) ?? "";
+  } catch {
+    return "";
+  }
+}
+
 export default function QuickCaptureModal({
   open,
   onOpenChange,
   selectedSection = "default",
 }: QuickCaptureModalProps) {
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState(readDraft);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    try {
+      if (content) localStorage.setItem(DRAFT_KEY, content);
+      else localStorage.removeItem(DRAFT_KEY);
+    } catch {
+      // storage unavailable or full; draft just won't persist
+    }
+  }, [content]);
 
   useEffect(() => {
     const handleBlur = () => {
