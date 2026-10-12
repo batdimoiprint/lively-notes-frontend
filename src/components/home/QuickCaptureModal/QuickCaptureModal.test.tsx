@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { expect, test, vi } from "vitest";
+import { beforeEach, expect, test, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import QuickCaptureModal, { formatQuickNoteTitle } from "./QuickCaptureModal";
 import * as notesApi from "@/api/notes";
@@ -9,6 +9,14 @@ vi.mock("@/api/notes", () => ({
     .fn()
     .mockResolvedValue({ _id: "new-note-1", title: "Sep 23, 2026, 9:00 PM", body: "Hello" }),
 }));
+
+// The body is a contenteditable rich-text editor, which can't take
+// fireEvent.change; seed it through the persisted draft it loads on mount.
+const DRAFT_KEY = "quick-capture-draft";
+
+beforeEach(() => {
+  localStorage.clear();
+});
 
 function renderWithQuery(ui: React.ReactElement) {
   const queryClient = new QueryClient({
@@ -24,26 +32,24 @@ test("formatQuickNoteTitle formats date into readable string", () => {
   expect(formatted).toContain("9:30");
 });
 
-test("renders single textarea without title input and submits on Ctrl+Enter", async () => {
+test("renders rich-text body without title input and submits on Ctrl+Enter", async () => {
   const handleOpenChange = vi.fn();
   const createSpy = vi.spyOn(notesApi, "createNotes");
+  localStorage.setItem(DRAFT_KEY, "Sudden brainstorm idea");
 
   renderWithQuery(
     <QuickCaptureModal open={true} onOpenChange={handleOpenChange} selectedSection="default" />
   );
 
-  // Verify only textarea input is present, NO title input field
+  // Verify only the body editor is present, NO title input field
   expect(screen.queryByPlaceholderText(/^title$/i)).not.toBeInTheDocument();
-  const textarea = screen.getByLabelText("Note content");
-  expect(textarea).toBeInTheDocument();
+  const editor = await screen.findByLabelText("Note content");
+  expect(editor).toHaveAttribute("contenteditable", "true");
   expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Save note" })).toBeInTheDocument();
 
-  // Type note content
-  fireEvent.change(textarea, { target: { value: "Sudden brainstorm idea" } });
-
   // Press Ctrl+Enter to submit
-  fireEvent.keyDown(textarea, { key: "Enter", ctrlKey: true });
+  fireEvent.keyDown(editor, { key: "Enter", ctrlKey: true });
 
   await waitFor(() => {
     expect(createSpy).toHaveBeenCalledWith(
@@ -65,9 +71,8 @@ test("does not submit empty note", async () => {
 
   renderWithQuery(<QuickCaptureModal open={true} onOpenChange={vi.fn()} selectedSection="work" />);
 
-  const textarea = screen.getByLabelText("Note content");
-  fireEvent.change(textarea, { target: { value: "   " } });
-  fireEvent.keyDown(textarea, { key: "Enter", ctrlKey: true });
+  const editor = await screen.findByLabelText("Note content");
+  fireEvent.keyDown(editor, { key: "Enter", ctrlKey: true });
 
   expect(createSpy).not.toHaveBeenCalled();
 });
@@ -125,5 +130,3 @@ test("toggles modal visibility on visibilitychange event", () => {
   fireEvent(document, new Event("visibilitychange"));
   expect(handleOpenChange).toHaveBeenCalledWith(true);
 });
-
-

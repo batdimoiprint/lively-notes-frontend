@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -9,7 +9,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
+import { MarkdownEditor } from "@/components/ui/markdown-editor";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { createNotes } from "@/api/notes";
@@ -47,7 +47,6 @@ export default function QuickCaptureModal({
   selectedSection = "default",
 }: QuickCaptureModalProps) {
   const [content, setContent] = useState(readDraft);
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -87,15 +86,6 @@ export default function QuickCaptureModal({
     };
   }, [onOpenChange]);
 
-  useEffect(() => {
-    if (open) {
-      const timer = setTimeout(() => {
-        textareaRef.current?.focus();
-      }, 50);
-      return () => clearTimeout(timer);
-    }
-  }, [open]);
-
   const mutation = useMutation({
     mutationFn: (data: Parameters<typeof createNotes>[0]) => createNotes(data),
     onSuccess: async () => {
@@ -125,21 +115,12 @@ export default function QuickCaptureModal({
     });
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-      e.preventDefault();
-      handleSubmit();
-    }
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className="border-border bg-card/95 w-full max-w-xl p-6 shadow-2xl backdrop-blur-md sm:max-w-2xl"
-        onOpenAutoFocus={(e) => {
-          e.preventDefault();
-          textareaRef.current?.focus();
-        }}
+        // The editor autofocuses itself on mount (the dialog remounts it on every open).
+        onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <DialogHeader className="gap-1 text-left">
           <DialogTitle className="flex items-center justify-between text-base font-semibold">
@@ -161,21 +142,15 @@ export default function QuickCaptureModal({
           }}
           className="mt-2 flex flex-col gap-4"
         >
-          <label htmlFor="quick-note-body" className="sr-only">
-            Note content
-          </label>
-          <Textarea
-            id="quick-note-body"
-            ref={textareaRef}
+          <MarkdownEditor
             value={content}
-            onChange={(e) => setContent(e.target.value)}
-            onKeyDown={handleKeyDown}
+            onChange={setContent}
+            onSubmitShortcut={handleSubmit}
             placeholder="Type your sudden note here... (Ctrl + Enter to save)"
-            aria-label="Note content"
-            aria-required="true"
-            className="min-h-[180px] resize-y text-base focus-visible:ring-2 sm:min-h-[220px] sm:text-sm"
+            ariaLabel="Note content"
             disabled={mutation.isPending}
             autoFocus
+            className="border-input focus-within:ring-ring/50 max-h-[60vh] min-h-[180px] overflow-y-auto rounded-md border px-3 py-2 focus-within:ring-2 sm:min-h-[220px] [&_.ProseMirror]:min-h-[120px]"
           />
 
           <DialogFooter className="flex w-full items-center justify-between gap-2 sm:justify-between">

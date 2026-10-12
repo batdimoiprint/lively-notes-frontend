@@ -20,6 +20,11 @@ interface MarkdownEditorProps {
   placeholder?: string;
   className?: string;
   autoFocus?: boolean;
+  disabled?: boolean;
+  /** Accessible name for the editable region. */
+  ariaLabel?: string;
+  /** Called on Ctrl/Cmd+Enter instead of inserting a line break. */
+  onSubmitShortcut?: () => void;
 }
 
 /**
@@ -32,20 +37,40 @@ export function MarkdownEditor({
   placeholder,
   className,
   autoFocus,
+  disabled,
+  ariaLabel,
+  onSubmitShortcut,
 }: MarkdownEditorProps) {
   const onChangeRef = useRef(onChange);
+  const onSubmitRef = useRef(onSubmitShortcut);
   // Last markdown this editor emitted, so echoes of our own value aren't re-applied.
   const lastEmittedRef = useRef(value);
 
   useEffect(() => {
     onChangeRef.current = onChange;
-  }, [onChange]);
+    onSubmitRef.current = onSubmitShortcut;
+  }, [onChange, onSubmitShortcut]);
 
   const editor = useEditor({
     extensions: markdownEditorExtensions(placeholder),
     content: value,
     contentType: "markdown",
     autofocus: autoFocus ? "end" : false,
+    editable: !disabled,
+    editorProps: {
+      attributes: ariaLabel
+        ? { "aria-label": ariaLabel, role: "textbox", "aria-multiline": "true" }
+        : {},
+      // Direct editor props run before extension keymaps, so this wins over
+      // the hard-break extension's own Mod-Enter binding.
+      handleKeyDown: (_view, event) => {
+        if (!onSubmitRef.current || event.key !== "Enter" || !(event.ctrlKey || event.metaKey))
+          return false;
+        event.preventDefault();
+        onSubmitRef.current();
+        return true;
+      },
+    },
     // Fires only for real edits, not the initial load, so opening an old note
     // never triggers an autosave of a re-serialized body.
     onUpdate: ({ editor }) => {
@@ -54,6 +79,10 @@ export function MarkdownEditor({
       onChangeRef.current(markdown);
     },
   });
+
+  useEffect(() => {
+    editor?.setEditable(!disabled, false);
+  }, [editor, disabled]);
 
   // Sync external changes (e.g. switching to a different note).
   useEffect(() => {
